@@ -17,21 +17,21 @@ class ProjectToInitialCCS(tf.keras.layers.Layer):
         return tf.expand_dims(tf.reduce_sum((self.slopes * mz + self.intercepts) * tf.squeeze(charge), axis=1), 1)
 
 
-class RecurrentModel(tf.keras.models.Model):
+class DeepRecurrentModel(tf.keras.models.Model):
     """
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is (partly) inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
     def __init__(self, slopes, intercepts):
-        super(RecurrentModel, self).__init__()
+        super(DeepRecurrentModel, self).__init__()
 
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
         self.emb = tf.keras.layers.Embedding(84, 128)
-        self.lstm1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=True))
-        self.lstm2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=False))
+        self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=True))
+        self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=False))
 
-        self.dense1 = tf.keras.layers.Dense(128, activation='relu')
+        self.dense1 = tf.keras.layers.Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l1(1e-4))
         self.dense2 = tf.keras.layers.Dense(64, activation='relu')
 
         self.dropout = tf.keras.layers.Dropout(0.3)
@@ -39,16 +39,17 @@ class RecurrentModel(tf.keras.models.Model):
         self.out = tf.keras.layers.Dense(1, activation=None)
 
     def call(self, inputs):
+        """
+        :param inputs: should contain: (mz, charge_one_hot, seq_as_token_indices, helix_score, gravy_score)
+        """
         # get inputs
         mz, charge, seq, helix, gravy = inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]
         # sequence learning
-        embedded = self.emb(seq)
-        x_recurrent = self.lstm1(embedded)
-        x_recurrent = self.lstm2(x_recurrent)
-
+        x_recurrent = self.gru2(self.gru1(self.emb(seq)))
+        # concat to feed to dense layers
         concat = tf.keras.layers.Concatenate()([charge, x_recurrent, gravy, helix])
-
+        # regularize
         d1 = self.dropout(self.dense1(concat))
         d2 = self.dense2(d1)
-
+        # combine simple linear hypotheses with deep part
         return self.linear([mz, charge]) + self.out(d2)
