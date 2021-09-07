@@ -20,7 +20,7 @@ class TestHelpers(unittest.TestCase):
         sequence = '_AM(ox)GIM(ox)NSFVNDIFER_'
         tokens = ['#-A', 'M-OX', 'G', 'I', 'M-OX', 'N', 'S', 'F', 'V', 'N', 'D', 'I', 'F', 'E', 'R-#']
         tokenizer = fit_tokenizer([tokens])
-        self.assertIs(len(tokenizer.word_index), 11)
+        self.assertIs(len(tokenizer.word_index), len(set(tokens)))
 
 
 if __name__ == '__main__':
