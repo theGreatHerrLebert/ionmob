@@ -1,5 +1,5 @@
 import unittest
-from preprocess.helpers import align_annotation, sequence_to_tokens, fit_tokenizer
+from src.preprocess.helpers import align_annotation, sequence_to_tokens, fit_tokenizer
 
 
 class TestHelpers(unittest.TestCase):
