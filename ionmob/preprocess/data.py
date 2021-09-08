@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from helpers import tokenizer_from_json, sequence_to_tokens, get_helix_score, get_gravy_score
+from ionmob.preprocess.helpers import tokenizer_from_json, sequence_to_tokens, get_helix_score, get_gravy_score
 
 
 def get_tf_dataset(mz, charge, sequence, ccs, tokenizer_path=''):
