@@ -52,4 +52,4 @@ class DeepRecurrentModel(tf.keras.models.Model):
         d1 = self.dropout(self.dense1(concat))
         d2 = self.dense2(d1)
         # combine simple linear hypotheses with deep part
-        return self.linear([mz, charge]) + self.out(d2)
+        return self.linear([mz, charge]) + self.out(d2), self.out(d2)
