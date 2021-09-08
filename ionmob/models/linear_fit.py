@@ -25,7 +25,7 @@ def get_slopes_and_intercepts(mz, charge, ccs):
     :return: two arrays, first is slopes per charge state, second is intercepts per charge state
     """
 
-    fit_samples = [filter_by_charge(mz, charge, ccs, c) for c in range(1, 4)]
+    fit_samples = [filter_by_charge(mz, charge, ccs, c) for c in range(1, 5)]
 
     if fit_samples[0][0].shape[0] == 0:
         slopes, intercepts = [0.0], [0.0]
@@ -35,7 +35,7 @@ def get_slopes_and_intercepts(mz, charge, ccs):
         slopes, intercepts = [], []
         start_with = 0
 
-    for i in range(start_with, len(fit_samples) + 1):
+    for i in range(start_with, len(fit_samples)):
         x, y = fit_samples[i][0].reshape(-1, 1), fit_samples[i][1].reshape(-1, 1)
         reg = LinearRegression().fit(x, y)
         slope = reg.coef_[0][0]
