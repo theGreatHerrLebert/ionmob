@@ -43,8 +43,7 @@ def get_prediction_data(mz, charge, sequence, tokenizer_path):
     charges_one_hot = tf.one_hot(charge - 1, 4)
 
     # prepare sequences
-    json_string = tokenizer_from_json(tokenizer_path)
-    tokenizer = tf.keras.preprocessing.text.tokenizer_from_json(json_string)
+    tokenizer = tokenizer_from_json(tokenizer_path)
     seq_tokens = [sequence_to_tokens(s) for s in sequence]
     seq_padded = tf.keras.preprocessing.sequence.pad_sequences(tokenizer.texts_to_sequences(seq_tokens), 40,
                                                                padding='post')
