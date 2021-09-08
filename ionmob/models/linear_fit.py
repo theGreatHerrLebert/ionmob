@@ -35,7 +35,7 @@ def get_slopes_and_intercepts(mz, charge, ccs):
         slopes, intercepts = [], []
         start_with = 0
 
-    for i in range(start_with, len(fit_samples)):
+    for i in range(start_with, len(fit_samples) + 1):
         x, y = fit_samples[i][0].reshape(-1, 1), fit_samples[i][1].reshape(-1, 1)
         reg = LinearRegression().fit(x, y)
         slope = reg.coef_[0][0]
