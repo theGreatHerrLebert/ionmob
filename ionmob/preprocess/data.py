@@ -11,18 +11,21 @@ def get_tf_dataset(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends: boo
     :param sequence: array of sequences as strings
     :param ccs: array of ccs values
     :param tokenizer: pre-fit tokenizer
+    :param drop_sequence_ends: if true, start end end AAs will not be treated as separate tokens
     :return: a tensorflow dataset for prediction
     """
     if ccs is not None:
 
         masses, charges_one_hot, seq_padded, helix_score, gravy_score, ccs = get_training_data(mz, charge, sequence,
-                                                                                               ccs, tokenizer, drop_sequence_ends)
+                                                                                               ccs, tokenizer,
+                                                                                               drop_sequence_ends)
         return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded,
                                                     helix_score, gravy_score), ccs))
 
     else:
         masses, charges_one_hot, seq_padded, helix_score, gravy_score = get_prediction_data(mz, charge, sequence,
-                                                                                            tokenizer, drop_sequence_ends)
+                                                                                            tokenizer,
+                                                                                            drop_sequence_ends)
         dummy_ccs = np.expand_dims(np.zeros(masses.shape[0]), 1)
         return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded,
                                                     helix_score, gravy_score), dummy_ccs))
@@ -35,6 +38,7 @@ def get_prediction_data(mz, charge, sequence, tokenizer, drop_sequence_ends):
     :param charge: arrays of one hot encoded charge state values between 1 and 4 (one hot 0 to 3)
     :param sequence: array of sequences as strings
     :param tokenizer: pre-fit tokenizer
+    :param drop_sequence_ends: if true, start end end AAs will not be treated as separate tokens
     :return: a tensorflow dataset for prediction
     """
     # prepare masses
@@ -61,7 +65,8 @@ def get_training_data(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends):
     :param charge: arrays of one hot encoded charge state values between 1 and 4 (one hot 0 to 3)
     :param sequence: array of sequences as strings
     :param ccs: array of ccs values
-    :param tokenizer_path: path to a prefittet tokenizer
+    :param tokenizer: pre-fit tokenizer
+    :param drop_sequence_ends: if true, start end end AAs will not be treated as separate tokens
     :return: a tensorflow dataset for prediction
     """
     # ccs values
@@ -91,7 +96,6 @@ def partition_tf_dataset(ds: tf.data.Dataset, ds_size: int, train_frac: float = 
     assert (ds_size <= shuffle_size)
 
     if shuffle:
-        # Specify seed to always have the same split distribution between runs
         ds = ds.shuffle(shuffle_size, seed=41)
 
     train_size = int(train_frac * ds_size)
