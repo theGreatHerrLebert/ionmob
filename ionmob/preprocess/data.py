@@ -72,3 +72,33 @@ def get_training_data(mz, charge, sequence, ccs, tokenizer_path):
 
     # generate dataset
     return masses, charges_one_hot, seq_padded, helix_score, gravy_score, ccs
+
+
+def partition_tf_dataset(ds: tf.data.Dataset, ds_size: int, train_frac: float = 0.8, val_frac: float = 0.1,
+                         test_frac: float = 0.1, shuffle: bool = True, shuffle_size: int = int(1e7)):
+    """
+    partitions a tensorflow dataset into fractions for training, validation and test
+    :param ds: a unbatched tensorflow dataset
+    :param ds_size: number of samples inside the data set
+    :param train_frac: fraction of data that should be used for training
+    :param val_frac: --""-- validation
+    :param test_frac: --""-- testing
+    :param shuffle: if true, dataset will be shuffled before splitting
+    :param shuffle_size: buffer size of shuffle, should be greater then number of examples
+    :return: split of dataset into three non-overlapping subsets for training, validation and test
+    """
+    assert (train_frac + val_frac + test_frac) == 1
+    assert (ds_size <= shuffle_size)
+
+    if shuffle:
+        # Specify seed to always have the same split distribution between runs
+        ds = ds.shuffle(shuffle_size, seed=41)
+
+    train_size = int(train_frac * ds_size)
+    val_size = int(val_frac * ds_size)
+
+    train_ds = ds.take(train_size)
+    val_ds = ds.skip(train_size).take(val_size)
+    test_ds = ds.skip(train_size).skip(val_size)
+
+    return train_ds, val_ds, test_ds
