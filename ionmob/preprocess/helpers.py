@@ -35,6 +35,9 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
     """
     seq = sequence.replace('_', '#').replace('(ox)', '§').replace('(ac)', '&')
 
+    if drop_ends:
+        seq = seq[1:-1]
+
     # turn string into list of symbols
     seq_list = list(seq)
 
@@ -43,9 +46,6 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
 
     matches_ox = [match.start() for match in matches_ox]
     matches_ac = [match.start() for match in matches_ac]
-
-    if drop_ends:
-        seq = seq[1:-1]
 
     if len(matches_ox) > 0:
         # the given symbol needs to be replaced by its modified version
