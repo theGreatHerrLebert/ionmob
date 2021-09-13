@@ -63,12 +63,10 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
     while '&' in seq_list:
         seq_list.remove('&')
 
-    s_start, s_end = seq_list[1], seq_list[len(seq_list) - 2]
-    seq_list[1] = '#-' + s_start
-    seq_list[len(seq_list) - 2] = s_end + '-#'
-    seq_list = seq_list[1:-1]
-
-    if drop_ends:
+    if not drop_ends:
+        s_start, s_end = seq_list[1], seq_list[len(seq_list) - 2]
+        seq_list[1] = '#-' + s_start
+        seq_list[len(seq_list) - 2] = s_end + '-#'
         seq_list = seq_list[1:-1]
 
     return seq_list
