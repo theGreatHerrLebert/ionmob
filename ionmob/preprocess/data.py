@@ -3,7 +3,8 @@ import tensorflow as tf
 from ionmob.preprocess.helpers import sequence_to_tokens, get_helix_score, get_gravy_score
 
 
-def get_tf_dataset(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends: bool = False):
+def get_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray, ccs: np.ndarray,
+                   tokenizer: tf.keras.preprocessing.text.Tokenizer, drop_sequence_ends: bool = False):
     """
     takes data and puts them into a tensorflow dataset for easy tf interop
     :param mz: arrays of mz values
@@ -31,7 +32,8 @@ def get_tf_dataset(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends: boo
                                                     helix_score, gravy_score), dummy_ccs))
 
 
-def get_prediction_data(mz, charge, sequence, tokenizer, drop_sequence_ends):
+def get_prediction_data(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray,
+                        tokenizer: tf.keras.preprocessing.text.Tokenizer, drop_sequence_ends: bool):
     """
     takes data for prediction and preprocesses it
     :param mz: arrays of mz values
