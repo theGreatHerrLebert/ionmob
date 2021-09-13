@@ -22,12 +22,12 @@ class DeepRecurrentModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is (partly) inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts):
+    def __init__(self, slopes, intercepts, number_tokens):
         super(DeepRecurrentModel, self).__init__()
 
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
-        self.emb = tf.keras.layers.Embedding(84, 128)
+        self.emb = tf.keras.layers.Embedding(number_tokens + 1, 128)
         self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=True))
         self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=False, 
                                                                       recurrent_dropout=0.2))
