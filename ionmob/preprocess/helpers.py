@@ -27,7 +27,7 @@ def align_annotation(sequence: str, from_str: str = '(Oxidation (M))', to_str: s
     return sequence
 
 
-def sequence_to_tokens(sequence: str):
+def sequence_to_tokens(sequence: str, drop_ends: bool = False):
     """
     transform a sequence to a set of tokens
     :param sequence: a sequence to be tokenized
@@ -43,6 +43,9 @@ def sequence_to_tokens(sequence: str):
 
     matches_ox = [match.start() for match in matches_ox]
     matches_ac = [match.start() for match in matches_ac]
+
+    if drop_ends:
+        seq = seq[1:-1]
 
     if len(matches_ox) > 0:
         # the given symbol needs to be replaced by its modified version
@@ -206,7 +209,7 @@ def get_counts_in_order(seq_as_tokens: list, tokens_in_order: list):
     return np.array(counts).astype(np.float32)
 
 
-def get_twomer_counts_in_order(seq_as_tokens: list, tokens_in_order: list):
+def get_two_mer_counts_in_order(seq_as_tokens: list, tokens_in_order: list):
     """
     get a dense, sorted vector of token counts
     :param seq_as_tokens: a sequence as a list of symbols
