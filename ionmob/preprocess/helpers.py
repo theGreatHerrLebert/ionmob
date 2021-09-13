@@ -69,6 +69,9 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
         seq_list[len(seq_list) - 2] = s_end + '-#'
         seq_list = seq_list[1:-1]
 
+    if drop_ends:
+        return seq_list[1:-1]
+
     return seq_list
 
 
