@@ -16,13 +16,13 @@ def get_tf_dataset(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends: boo
     if ccs is not None:
 
         masses, charges_one_hot, seq_padded, helix_score, gravy_score, ccs = get_training_data(mz, charge, sequence,
-                                                                                               ccs, tokenizer)
+                                                                                               ccs, tokenizer, drop_sequence_ends)
         return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded,
                                                     helix_score, gravy_score), ccs))
 
     else:
         masses, charges_one_hot, seq_padded, helix_score, gravy_score = get_prediction_data(mz, charge, sequence,
-                                                                                            tokenizer)
+                                                                                            tokenizer, drop_sequence_ends)
         dummy_ccs = np.expand_dims(np.zeros(masses.shape[0]), 1)
         return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded,
                                                     helix_score, gravy_score), dummy_ccs))
