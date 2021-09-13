@@ -36,9 +36,6 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
     """
     seq = sequence.replace('_', '#').replace('(ox)', '§').replace('(ac)', '&')
 
-    if drop_ends:
-        seq = seq[1:-1]
-
     # turn string into list of symbols
     seq_list = list(seq)
 
@@ -70,6 +67,9 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
     seq_list[1] = '#-' + s_start
     seq_list[len(seq_list) - 2] = s_end + '-#'
     seq_list = seq_list[1:-1]
+
+    if drop_ends:
+        seq_list = seq_list[1:-1]
 
     return seq_list
 
