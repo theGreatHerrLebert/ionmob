@@ -31,6 +31,7 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
     """
     transform a sequence to a set of tokens
     :param sequence: a sequence to be tokenized
+    :param drop_ends: if true, start and stop AAs will not be treated as separate tokens
     :return: a tokenized sequence
     """
     seq = sequence.replace('_', '#').replace('(ox)', '§').replace('(ac)', '&')
