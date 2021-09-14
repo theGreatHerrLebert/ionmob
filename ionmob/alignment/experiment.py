@@ -292,9 +292,11 @@ class Experiment:
             "main_ccs", "difference_ccs"]] = np.nan
         return self._from_whole_DataFrame(self.name, df)
 
-    def find_true_bimodals(df) -> pd.DataFrame:
+    @staticmethod
+    def _find_true_bimodals(df: pd.DataFrame) -> pd.DataFrame:
         """
-        @df: dataframe with modality column and vlaues (unimodal, main, measurement_error, secondary)
+        @df: dataframe with modality column containing vlaues (unimodal, main, measurement_error, secondary)
+        @return: dataframe 
         """
         sndry = df.loc[df.modality == "secondary"]
         main_and_meas_err = df.loc[(df.modality == "main") | (
@@ -302,17 +304,32 @@ class Experiment:
 
         # carry the "old" row-labels over for after merge
         main_and_meas_err.loc[:, 'index'] = main_and_meas_err.index
-        # select only (seq, cahrge) instances not present in "secondary"
+        # select only (seq, charge) instances present in "secondary"
         df_new_unimodals_pre_agg = main_and_meas_err.merge(sndry.loc[:, ["sequence", "charge", "ccs"]],
                                                            how="left", on=["sequence", "charge"],
-                                                           suffixes=[None, "_right"]).drop_duplicates(subset=["index"]).set_index("index")
+                                                           suffixes=[
+                                                               None, "_right"]
+                                                           ).drop_duplicates(subset=["index"]).set_index("index")    # drop duplicates in subset "index" to have only one representative of each feature like in main_and_meas_err
+
         df_new_unimodals_pre_agg = df_new_unimodals_pre_agg.loc[df_new_unimodals_pre_agg.ccs_right.notna(
         )]
 
-        df_new_unimodals_pre_agg.drop(
-            columns=["modality", "ccs_right"], inplace=True)
+        df_new_unimodals_pre_agg = df_new_unimodals_pre_agg.drop(
+            columns=["modality", "ccs_right"])
 
         return df_new_unimodals_pre_agg
+
+    def agg_bimodal_main_and_measurement_errors(self, weight_col_for_ccs_agg):
+        """aggregates all those features labeled as "main" and "measuremen_error" out of truly bimodal feats"""
+        df_true_bimodals_pre_agg = self._find_true_bimodals(self.data)
+        def wm(x): return np.average(
+            x, weights=df_true_bimodals_pre_agg.loc[x.index, weight_col_for_ccs_agg])
+
+        df_true_bimodals_post_agg = self.agg_with_container_in_cols(
+            df_true_bimodals_pre_agg, ccs_agg_func=wm, modality_class="main")
+        result_df = self._replace_rows_in_df(
+            self.data, df_true_bimodals_pre_agg, df_true_bimodals_post_agg)
+        return self._from_whole_DataFrame(self.name, result_df)
 
 
 #     def assign_modalities(self, df, target_cols):
@@ -330,6 +347,7 @@ class Experiment:
 #         df = agg_secondary_feats(df, "occurences")
 #         df = set_to_list(df)
 #         return _from_whole_DataFrame(self.name, df)
+
 
     def intrinsic_align(self):
         pass
