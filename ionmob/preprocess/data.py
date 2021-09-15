@@ -4,7 +4,8 @@ from ionmob.preprocess.helpers import sequence_to_tokens, get_helix_score, get_g
 
 
 def get_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray, ccs: np.ndarray,
-                   tokenizer: tf.keras.preprocessing.text.Tokenizer, drop_sequence_ends: bool = False):
+                   tokenizer: tf.keras.preprocessing.text.Tokenizer,
+                   drop_sequence_ends: bool = False) -> tf.data.Dataset:
     """
     takes data and puts them into a tensorflow dataset for easy tf interop
     :param mz: arrays of mz values
@@ -82,7 +83,8 @@ def get_training_data(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends):
 
 
 def partition_tf_dataset(ds: tf.data.Dataset, ds_size: int, train_frac: float = 0.8, val_frac: float = 0.1,
-                         test_frac: float = 0.1, shuffle: bool = True, shuffle_size: int = int(1e7)):
+                         test_frac: float = 0.1, shuffle: bool = True,
+                         shuffle_size: int = int(1e7)) -> (tf.data.Dataset, tf.data.Dataset, tf.data.Dataset):
     """
     partitions a tensorflow dataset into fractions for training, validation and test
     :param ds: a unbatched tensorflow dataset

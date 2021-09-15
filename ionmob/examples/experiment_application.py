@@ -1,5 +1,5 @@
 import pandas as pd
-from ionmob.alignment import experiment
+from ionmob.alignment.experiment import Experiment
 
 data_dir = "data/raw_data/"
 fname = "M210115_00[1,2,3]_HeLa_grad110_ramp100__evidence.txt"
@@ -14,12 +14,12 @@ seq, charge, ccs, intensity, mz, raw_file, evidence_id = df["Modified sequence"]
     "CCS"].values, df["Intensity"].values, df["m/z"].values, df["Raw file"].values, df["id"].values
 # give your experiment instance a name. ideally a short uinique version of fname
 ex_name = "HeLa_grad110"
-ex1 = Experiment(ex_name, seq, charge, ccs,
-                 intensity, mz, raw_file, evidence_id)
+ex1 = Experiment(ex_name, seq, charge, ccs, intensity, mz, raw_file, evidence_id)
 
 # or rather like this. be aware of the order of args!
 args = df["Modified sequence"].values, df["Charge"].values, df["CCS"].values, df[
     "Intensity"].values, df["m/z"].values, df["Raw file"].values, df["id"].values
+
 ex1 = Experiment(ex_name, *args)
 
 # 2nd method: if you are sure that the output table contains the columns "Modified sequence", "Charge", "CCS", "Intensity", "m/z", "Raw file", "id"
