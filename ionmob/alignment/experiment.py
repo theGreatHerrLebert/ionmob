@@ -110,19 +110,23 @@ class Experiment:
     #                 pass
     #     return mask
     @staticmethod
-    def add_main_feat_values(df, condition_main):
+    def add_main_feat_values(df, condition_main, secondary_level=False):
         """
         adds columns with values of respective main_feature to each row. For each column in target_cols that contains a container data type, a
         seperate colum with name max_feat_{colname} is generated with the max value of respective container 
         :param condition_main: column which determines main feature. currently only "feat_intensity" or "occurences" considered
         :return: dataframe with len(target_columns) additinal columns with "main_" prefix to targeted column name
         """
+
+        secondary_col = ""
+        if secondary_level:
+            secondary_col = "_secondary"
         target_col = ["ccs"]
 
         subset = ["sequence", "charge"]
         main_vals_col = np.empty((df.shape[0],))
         main_vals_col.fill(np.nan)
-        new_col_name = "main_ccs"
+        new_col_name = "main_ccs"+secondary_col
         main_feat_df = pd.DataFrame(
             {new_col_name: main_vals_col}, index=df.index)
 
@@ -155,19 +159,18 @@ class Experiment:
             main_col = "main_" + col+secondary_col
             df.loc[:, "difference_" + col +
                    secondary_col] = df[col] - df[main_col]
-
         return df
 
-    def prep_feat_analysis(self, condition_main):
+    def prep_feat_analysis(self, condition_main, secondary_level=False):
         """wraps pipeline for preperation for modality class assignment
         @df: pandas DataFrame
         @condition_main: column on which the main feat identification is based
         @return: datframe with additional max_feat_{colname} or
         """
-        df = self.add_main_feat_values(self.data, condition_main)
-        print("after add_main_feat_values(): ", df.columns)
-        df = self.calc_diffs_to_main_feat(df, ["ccs"])
-        print("after calc_diffs_to_main_feat(): ", df.columns)
+        df = self.add_main_feat_values(
+            self.data, condition_main, secondary_level=secondary_level)
+        df = self.calc_diffs_to_main_feat(
+            df, ["ccs"], secondary_level=secondary_level)
         return self._from_whole_DataFrame(self.name, df)
 
     @staticmethod
@@ -190,8 +193,8 @@ class Experiment:
         return scndry_feat_idx
 
     def add_modality_col(self, secondary_level=False):
-        """
-        @metric: string. column of df. metric that is used to quantify features
+        """assigns initial modality classes
+        secondary_level: if True initial assignment of modality classes on only for secondary feats
         """
         secondary_col = ""
         if secondary_level:
@@ -331,23 +334,67 @@ class Experiment:
             self.data, df_true_bimodals_pre_agg, df_true_bimodals_post_agg)
         return self._from_whole_DataFrame(self.name, result_df)
 
+    @staticmethod
+    def agg_secondary_main_and_measurement_errors(df, weight_col_for_ccs_agg):
+        def wm(x): return np.average(
+            x, weights=df.loc[x.index, weight_col_for_ccs_agg])
 
-#     def assign_modalities(self, df, target_cols):
-#         """
-#         wraps pipeline for modality class asignment of features
-#         @df: pandas DataFrame
-#         @target_cols: values of interest for modality assignment, like ccs or score
-#         @return: pandas Dataframe with
-#         """
-#         new_exp = self.prep_feat_analysis(
-#             df, target_cols, condition_main="occurences", aggregate=True, remove_unimod=False)
-#         new_exp = new_exp.add_modality_col()
-#         df = false_bimodal_to_unimodal(df, "occurences")
-#         df = agg_bimodal_main_and_measurement_errors(df, "occurences")
-#         df = agg_secondary_feats(df, "occurences")
-#         df = set_to_list(df)
-#         return _from_whole_DataFrame(self.name, df)
+        def get_first(series): return series.iloc[0]
 
+        def concat_sets(x): return set().union(*x)
+
+        df_new_secondary = df.groupby(by=["sequence", "charge"]).agg(
+            intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
+            occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
+            ids=("ids", "sum"), mz=("mz", concat_sets), ccs=("ccs", wm),
+            main_ccs=("main_ccs", get_first)).reset_index(drop=False)
+        df_new_secondary["modality"] = "secondary"
+        return df_new_secondary
+
+    def assign_modalities_main_level(self):
+        new_exp = self.prep_feat_analysis(condition_main="occurences")
+        new_exp = new_exp.add_modality_col()
+        new_exp = new_exp.false_bimodal_to_unimodal("occurences")
+        new_exp = new_exp.agg_bimodal_main_and_measurement_errors("occurences")
+        return new_exp
+
+    def select_secondary(self) -> pd.DataFrame:
+        return self.data.loc[self.data.modality == "secondary", :]
+
+    def assign_modalities_secondary_level(self):
+
+        new_exp = self._from_whole_DataFrame(
+            self.name, self.select_secondary())
+        new_exp = new_exp.prep_feat_analysis(
+            condition_main="occurences", secondary_level=True)
+        new_exp = new_exp.add_modality_col(secondary_level=True)
+
+        df_secondary = new_exp.data
+        # select only rows labeled as "main" or "measurement_error" within the originally secondary feats
+        df_secondary_to_be_agg = df_secondary.loc[(df_secondary.modality_secondary == "main") |
+                                                  (df_secondary.modality_secondary == "measurement_error")]
+
+        df_secondary_aggregated = self.agg_secondary_main_and_measurement_errors(
+            df_secondary_to_be_agg, "occurences")
+        # recalculating differences between main and secondary
+        df_secondary_aggredated = self.calc_diffs_to_main_feat(
+            df_secondary_aggregated, ["ccs"])
+
+        # the rows which were outliers within the secondary feats are seperate feature
+        # and labeled "tertiary"
+        self.data.loc[df_secondary[df_secondary.modality_secondary ==
+                                   "secondary"].index, "modality"] = "tertiary"
+
+        result_df = self._replace_rows_in_df(
+            self.data, df_secondary_to_be_agg, df_secondary_aggregated)
+        return self._from_whole_DataFrame(self.name, result_df)
+
+    def assign_modalities(self) -> Experiment:
+        """
+        wraps pipeline for modality class asignment of features
+        @return: Experiment
+        """
+        return self.assign_modalities_main_level().assign_modalities_secondary_level()
 
     def intrinsic_align(self):
         pass
