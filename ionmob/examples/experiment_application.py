@@ -22,6 +22,11 @@ args = df["Modified sequence"].values, df["Charge"].values, df["CCS"].values, df
     "Intensity"].values, df["m/z"].values, df["Raw file"].values, df["id"].values
 ex1 = Experiment(ex_name, *args)
 
+# 2nd method: if you are sure that the output table contains the columns "Modified sequence", "Charge", "CCS", "Intensity", "m/z", "Raw file", "id"
+# ( which is usually the case for MaxQuant evidence.txt), then you can also use this method
+
+ex1 = Experiment.from_MaxQuant_DataFrame(df, "HeLa_grad110")
+
 # access the name and data of Experiment like this
 print("name of your experiment: ", ex1.name)
 print("data of your experiment: ", ex1.data)
