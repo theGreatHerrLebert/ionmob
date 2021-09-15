@@ -20,19 +20,19 @@ class Experiment:
 
     # alternative constructors
     @classmethod
-    def empty_experiment(cls, name):
+    def empty_experiment(cls, name: str):
         args = [[]]*7
         return cls(name, *args)
 
     @classmethod
-    def _from_whole_DataFrame(cls, name, df):
+    def _from_whole_DataFrame(cls, name: str, df: pd.DataFrame) -> Experiment:
         # instanciate empty experiment and fill mit df
         new_exp = cls.empty_experiment(name)
         new_exp.data = df
         return new_exp
 
     @classmethod
-    def from_MaxQuant_DataFrame(cls, df: pd.DataFrame, name: str):
+    def from_MaxQuant_DataFrame(cls, df: pd.DataFrame, name: str) -> Experiment:
         cls._validate(df)
         return cls(name, df["Modified sequence"].values, df["Charge"].values, df["CCS"].values, df["Intensity"].values, df["m/z"].values, df["Raw file"].values, df["id"].values)
 
@@ -64,22 +64,18 @@ class Experiment:
                     mz=("mz", set), occurences=("sequence", "count"),
                     raw_files=("raw_file", set), ids=("id", list)
                     ).reset_index(drop=False)
-        print("_reduce_dup_feats():", df.columns)
         return df
 
     @staticmethod
     def _drop_unnecessary_rows(df: pd.DataFrame) -> pd.DataFrame:
         df = df.dropna()
         df = df.drop(df[df.charge == 1].index)
-        print("_drop_unnecessary_rows():", df.columns)
-
         return df
 
     @staticmethod
     def _sort_feats(df: pd.DataFrame) -> pd.DataFrame:
         df = df.sort_values(
             by=["sequence", "charge", "ccs"]).reset_index(drop=True)
-        print("_sort_feats():", df.columns)
         return df
 
     @classmethod
@@ -260,7 +256,7 @@ class Experiment:
         aggregated_df = df.groupby(by=["sequence", "charge"]).agg(
             intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
             occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
-            ids=("ids", "sum"), ccs=("ccs", ccs_agg_func)
+            ids=("ids", "sum"), ccs=("ccs", ccs_agg_func), mz=("mz", concat_sets)
         ).reset_index(drop=False)
         aggregated_df["modality"] = modality_class
         return aggregated_df
