@@ -52,8 +52,10 @@ class Experiment:
         """
         aggregates ("modified_sequence", "charge", "ccs")-duplicates
         """
-        # calculate total intensity of (seq, z, ccs) duplicates in table (across runs)
+        # calculate total intensity and occurences of (seq, z, ccs) duplicates in table (across runs)
         subset = ["sequence", "charge", "ccs"]
+
+        def get_first(series): return series.iloc[0]
         # groupby() removes rows with nan values in subset additionally to grouping
         df = df.groupby(by=subset)
 
@@ -61,7 +63,7 @@ class Experiment:
         #! maybe instead of list and set use tuples
         df = df.agg(intensities=("intensity", list),
                     feat_intensity=("intensity", "sum"),
-                    mz=("mz", set), occurences=("sequence", "count"),
+                    mz=("mz", get_first), occurences=("sequence", "count"),
                     raw_files=("raw_file", set), ids=("id", list)
                     ).reset_index(drop=False)
         return df
@@ -252,11 +254,12 @@ class Experiment:
         @modality_class: new modality class assigned to all feats in newly aggregated df
         """
         def concat_sets(x): return set().union(*x)
+        def get_first(series): return series.iloc[0]
 
         aggregated_df = df.groupby(by=["sequence", "charge"]).agg(
             intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
             occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
-            ids=("ids", "sum"), ccs=("ccs", ccs_agg_func), mz=("mz", concat_sets)
+            ids=("ids", "sum"), ccs=("ccs", ccs_agg_func), mz=("mz", get_first)
         ).reset_index(drop=False)
         aggregated_df["modality"] = modality_class
         return aggregated_df
@@ -342,7 +345,7 @@ class Experiment:
         df_new_secondary = df.groupby(by=["sequence", "charge"]).agg(
             intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
             occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
-            ids=("ids", "sum"), mz=("mz", concat_sets), ccs=("ccs", wm),
+            ids=("ids", "sum"), mz=("mz", get_first), ccs=("ccs", wm),
             main_ccs=("main_ccs", get_first)).reset_index(drop=False)
         df_new_secondary["modality"] = "secondary"
         return df_new_secondary
