@@ -21,19 +21,19 @@ class Experiment:
 
     # alternative constructors
     @classmethod
-    def empty_experiment(cls, name):
+    def empty_experiment(cls, name: str):
         args = [[]]*7
         return cls(name, *args)
 
     @classmethod
-    def _from_whole_DataFrame(cls, name, df):
+    def _from_whole_DataFrame(cls, name: str, df: pd.DataFrame) -> Experiment:
         # instanciate empty experiment and fill mit df
         new_exp = cls.empty_experiment(name)
         new_exp.data = df
         return new_exp
 
     @classmethod
-    def from_MaxQuant_DataFrame(cls, df: pd.DataFrame, name: str):
+    def from_MaxQuant_DataFrame(cls, df: pd.DataFrame, name: str) -> Experiment:
         cls._validate(df)
         return cls(name, df["Modified sequence"].values, df["Charge"].values, df["CCS"].values, df["Intensity"].values, df["m/z"].values, df["Raw file"].values, df["id"].values)
 
@@ -53,8 +53,10 @@ class Experiment:
         """
         aggregates ("modified_sequence", "charge", "ccs")-duplicates
         """
-        # calculate total intensity of (seq, z, ccs) duplicates in table (across runs)
+        # calculate total intensity and occurences of (seq, z, ccs) duplicates in table (across runs)
         subset = ["sequence", "charge", "ccs"]
+
+        def get_first(series): return series.iloc[0]
         # groupby() removes rows with nan values in subset additionally to grouping
         df = df.groupby(by=subset)
 
@@ -62,25 +64,21 @@ class Experiment:
         #! maybe instead of list and set use tuples
         df = df.agg(intensities=("intensity", list),
                     feat_intensity=("intensity", "sum"),
-                    mz=("mz", set), occurences=("sequence", "count"),
+                    mz=("mz", get_first), occurences=("sequence", "count"),
                     raw_files=("raw_file", set), ids=("id", list)
                     ).reset_index(drop=False)
-        print("_reduce_dup_feats():", df.columns)
         return df
 
     @staticmethod
     def _drop_unnecessary_rows(df: pd.DataFrame) -> pd.DataFrame:
         df = df.dropna()
         df = df.drop(df[df.charge == 1].index)
-        print("_drop_unnecessary_rows():", df.columns)
-
         return df
 
     @staticmethod
     def _sort_feats(df: pd.DataFrame) -> pd.DataFrame:
         df = df.sort_values(
             by=["sequence", "charge", "ccs"]).reset_index(drop=True)
-        print("_sort_feats():", df.columns)
         return df
 
     @classmethod
@@ -257,11 +255,12 @@ class Experiment:
         @modality_class: new modality class assigned to all feats in newly aggregated df
         """
         def concat_sets(x): return set().union(*x)
+        def get_first(series): return series.iloc[0]
 
         aggregated_df = df.groupby(by=["sequence", "charge"]).agg(
             intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
             occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
-            ids=("ids", "sum"), ccs=("ccs", ccs_agg_func)
+            ids=("ids", "sum"), ccs=("ccs", ccs_agg_func), mz=("mz", get_first)
         ).reset_index(drop=False)
         aggregated_df["modality"] = modality_class
         return aggregated_df
@@ -347,7 +346,7 @@ class Experiment:
         df_new_secondary = df.groupby(by=["sequence", "charge"]).agg(
             intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
             occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
-            ids=("ids", "sum"), mz=("mz", concat_sets), ccs=("ccs", wm),
+            ids=("ids", "sum"), mz=("mz", get_first), ccs=("ccs", wm),
             main_ccs=("main_ccs", get_first)).reset_index(drop=False)
         df_new_secondary["modality"] = "secondary"
         return df_new_secondary
