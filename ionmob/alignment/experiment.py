@@ -361,6 +361,12 @@ class Experiment:
     def select_secondary(self) -> pd.DataFrame:
         return self.data.loc[self.data.modality == "secondary", :]
 
+    def get_secondary(self) -> Experiment:
+        return self._from_whole_DataFrame(self.name, self.select_secondary)
+
+    def select_uni_and_main(self) -> pd.DataFrame:
+        return self.data.loc[(self.data.modality == "unimodal") | (self.data.modality == "main"), :]
+
     def assign_modalities_secondary_level(self):
 
         new_exp = self._from_whole_DataFrame(
