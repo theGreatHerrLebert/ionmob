@@ -10,19 +10,22 @@ class Experiment:
     # auch noch dic mit ("ptm"->"ptm-token-in-seq") um sequences in Experiments zu standardisieren
     def __init__(self, name: str, seq: np.ndarray, charge: np.ndarray,
                  ccs: np.ndarray, intensity: np.ndarray, mz: np.ndarray,
-                 raw_file: np.ndarray, evidence_id: np.ndarray):
+                 raw_file: np.ndarray, evidence_id: np.ndarray, rt_min: np.ndarray,
+                 rt_max: np.ndarray, mz_min: np.ndarray, mz_max: np.ndarray):
         self.raw_dict = dict(zip(set(raw_file), range(len(set(raw_file)))))
         raw_file_int = np.vectorize(self.raw_dict.get, otypes=[int])(raw_file)
         self.name = name
         df = pd.DataFrame({"sequence": seq, "charge": charge, "ccs": ccs,
                            "intensity": intensity, "mz": mz, "raw_file": raw_file_int,
-                           "id": evidence_id})
+                           "id": evidence_id, "rt_min": rt_min, "rt_max": rt_max,
+                           "mz_min": mz_min, "mz_max": mz_max})
         self.data = self._cleanup(df)
 
     # alternative constructors
+    # instead of empty_experiment empty arrays as default values for the main constructor could be better
     @classmethod
     def empty_experiment(cls, name: str):
-        args = [[]]*7
+        args = [[]]*11
         return cls(name, *args)
 
     @classmethod
@@ -35,7 +38,16 @@ class Experiment:
     @classmethod
     def from_MaxQuant_DataFrame(cls, df: pd.DataFrame, name: str) -> Experiment:
         cls._validate(df)
-        return cls(name, df["Modified sequence"].values, df["Charge"].values, df["CCS"].values, df["Intensity"].values, df["m/z"].values, df["Raw file"].values, df["id"].values)
+        rt_min = df["Retention time"].values - df["Retention length"]/2
+        rt_max = df["Retention time"].values + df["Retention length"]/2
+        mz_min = df["Mass"].values
+        mz_max = mz_min + \
+            (df["Number of isotopic peaks"].values - 1)/df["Charge"].values
+        reference_args = [df["Raw file"].values,
+                          df["id"].values, rt_min, rt_max, mz_min, mz_max]
+        exp = cls(name, df["Modified sequence"].values, df["Charge"].values,
+                  df["CCS"].values, df["Intensity"].values, df["m/z"].values, *reference_args)
+        return exp
 
     def __repr__(self):
         return "Experiment: {}\n".format(self.name) + self.data.__repr__()
@@ -44,7 +56,9 @@ class Experiment:
     def _validate(obj):
         # verify presence of necessary columns
         cols = ["Modified sequence", "Charge", "m/z",
-                "CCS", "Intensity", "Raw file", "Mass"]
+                "CCS", "Intensity", "Raw file",
+                "Retention time", "Retention length",
+                "Mass", "Number of isotopic peaks"]
         if not set(cols).issubset(set(obj.columns)):
             raise AttributeError("Must have {}.".format(cols))
 
@@ -65,7 +79,9 @@ class Experiment:
         df = df.agg(intensities=("intensity", list),
                     feat_intensity=("intensity", "sum"),
                     mz=("mz", get_first), occurences=("sequence", "count"),
-                    raw_files=("raw_file", set), ids=("id", list)
+                    raw_files=("raw_file", set), ids=("id", list),
+                    rt_min=("rt_min", list), rt_max=("rt_max", list),
+                    mz_min=("mz_min", list), mz_max=("mz_max", list)
                     ).reset_index(drop=False)
         return df
 
@@ -260,7 +276,9 @@ class Experiment:
         aggregated_df = df.groupby(by=["sequence", "charge"]).agg(
             intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
             occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
-            ids=("ids", "sum"), ccs=("ccs", ccs_agg_func), mz=("mz", get_first)
+            ids=("ids", "sum"), ccs=("ccs", ccs_agg_func), mz=("mz", get_first),
+            rt_min=("rt_min", "sum"), rt_max=("rt_max", "sum"),
+            mz_min=("mz_min", "sum"), mz_max=("mz_max", "sum")
         ).reset_index(drop=False)
         aggregated_df["modality"] = modality_class
         return aggregated_df
@@ -347,7 +365,9 @@ class Experiment:
             intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
             occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
             ids=("ids", "sum"), mz=("mz", get_first), ccs=("ccs", wm),
-            main_ccs=("main_ccs", get_first)).reset_index(drop=False)
+            main_ccs=("main_ccs", get_first),
+            rt_min=("rt_min", "sum"), rt_max=("rt_max", "sum"),
+            mz_min=("mz_min", "sum"), mz_max=("mz_max", "sum")).reset_index(drop=False)
         df_new_secondary["modality"] = "secondary"
         return df_new_secondary
 
