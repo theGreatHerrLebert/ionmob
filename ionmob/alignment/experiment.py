@@ -11,8 +11,9 @@ class Experiment:
                  ccs: np.ndarray, intensity: np.ndarray, mz: np.ndarray,
                  raw_file: np.ndarray, evidence_id: np.ndarray, rt_min: np.ndarray,
                  rt_max: np.ndarray, mz_min: np.ndarray, mz_max: np.ndarray):
-        self.raw_dict = dict(zip(set(raw_file), range(len(set(raw_file)))))
-        raw_file_int = np.vectorize(self.raw_dict.get, otypes=[int])(raw_file)
+        raw_to_int = dict(zip(set(raw_file), range(len(set(raw_file)))))
+        self.int_to_raw = {i: file for file, i in raw_to_int}
+        raw_file_int = np.vectorize(raw_to_int.get, otypes=[int])(raw_file)
         self.name = name
         df = pd.DataFrame({"sequence": seq, "charge": charge, "ccs": ccs,
                            "intensity": intensity, "mz": mz, "raw_file": raw_file_int,
