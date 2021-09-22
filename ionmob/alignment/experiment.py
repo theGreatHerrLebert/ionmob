@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import pandas as pd
 import numpy as np
 from typing import Callable
+from __future__ import annotations
 
 
 class Experiment:
@@ -13,7 +12,7 @@ class Experiment:
                  raw_file: np.ndarray, evidence_id: np.ndarray, rt_min: np.ndarray,
                  rt_max: np.ndarray, mz_min: np.ndarray, mz_max: np.ndarray):
         raw_to_int = dict(zip(set(raw_file), range(len(set(raw_file)))))
-        self.int_to_raw = {i: file for file, i in raw_to_int}
+        self.int_to_raw = {i: file for file, i in raw_to_int.items()}
         raw_file_int = np.vectorize(raw_to_int.get, otypes=[int])(raw_file)
         self.name = name
         df = pd.DataFrame({"sequence": seq, "charge": charge, "ccs": ccs,
@@ -34,6 +33,7 @@ class Experiment:
         # instanciate empty experiment and fill mit df
         new_exp = cls.empty_experiment(name)
         new_exp.data = df
+        new_exp.int_to_raw = raw_dict
         return new_exp
 
     @classmethod
