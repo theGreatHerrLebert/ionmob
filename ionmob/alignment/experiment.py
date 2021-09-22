@@ -12,8 +12,9 @@ class Experiment:
                  ccs: np.ndarray, intensity: np.ndarray, mz: np.ndarray,
                  raw_file: np.ndarray, evidence_id: np.ndarray, rt_min: np.ndarray,
                  rt_max: np.ndarray, mz_min: np.ndarray, mz_max: np.ndarray):
-        self.raw_dict = dict(zip(set(raw_file), range(len(set(raw_file)))))
-        raw_file_int = np.vectorize(self.raw_dict.get, otypes=[int])(raw_file)
+        raw_to_int = dict(zip(set(raw_file), range(len(set(raw_file)))))
+        self.int_to_raw = {i: file for file, i in raw_to_int}
+        raw_file_int = np.vectorize(raw_to_int.get, otypes=[int])(raw_file)
         self.name = name
         df = pd.DataFrame({"sequence": seq, "charge": charge, "ccs": ccs,
                            "intensity": intensity, "mz": mz, "raw_file": raw_file_int,
@@ -29,7 +30,7 @@ class Experiment:
         return cls(name, *args)
 
     @classmethod
-    def _from_whole_DataFrame(cls, name: str, df: pd.DataFrame) -> Experiment:
+    def _from_whole_DataFrame(cls, name: str, raw_dict: dict, df: pd.DataFrame) -> Experiment:
         # instanciate empty experiment and fill mit df
         new_exp = cls.empty_experiment(name)
         new_exp.data = df
@@ -186,7 +187,7 @@ class Experiment:
             self.data, condition_main, secondary_level=secondary_level)
         df = self.calc_diffs_to_main_feat(
             df, ["ccs"], secondary_level=secondary_level)
-        return self._from_whole_DataFrame(self.name, df)
+        return self._from_whole_DataFrame(self.name, self.int_to_raw, df)
 
     @staticmethod
     def get_outliers_loc(df, sd, scale_factor=1, secondary_level=False):
@@ -234,7 +235,7 @@ class Experiment:
         for k, v in indices.items():
             df.loc[v, "modality"+secondary_col] = k
 
-        return self._from_whole_DataFrame(self.name, df)
+        return self._from_whole_DataFrame(self.name, self.int_to_raw, df)
 
     @staticmethod
     def _find_false_bimodals(df: pd.DataFrame) -> pd.DataFrame:
@@ -311,7 +312,7 @@ class Experiment:
             self.data, df_false_bimodals_pre_agg, df_false_bimodals_post_agg)
         df.loc[df.modality == "unimodal", [
             "main_ccs", "difference_ccs"]] = np.nan
-        return self._from_whole_DataFrame(self.name, df)
+        return self._from_whole_DataFrame(self.name, self.int_to_raw, df)
 
     @staticmethod
     def _find_true_bimodals(df: pd.DataFrame) -> pd.DataFrame:
@@ -350,7 +351,7 @@ class Experiment:
             df_true_bimodals_pre_agg, ccs_agg_func=wm, modality_class="main")
         result_df = self._replace_rows_in_df(
             self.data, df_true_bimodals_pre_agg, df_true_bimodals_post_agg)
-        return self._from_whole_DataFrame(self.name, result_df)
+        return self._from_whole_DataFrame(self.name, self.int_to_raw, result_df)
 
     @staticmethod
     def agg_secondary_main_and_measurement_errors(df, weight_col_for_ccs_agg):
@@ -382,7 +383,7 @@ class Experiment:
         return self.data.loc[self.data.modality == "secondary", :]
 
     def get_secondary(self) -> Experiment:
-        return self._from_whole_DataFrame(self.name, self.select_secondary)
+        return self._from_whole_DataFrame(self.name, self.int_to_raw, self.select_secondary)
 
     def select_uni_and_main(self) -> pd.DataFrame:
         return self.data.loc[(self.data.modality == "unimodal") | (self.data.modality == "main"), :]
@@ -390,7 +391,7 @@ class Experiment:
     def assign_modalities_secondary_level(self):
 
         new_exp = self._from_whole_DataFrame(
-            self.name, self.select_secondary())
+            self.name, self.int_to_raw, self.select_secondary())
         new_exp = new_exp.prep_feat_analysis(
             condition_main="occurences", secondary_level=True)
         new_exp = new_exp.add_modality_col(secondary_level=True)
@@ -413,7 +414,7 @@ class Experiment:
 
         result_df = self._replace_rows_in_df(
             self.data, df_secondary_to_be_agg, df_secondary_aggregated)
-        return self._from_whole_DataFrame(self.name, result_df)
+        return self._from_whole_DataFrame(self.name, self.int_to_raw, result_df)
 
     def assign_modalities(self) -> Experiment:
         """

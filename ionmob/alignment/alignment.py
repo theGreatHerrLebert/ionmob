@@ -57,7 +57,7 @@ def chargewise_binning(df, ccs_col, bin_size, diff_ccs_col):
     df_charges = [assign_ccs_to_bins(
         df_one_charge, ccs_col, bin_size) for df_one_charge in df_charges]
     result_df_list = [binwise_medians(
-        df_charges, ccs_col, diff_ccs_col) for df_one_charge in df_charges]
+        df_one_charge, ccs_col, diff_ccs_col) for df_one_charge in df_charges]
     return result_df_list
 
 
@@ -87,7 +87,7 @@ def align_ccs(df, df_name, funcs_dict, col_to_align):
     for z, dfunc in funcs_dict[df_name].items():
         df.loc[df.charge == z, col_to_align] = df.loc[df.charge == z, col_to_align].map(
             lambda ccs: ccs + funcs_dict[df_name][z](ccs))
-    return df
+    return df.copy()
 
 
 def add_feat_median(df: pd.DataFrame) -> pd.DataFrame:
@@ -105,7 +105,7 @@ def calc_diffs_to_feat_median(joined_tables: pd.DataFrame):
     return joined_tables.reset_index(drop=False)
 
 
-def average_moving_window_over_diff_ccs(diff_ccs: np.ndarray, filter_size: int):
+def average_moving_window_over_diff_ccs(diff_ccs: np.ndarray, filter_size: int = 11):
     return uniform_filter1d(diff_ccs, filter_size, mode="constant")
 
 
@@ -153,15 +153,14 @@ def learn_ccs_correction(df: pd.DataFrame, ex_name: str) -> dict:
                           fill_value=0, bounds_error=False)
 
         funcs_dic[ex_name][z_state+2] = interp
-    print("is funcs_dic 3 items long per experiment?",
-          len(funcs_dic[ex_name]) == 3)
     return funcs_dic
 
 
-def align_experiements(coll_exs: List[Experiment]) -> List[Experiment]:
+def align_experiments(coll_exs: List[Experiment]) -> List[Experiment]:
     # apply alignment only on unimodal and main feats
     df_names = [ex.name for ex in coll_exs]
-    dfs = [exp.select_uni_and_main for exp in coll_exs]
+    keys = ["sequence", "charge"]
+    dfs = [exp.select_uni_and_main().set_index(keys) for exp in coll_exs]
     dfs = [df.loc[:, "ccs"].to_frame() for df in dfs]
 
     # change names of overlapping column names to prepare for join
@@ -176,11 +175,112 @@ def align_experiements(coll_exs: List[Experiment]) -> List[Experiment]:
     joined_tables = calc_diffs_to_feat_median(joined_tables)
 
     # merge the dictionaries
-    func_dic = {**learn_ccs_correction(joined_tables, ex_name) for ex_name in df_names}
+    func_dic = {}
+    for ex_name in df_names:
+        func_dic.update(learn_ccs_correction(joined_tables, ex_name))
     # align ccs of each experiment
-    result = [Experiment._from_whole_DataFrame(ex.name, align_ccs(
+    result = [Experiment._from_whole_DataFrame(ex.name, ex.int_to_raw, align_ccs(
         ex.data, ex.name, func_dic, "ccs")) for ex in coll_exs]
     return result
+
+
+def agg_feats_after_merge(df: pd.DataFrame, ccs_agg_func: Callable[[pd.Series], float]) -> pd.DataFrame:
+    """
+    aggregates (modified_sequence, charge)-duplicates for dfs with containers in columns. CCS values are
+    aggregated according to ccs_agg_func
+    @df: df that only contains instances that were labeles as 'main' and 'measurement_error' but do not have
+    a corresponding 'secondary' instance and therefore are not actually bimodal
+    @cc_agg_func: function to use for aggregation of CCS values of (modified_sequence, charge)-duplicates
+    @modality_class: new modality class assigned to all feats in newly aggregated df
+    """
+    def concat_sets(x): return set().union(*x)
+    def get_first(series): return series.iloc[0]
+
+    aggregated_df = df.groupby(by=["sequence", "charge"]).agg(
+        intensities=("intensities", "sum"), feat_intensity=("feat_intensity", "sum"),
+        occurences=("occurences", "sum"), raw_files=("raw_files", concat_sets),
+        #ids=("ids", "sum"),
+        ccs=("ccs", ccs_agg_func), mz=("mz", get_first),
+        rt_min=("rt_min", "sum"), rt_max=("rt_max", "sum"),
+        mz_min=("mz_min", "sum"), mz_max=("mz_max", "sum")
+    ).reset_index(drop=False)
+    return aggregated_df
+
+
+def merge_experiments(coll_exs: List[exp.Experiment], new_name: str) -> exp.Experiment:
+    dfs = [ex.data.copy() for ex in coll_exs]
+
+    # bevor concat noch die raw_file spalte zurückübersetzen damit bei neuer experiment konstruktion
+    # diese wieder in integer übersetzt werden können
+
+    # ids noch erforderlich bzw korrekt? wahrscheinlich nicht mehr korrekt
+
+    def get_combined_dict_of_exs():
+        raw_file_names = []
+        for ex in coll_exs:
+            for k, raw_file_name in ex.int_to_raw.items():
+                raw_file_names.append(raw_file_name)
+        combined_raw_file_names = list(set(raw_file_names))
+        return dict(zip(combined_raw_file_names, range(len(combined_raw_file_names))))
+
+    comb_raw_to_int = get_combined_dict_of_exs()
+
+    def renew_encoding_raw_files_col(df_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
+
+        def change_to_new_encoding(old_code: set, old_int_to_raw: dict[int, str]) -> set:
+            return {comb_raw_to_int[old_int_to_raw[i]] for i in old_code}
+
+        # transfer {original_encoded_ints} -> {new_encoding_ints}
+        for i in range(len(coll_exs)):
+            raw_file_new_int = np.vectorize(change_to_new_encoding)(
+                df_list[i].raw_files.values, coll_exs[i].int_to_raw)
+            df_list[i].loc[:, "raw_files"] = raw_file_new_int
+        return df_list
+
+    dfs = renew_encoding_raw_files_col(dfs)
+
+    merged_df = pd.concat(dfs, ignore_index=True)
+    cols_to_keep = ["sequence", "charge", "ccs", "intensities",
+                    "feat_intensity", "mz", "occurences",
+                    "raw_files", "ids", "rt_min", "rt_max",
+                    "mz_min", "mz_max"
+                    ]
+    agged_df = agg_feats_after_merge(merged_df, np.mean)
+
+    return Experiment._from_whole_DataFrame(new_name, comb_raw_to_int, agged_df)
+
+
+def get_chargewise_mean(exp):
+    return np.array([exp.data.loc[exp.data.charge == z, "ccs"].values.mean() for z in range(2, 5)])
+
+
+def apply_mean_shift(ref, exp):
+    """chargewise mean shift on exp2 to have same means as exp1 on ccs values distribution
+    """
+    means_ref = get_chargewise_mean(ref)
+    means_exp = get_chargewise_mean(exp)
+
+    diffs_means = means_ref - means_exp
+    diffs_means_dic = dict(zip(range(2, 5), diffs_means))
+
+    def apply_shift(number, condition):
+        return number + diffs_means_dic[condition]
+
+    shifted_df = exp.data.copy()
+    shifted_df.loc[:, "shifted_ccs"] = exp.data.apply(
+        lambda row: apply_shift(row["ccs"], row["charge"]), axis=1)
+    # print(shifted_df)
+
+#     charges = range(2, 5)
+#     df_charges = [exp2.data.loc[exp2.data.charge == z].copy() for z in charges]
+#     new_chargewise_ccs = np.array(
+#         [df.ccs.values for df in df_charges], dtype=np.ndarray) + diffs_means
+
+#     for i in range(len(df_charges)):
+#         df_charges[i].loc[:, "ccs"] = new_chargewise_ccs[i]
+
+#     exp2.data = pd.concat(df_charges, ignore_index=True)
+    return Experiment._from_whole_DataFrame(exp2.name, exp2.int_to_raw, shifted_df)
 
 
 def intrinsic_align(self):
