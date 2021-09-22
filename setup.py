@@ -21,5 +21,5 @@ setup(
     install_requires=[
         "tensorflow >=2.4",
         "pandas >=1.1"
-    ]
+    ],
 )
