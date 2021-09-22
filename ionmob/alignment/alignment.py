@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import List, Callable
+from typing import List, Callable, Dict
 from ionmob.alignment.experiment import Experiment
 import math
 from scipy.interpolate import interp1d
@@ -216,6 +216,7 @@ def merge_experiments(coll_exs: List[Experiment], new_name: str) -> Experiment:
     # ids noch erforderlich bzw korrekt? wahrscheinlich nicht mehr korrekt
 
     def get_combined_dict_of_exs():
+        """combines the int_to_raw members of Experiment to form new int_to_raw dict"""
         raw_file_names = []
         for ex in coll_exs:
             for k, raw_file_name in ex.int_to_raw.items():
@@ -227,7 +228,9 @@ def merge_experiments(coll_exs: List[Experiment], new_name: str) -> Experiment:
 
     def renew_encoding_raw_files_col(df_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
 
-        def change_to_new_encoding(old_code, old_int_to_raw):
+        def change_to_new_encoding(old_code: set, old_int_to_raw: Dict[int, str]) -> set:
+            """changes the encoding for raw files of respective int_to_raw member
+            into new encoding according to combined dict of all experiment int_to_raw members"""
             return {comb_raw_to_int[old_int_to_raw[i]] for i in old_code}
 
         # transfer {original_encoded_ints} -> {new_encoding_ints}
@@ -240,46 +243,35 @@ def merge_experiments(coll_exs: List[Experiment], new_name: str) -> Experiment:
     dfs = renew_encoding_raw_files_col(dfs)
 
     merged_df = pd.concat(dfs, ignore_index=True)
-    cols_to_keep = ["sequence", "charge", "ccs", "intensities",
-                    "feat_intensity", "mz", "occurences",
-                    "raw_files", "ids", "rt_min", "rt_max",
-                    "mz_min", "mz_max"
-                    ]
     agged_df = agg_feats_after_merge(merged_df, np.mean)
 
     return Experiment._from_whole_DataFrame(new_name, comb_raw_to_int, agged_df)
 
 
-def get_chargewise_mean(exp):
-    return np.array([exp.data.loc[exp.data.charge == z, "ccs"].values.mean() for z in range(2, 5)])
+def get_chargewise_mean(df: pd.DataFrame, col_name: str) -> Dict[int, np.float64]:
+    result_dic = {z: df.loc[df.charge == z, col_name].values.mean() for z in range(2, 5)
+                  if not df.loc[df.charge == z, col_name].empty}
+    return result_dic
 
 
-def apply_mean_shift(ref, exp):
-    """chargewise mean shift on exp2 to have same means as exp1 on ccs values distribution
+def apply_mean_shift(ref: Experiment, exp: Experiment) -> Experiment:
+    """apply a shift on ccs values of exp to correct for experimental or device
+    :ref: reference experiment towards which the data of exp is corrected
+    :exp: experiment that undergoes correction
+    :return: Experiment instance that is essentially exp with corrected ccs values
     """
-    means_ref = get_chargewise_mean(ref)
-    means_exp = get_chargewise_mean(exp)
-
-    diffs_means = means_ref - means_exp
-    diffs_means_dic = dict(zip(range(2, 5), diffs_means))
+    c_pairs = ref.data.merge(exp.data, left_on=['sequence', 'charge'], right_on=[
+                             'sequence', 'charge'])
+    c_pairs['diff'] = c_pairs['ccs_x'] - c_pairs['ccs_y']
+    charge_to_factor = get_chargewise_mean(c_pairs, col_name="diff")
 
     def apply_shift(number, condition):
-        return number + diffs_means_dic[condition]
+        return number + charge_to_factor[condition]
 
     shifted_df = exp.data.copy()
     shifted_df.loc[:, "shifted_ccs"] = exp.data.apply(
         lambda row: apply_shift(row["ccs"], row["charge"]), axis=1)
-    # print(shifted_df)
 
-#     charges = range(2, 5)
-#     df_charges = [exp2.data.loc[exp2.data.charge == z].copy() for z in charges]
-#     new_chargewise_ccs = np.array(
-#         [df.ccs.values for df in df_charges], dtype=np.ndarray) + diffs_means
-
-#     for i in range(len(df_charges)):
-#         df_charges[i].loc[:, "ccs"] = new_chargewise_ccs[i]
-
-#     exp2.data = pd.concat(df_charges, ignore_index=True)
     return Experiment._from_whole_DataFrame(exp.name, exp.int_to_raw, shifted_df)
 
 
