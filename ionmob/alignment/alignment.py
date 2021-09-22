@@ -280,7 +280,7 @@ def apply_mean_shift(ref, exp):
 #         df_charges[i].loc[:, "ccs"] = new_chargewise_ccs[i]
 
 #     exp2.data = pd.concat(df_charges, ignore_index=True)
-    return Experiment._from_whole_DataFrame(exp2.name, exp2.int_to_raw, shifted_df)
+    return Experiment._from_whole_DataFrame(exp.name, exp.int_to_raw, shifted_df)
 
 
 def intrinsic_align(self):
