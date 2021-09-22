@@ -227,7 +227,7 @@ def merge_experiments(coll_exs: List[Experiment], new_name: str) -> Experiment:
 
     def renew_encoding_raw_files_col(df_list: List[pd.DataFrame]) -> List[pd.DataFrame]:
 
-        def change_to_new_encoding(old_code: set, old_int_to_raw: dict[int, str]) -> set:
+        def change_to_new_encoding(old_code, old_int_to_raw):
             return {comb_raw_to_int[old_int_to_raw[i]] for i in old_code}
 
         # transfer {original_encoded_ints} -> {new_encoding_ints}
