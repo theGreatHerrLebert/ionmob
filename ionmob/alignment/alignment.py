@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from typing import List
-from experiment import Experiment
+from typing import List, Callable
+from ionmob.alignment.experiment import Experiment
 import math
 from scipy.interpolate import interp1d
 from scipy.ndimage import uniform_filter1d
@@ -207,7 +207,7 @@ def agg_feats_after_merge(df: pd.DataFrame, ccs_agg_func: Callable[[pd.Series], 
     return aggregated_df
 
 
-def merge_experiments(coll_exs: List[exp.Experiment], new_name: str) -> exp.Experiment:
+def merge_experiments(coll_exs: List[Experiment], new_name: str) -> Experiment:
     dfs = [ex.data.copy() for ex in coll_exs]
 
     # bevor concat noch die raw_file spalte zurückübersetzen damit bei neuer experiment konstruktion
