@@ -20,6 +20,7 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=[
         "tensorflow >=2.4",
-        "pandas >=1.1"
+        "pandas >=1.1",
+        "scipy >=1.5"
     ],
 )
