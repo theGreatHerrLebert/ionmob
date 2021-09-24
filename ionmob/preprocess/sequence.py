@@ -3,88 +3,74 @@ import re
 import string
 from itertools import islice, product
 
-
 sequence = '_AADM(Oxidation (M))Z(Oxidation (Z))VIEAVFEDLSLK_'
 
-def mer_pattern_str_maker(
-        degree=1,
-        tokens=list(string.ascii_uppercase) + ["[A-Z][(][a-zA-Z]+ [(][A-Z][)][)]"]
-    ):
-    "|".join("".join(letter_tuple) for letter_tuple in product(tokens , repeat=2))
+
+def get_token_pattern_str(
+        modification_pattern: str,
+        letters: str
+    ) -> str:
+    """Get a token pattern.
+
+    The token pattern describes what are the basic units in a string containing the sequence of (potentially) modified amino-acids.
+    It extends the simple letter notation, eg AAACCCPPPAACP, to include additional descriptors of amino-acids, eg AA(ox)ACCCPP(silly)PAACP.
+    Note that the modifications pattern must precede the letters, as letters might be included in the modifications.
+
+    Arguments:
+        modification_pattern (str): A string containing the pattern of modifications.
+        letters (str): A string with all the one-symbol letters of the alphabet.
+
+    Returns:
+        str: the pattern string describing the rule for regex to find individual tokens in a sequence.
+    """
+    return "(" + modification_pattern + "|" + "|".join(letters)  + ")" 
 
 
-def make_token_pattern(
-        LETTERS = string.ascii_uppercase,
-        modification_pattern_str = "[A-Z][(][a-zA-Z]+ [(][A-Z][)][)]"
-    ):
-    token_pattern_str = "(" + modification_pattern_str + "|" + "|".join(LETTERS)  + ")" 
-    return re.compile(token_pattern_str)
+token_pattern_MaxQuant_v1dot8 = re.compile(get_token_pattern_str(
+    # modification_pattern="[A|C|D|E|F|G|H|I|K|L|M|N|P|Q|R|S|T|W|Y][(][a-zA-Z]+ [(][A|C|D|E|F|G|H|I|K|L|M|N|P|Q|R|S|T|W|Y][)][)]",
+    modification_pattern="[A-Z][(][a-zA-Z]+ [(][A-Z][)][)]",
+    letters=string.ascii_uppercase
+))
 
+token_pattern_MaxQuant_v1dot7 = re.compile(get_token_pattern_str(
+    # modification_pattern="[A|C|D|E|F|G|H|I|K|L|M|N|P|Q|R|S|T|W|Y][(][a-zA-Z]+[)]",
+    modification_pattern="[A-Z][(][a-zA-Z]+ [(][A-Z][)][)]",
+    letters=string.ascii_uppercase  
+))
 
-token_pattern = make_token_pattern()
-
+token_pattern = token_pattern_MaxQuant_v1dot8
 
 
 def iter_tokens(token_pattern, sequence):
     for x in re.finditer(token_pattern, sequence):
         yield x.group()
 
+def iter_strings_modifying_first_and_last(iterator, first_prefix="@", first_suffix="", last_prefix="#", last_suffix=""):
+    prev_ = f"{first_prefix}{next(iterator)}{first_suffix}"
+    for next_ in iterator:
+        yield prev_
+        prev_ = next_
+    yield f"{last_prefix}{prev_}{last_suffix}" 
 
-def get_token(token_pattern, sequence):
-    return list(iter_tokens(token_pattern, sequence))
-
-
-def get_token_begins_ends(token_pattern, sequence):
-    res = list(iter_tokens(token_pattern, sequence))
-    res[0] = "@" + res[0]
-    res[-1] = "#" + res[-1]
-    return res 
-
-
-def get_token_counts(token_pattern, sequence):
-    return Counter(iter_tokens(token_pattern, sequence))
-
-
-def Counter_begins_ends(tokenator):
-    first = next(tokenator)
-    cnt = Counter()
-    cnt[f"@{first}"] += 1
-    for token in tokenator:
-        cnt[token] += 1
-    last = token
-    if cnt[last] == 1:
-        cnt.pop(last)
-    else:
-        cnt[last] -= 1
-    cnt[f"#{last}"] += 1
-    return cnt
-
-
-def iter_complicated_mers(tokenator, separator="", degree=1):
-    prev_lst = list(islice(tokenator, degree))
+def iter_complicated_mers(iterator, separator="", degree=1):
+    prev_lst = list(islice(iterator, degree))
     yield separator.join(prev_lst)
-    for next_token in tokenator:
+    for next_token in iterator:
         prev_lst.pop(0)
         prev_lst.append(next_token) 
         yield separator.join(prev_lst)
 
 
-Counter(iter_complicated_mers(iter_tokens(token_pattern, sequence), degree=1))
+
+list(iter_tokens(token_pattern, sequence))
+list(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)))
+Counter(iter_tokens(token_pattern, sequence))
+Counter(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)))
+
+list(iter_complicated_mers(iter_tokens(token_pattern, sequence), degree=2))
+list(iter_complicated_mers(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)), degree=2))
+list(iter_complicated_mers(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)), degree=3))
+
 Counter(iter_complicated_mers(iter_tokens(token_pattern, sequence), degree=2))
-Counter_begins_ends(iter_complicated_mers(iter_tokens(token_pattern, sequence), degree=2))
-Counter_begins_ends(iter_complicated_mers(iter_tokens(token_pattern, sequence), degree=3))
-
-
-def get_mers(token_patterns, sequence, degree=1):
-    if degree == 1:
-        return get_token_counts_begins_ends(token_pattern, sequence)
-    else:
-        return get_complicated_mers(degree)
-
-def get_token_counts(
-        sequence,
-        token_pattern,
-        # compiled_modification_pattern,
-        # compiled_dropable_pattern,
-    ):
-    pass
+Counter(iter_complicated_mers(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)), degree=2))
+Counter(iter_complicated_mers(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)), degree=3))
