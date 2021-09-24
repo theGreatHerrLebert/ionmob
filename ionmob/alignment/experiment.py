@@ -2,6 +2,7 @@ from __future__ import annotations
 import pandas as pd
 import numpy as np
 from typing import Callable
+import copy
 
 
 class Experiment:
@@ -30,10 +31,10 @@ class Experiment:
 
     @classmethod
     def _from_whole_DataFrame(cls, name: str, raw_dict: dict, df: pd.DataFrame) -> Experiment:
-        # instanciate empty experiment and fill mit df
+        # instantiate empty experiment and fill mit df
         new_exp = cls.empty_experiment(name)
         new_exp.data = df
-        new_exp.int_to_raw = raw_dict
+        new_exp.int_to_raw = copy.copy(raw_dict)
         return new_exp
 
     @classmethod
