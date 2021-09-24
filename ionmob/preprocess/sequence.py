@@ -2,6 +2,9 @@ from collections import Counter
 import re
 import string
 from itertools import islice, product
+from typing import Iterator
+import functools
+
 
 sequence = '_AADM(Oxidation (M))Z(Oxidation (Z))VIEAVFEDLSLK_'
 
@@ -41,36 +44,74 @@ token_pattern_MaxQuant_v1dot7 = re.compile(get_token_pattern_str(
 token_pattern = token_pattern_MaxQuant_v1dot8
 
 
-def iter_tokens(token_pattern, sequence):
+def tokenize(token_pattern: re.Pattern, sequence:str) -> Iterable[str]:
+    """Iterate over tokens.
+
+    Arguments:
+        token_pattern: a compiled token_pattern.
+        sequence (str): a sequence to tokenize.
+    
+    Yields:
+        str: A valid token.
+    """
     for x in re.finditer(token_pattern, sequence):
         yield x.group()
 
-def iter_strings_modifying_first_and_last(iterator, first_prefix="@", first_suffix="", last_prefix="#", last_suffix=""):
-    prev_ = f"{first_prefix}{next(iterator)}{first_suffix}"
-    for next_ in iterator:
-        yield prev_
-        prev_ = next_
-    yield f"{last_prefix}{prev_}{last_suffix}" 
 
-def iter_complicated_mers(iterator, separator="", degree=1):
-    prev_lst = list(islice(iterator, degree))
-    yield separator.join(prev_lst)
-    for next_token in iterator:
-        prev_lst.pop(0)
-        prev_lst.append(next_token) 
-        yield separator.join(prev_lst)
+def tag_first_and_last(
+        first_prefix: str="@",
+        first_suffix: str="",
+        last_prefix: str="#",
+        last_suffix: str=""
+    )-> Iterator[str]:
+    def decorator(tokenize):
+        @functools.wraps(tokenize)
+        def wrapper(*args, **kwargs):
+            iter_ = tokenize(*args, **kwargs)
+            prev_ = f"{first_prefix}{next(iter_)}{first_suffix}"
+            for next_ in iter_:
+                yield prev_
+                prev_ = next_
+            yield f"{last_prefix}{prev_}{last_suffix}"
+        return wrapper
+    return decorator
 
 
+def merize(degree: int=2, separator: str="") -> Iterator[str]:
+    assert degree >= 2, f"merizing makes sense for degree >= 2, not {degree}."
+    def decorator(tokenize):
+        @functools.wraps(tokenize)
+        def wrapper(*args, **kwargs):
+            iter_ = tokenize(*args, **kwargs)
+            prev_lst = list(islice(iter_, degree))
+            yield separator.join(prev_lst)
+            for next_token in iter_:
+                prev_lst.pop(0)
+                prev_lst.append(next_token) 
+                yield separator.join(prev_lst)
+        return wrapper
+    return decorator
 
-list(iter_tokens(token_pattern, sequence))
-list(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)))
-Counter(iter_tokens(token_pattern, sequence))
-Counter(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)))
 
-list(iter_complicated_mers(iter_tokens(token_pattern, sequence), degree=2))
-list(iter_complicated_mers(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)), degree=2))
-list(iter_complicated_mers(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)), degree=3))
+tokenize_tag_first_and_last = tag_first_and_last()(tokenize)
+list(tokenize_tag_first_and_last(token_pattern, sequence))
+Counter(tokenize_tag_first_and_last(token_pattern, sequence))
 
-Counter(iter_complicated_mers(iter_tokens(token_pattern, sequence), degree=2))
-Counter(iter_complicated_mers(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)), degree=2))
-Counter(iter_complicated_mers(iter_strings_modifying_first_and_last(iter_tokens(token_pattern, sequence)), degree=3))
+tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
+list(tokenize_tag_first_and_last(token_pattern, sequence))
+Counter(tokenize_tag_first_and_last(token_pattern, sequence))
+
+tokenize_1_mers = merize(degree=1)(tokenize)
+list(tokenize_1_mers(token_pattern, sequence))
+Counter(tokenize_1_mers(token_pattern, sequence))
+
+tokenize_2_mers = merize(degree=2)(tokenize)
+list(tokenize_2_mers(token_pattern, sequence))
+Counter(tokenize_2_mers(token_pattern, sequence))
+
+tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
+list(tokenize_tag_first_and_last(token_pattern, sequence))
+
+tokenize_2_mers = merize(degree=2)(tag_first_and_last()(tokenize))
+list(tokenize_2_mers(token_pattern, sequence))
+Counter(tokenize_2_mers(token_pattern, sequence))
