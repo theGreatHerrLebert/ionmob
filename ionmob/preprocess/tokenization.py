@@ -2,11 +2,8 @@ from collections import Counter
 import re
 import string
 from itertools import islice, product
-from typing import Iterator
+from typing import Iterator, Iterable
 import functools
-
-
-sequence = '_AADM(Oxidation (M))Z(Oxidation (Z))VIEAVFEDLSLK_'
 
 
 def get_token_pattern_str(
@@ -29,19 +26,17 @@ def get_token_pattern_str(
     return "(" + modification_pattern + "|" + "|".join(letters)  + ")" 
 
 
-token_pattern_MaxQuant_v1dot8 = re.compile(get_token_pattern_str(
-    # modification_pattern="[A|C|D|E|F|G|H|I|K|L|M|N|P|Q|R|S|T|W|Y][(][a-zA-Z]+ [(][A|C|D|E|F|G|H|I|K|L|M|N|P|Q|R|S|T|W|Y][)][)]",
+token_pattern_MaxQuant_v2 = re.compile(get_token_pattern_str(
     modification_pattern="[A-Z][(][a-zA-Z]+ [(][A-Z][)][)]",
     letters=string.ascii_uppercase
 ))
 
-token_pattern_MaxQuant_v1dot7 = re.compile(get_token_pattern_str(
-    # modification_pattern="[A|C|D|E|F|G|H|I|K|L|M|N|P|Q|R|S|T|W|Y][(][a-zA-Z]+[)]",
+token_pattern_MaxQuant_v1 = re.compile(get_token_pattern_str(
     modification_pattern="[A-Z][(][a-zA-Z]+ [(][A-Z][)][)]",
     letters=string.ascii_uppercase  
 ))
 
-token_pattern = token_pattern_MaxQuant_v1dot8
+#TODO: add more patterns for other programs, like DiaNN/Spectronaut...
 
 
 def tokenize(token_pattern: re.Pattern, sequence:str) -> Iterable[str]:
@@ -93,25 +88,38 @@ def merize(degree: int=2, separator: str="") -> Iterator[str]:
     return decorator
 
 
-tokenize_tag_first_and_last = tag_first_and_last()(tokenize)
-list(tokenize_tag_first_and_last(token_pattern, sequence))
-Counter(tokenize_tag_first_and_last(token_pattern, sequence))
+if __name__ == "__main__":
+    sequence = '_AADM(Oxidation (M))Z(Oxidation (Z))VIEAVFEDLSLK_'
+    token_pattern = token_pattern_MaxQuant_v1dot8
+    tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
+    list(tokenize_tag_first_and_last(token_pattern, sequence))
+    Counter(tokenize_tag_first_and_last(token_pattern, sequence))
 
-tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
-list(tokenize_tag_first_and_last(token_pattern, sequence))
-Counter(tokenize_tag_first_and_last(token_pattern, sequence))
+    tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
+    list(tokenize_tag_first_and_last(token_pattern, sequence))
+    Counter(tokenize_tag_first_and_last(token_pattern, sequence))
 
-tokenize_1_mers = merize(degree=1)(tokenize)
-list(tokenize_1_mers(token_pattern, sequence))
-Counter(tokenize_1_mers(token_pattern, sequence))
+    tokenize_2_mers = merize(degree=2)(tokenize)
+    list(tokenize_2_mers(token_pattern, sequence))
+    Counter(tokenize_2_mers(token_pattern, sequence))
 
-tokenize_2_mers = merize(degree=2)(tokenize)
-list(tokenize_2_mers(token_pattern, sequence))
-Counter(tokenize_2_mers(token_pattern, sequence))
+    tokenize_2_mers = merize(degree=2)(tag_first_and_last()(tokenize))
+    list(tokenize_2_mers(token_pattern, sequence))
+    Counter(tokenize_2_mers(token_pattern, sequence))
 
-tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
-list(tokenize_tag_first_and_last(token_pattern, sequence))
+    @merize(degree=2)
+    @tag_first_and_last(first_prefix="!", last_suffix="$")
+    def tokenize(token_pattern: re.Pattern, sequence:str) -> Iterable[str]:
+        """Iterate over tokens.
 
-tokenize_2_mers = merize(degree=2)(tag_first_and_last()(tokenize))
-list(tokenize_2_mers(token_pattern, sequence))
-Counter(tokenize_2_mers(token_pattern, sequence))
+        Arguments:
+            token_pattern: a compiled token_pattern.
+            sequence (str): a sequence to tokenize.
+        
+        Yields:
+            str: A valid token.
+        """
+        for x in re.finditer(token_pattern, sequence):
+            yield x.group()
+
+    list(tokenize(token_pattern, sequence))
