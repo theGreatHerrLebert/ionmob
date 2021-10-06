@@ -255,7 +255,10 @@ def get_chargewise_mean(df: pd.DataFrame, col_name: str) -> Dict[int, np.float64
 
 
 def apply_mean_shift(ref: Experiment, exp: Experiment) -> Experiment:
-    """apply a shift on ccs values of exp to correct for experimental or device
+    """apply a shift on ccs values of exp to correct for experimental or device shifts.
+    a chargewise shift is applied on exp by calculating the difference of ccs values
+    detected in both experiments and their chargewise mean before applying those means
+    on the ccs values of exp depending on the charge state.
     :ref: reference experiment towards which the data of exp is corrected
     :exp: experiment that undergoes correction
     :return: Experiment instance that is essentially exp with corrected ccs values
@@ -275,5 +278,54 @@ def apply_mean_shift(ref: Experiment, exp: Experiment) -> Experiment:
     return Experiment._from_whole_DataFrame(exp.name, exp.int_to_raw, shifted_df)
 
 
-def intrinsic_align(self):
-    pass
+def adopt_shifted_ccs(exp: Experiment) -> Experiment:
+    """substitutes ccs values with values of shifted_ccs and removes latter one"""
+    df = exp.data.copy().drop(columns="ccs").rename(
+        columns={"shifted_ccs": "ccs"})
+
+    return Experiment._from_whole_DataFrame(exp.name, exp.int_to_raw, df)
+
+
+# alternative method for shift correction by caluculating the shift as
+# difference between 2 linear regressions of each charge state and experiment
+
+# def seperate_by_charge(df: pd.DataFrame) -> List[pd.DataFrame]:
+#     """split pandas Dataframe according to charge column
+#     """
+#     result = []
+#     for _, g_df in df.groupby(by= ["charge"]):
+#         result.append(g_df)
+
+#     return result
+
+# def learn_ccs_mz_linReg(ex: Experiment) -> dict:
+#     """learn linear regression line for each charge state of an experiment
+#     ccs VS mz values
+#     @ex: Experiment instance on which ccs and mz values a linear regression is learned
+#     @return: {experiment_name: {charge_state: align_function}}
+#     """
+#     ex_name = ex.name
+#     df = ex.data
+#     funcs_dic = {ex_name: dict()}
+
+#     diff_ccs_col = "diff_ccs_"+ex_name
+
+#     df_charge_list = seperate_by_charge(df)
+
+#     for z_state, df_charge in enumerate(df_charge_list):
+
+#         x = df_charge.ccs.values
+#         y = df_charge.diff_ccs.values
+#         x_idx = np.argsort(x)
+#         x = x[x_idx]
+#         y = y[x_idx]
+
+#         #linreg_func = linreg....
+
+#         funcs_dic[ex_name][z_state+2] = linreg_func
+#     return funcs_dic
+
+
+# def apply_mean_shift2(ref: Experiment, exp: Experiment) -> Experiment:
+#     """shift factor anhand von chargewise linReg für ref und exp daten berechnet"""
+#     pass

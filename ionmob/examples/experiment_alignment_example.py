@@ -62,7 +62,7 @@ aligned_exs = alig.align_experiments(exs)
 aligned_ex = alig.merge_experiments(aligned_exs, "our_experiments")
 
 # if you want to expand your aquired data you can align a dataset aquired by another lab to the first one
-# first read and intrinsically align the experiments of the other dataset
+# first read and intrinsically align the experiments of the other dataset like you did above
 data_dir2 = "data/mann_data/"
 file_names2 = ["Results_evidence_mann_Drosophila.txt",
                "Results_evidence_mann_HeLaTryp.txt",
@@ -80,8 +80,14 @@ aligned_ex2 = alig.merge_experiments(aligned_exs2, "mann_experiments")
 
 
 # in order to merge experiments from 2 different labs you firstly have to
-# perform a linear shift on the data (in this cas aligned_ex2 is )
+# perform a linear shift on the data (in this case a copy of aligned_ex2 is returned with the additional
+# column "shifted_ccs")
 aligned_ex2_mean_shifted = alig.apply_mean_shift(aligned_ex, aligned_ex2)
+# at this point you can compare the original ccs values to the shifted ones within aligned_ex2_mean_shifted
+# by accessing aligned_ex2_mean_shifted.data.ccs and aligned_ex2_mean_shifted.data.shifted_ccs
+
+# if you are satisified with the shifted data you can proceed with adopting the shifted ccs values
+aligned_ex2_mean_shifted = alig.adopt_shifted_ccs(aligned_ex2_mean_shifted)
 
 # then merge them with the previous method
 exs_of_labs = [aligned_ex, aligned_ex2_mean_shifted]
