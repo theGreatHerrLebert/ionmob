@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 
 
@@ -20,7 +21,7 @@ class ProjectToInitialCCS(tf.keras.layers.Layer):
 class DeepRecurrentModel(tf.keras.models.Model):
     """
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
-    Model architecture is (partly) inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
+    Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
     def __init__(self, slopes, intercepts, number_tokens):
         super(DeepRecurrentModel, self).__init__()
@@ -55,3 +56,46 @@ class DeepRecurrentModel(tf.keras.models.Model):
         d2 = self.dense2(d1)
         # combine simple linear hypotheses with deep part
         return self.linear([mz, charge]) + self.out(d2), self.out(d2)
+
+
+if __name__ == '__main__':
+
+    early_stopper = tf.keras.callbacks.EarlyStopping(
+        monitor='val_output_1_loss',
+        patience=10
+    )
+
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(
+        filepath='training/rnn/checkpoint',
+        monitor='val_output_1_loss',
+        save_best_only=True,
+        mode='min'
+    )
+
+    csv_logger = tf.keras.callbacks.CSVLogger(
+        filename='training/rnn/training.csv',
+        separator=',',
+        append=True
+    )
+
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+        monitor='val_output_1_loss',
+        factor=1e-1,
+        patience=5,
+        monde='auto',
+        min_delta=1e-5,
+        cooldown=0,
+        min_lr=1e-7
+    )
+
+    cbs = [early_stopper, checkpoint, csv_logger, reduce_lr]
+
+    model = DeepRecurrentModel(np.array([[0.0, 0.0, 0.0, 0.0]], dtype=np.float32),
+                               np.array([[0.0, 0.0, 0.0, 0.0]], dtype=np.float32), 83)
+
+    model.build([(None, 1), (None, 4), (None, 83,), (None, 1), (None, 1)])
+
+    model.compile(loss=tf.keras.losses.MeanAbsoluteError(), loss_weights=[1., 0.0],
+                  optimizer=tf.keras.optimizers.Adam(1e-3), metrics=['mae'])
+
+    print(model.summary())

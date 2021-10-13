@@ -8,6 +8,25 @@ import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
 
+def get_non_overlapping_pairs(ds_ref, ds_test):
+    """
+    reduce a dataframe to only contain seq, charge pairs not present in ref dataset
+    :ds_ref: dataframe containing all charge, seq pairs that should be excluded from other frame
+    :ds_test: dataframe that should be reduced to only contain seq, charge pairs not in reference
+    :return: dataframe only containing seq, charge pairs not in ref data
+    """
+    ref_pairs = set(zip(ds_ref.sequence, ds_ref.charge))
+    test_pairs = set(zip(ds_test.sequence, ds_test.charge))
+    candidates = test_pairs - ref_pairs
+
+    row_list = []
+    for index, row in ds_test.iterrows():
+        if (row['sequence'], row['charge']) in candidates:
+            row_list.append(row)
+
+    return pd.DataFrame(row_list)
+
+
 def align_annotation(sequence: str, from_str: str = '(Oxidation (M))', to_str: str = '(ox)'):
     """
     replace parts of a string with other string, can be used for annotation alignment for e.g. modifications
