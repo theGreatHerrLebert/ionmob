@@ -48,7 +48,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
         # get inputs
         mz, charge, seq, helix, gravy = inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]
 
-        charge_repeated = tf.repeat(tf.expand_dims(charge, axis=2), 40, axis=1)
+        charge_repeated = tf.repeat(tf.expand_dims(charge / 4*1e3, axis=1), 40, axis=1)
         # sequence learning
         x_recurrent = self.gru1(self.emb(seq))
         x_recurrent = self.gru2(tf.keras.layers.Concatenate()([x_recurrent, charge_repeated]))
