@@ -31,7 +31,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
 
         self.emb = tf.keras.layers.Embedding(input_dim=number_tokens + 1, output_dim=128, input_length=seq_len)
         self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(128, return_sequences=True))
-        self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(128, return_sequences=False,
+        self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=False,
                                                                       recurrent_dropout=0.2))
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
