@@ -25,6 +25,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
     """
     def __init__(self, slopes, intercepts, number_tokens, seq_len=40):
         super(DeepRecurrentModel, self).__init__()
+        self.__seq_len = seq_len
 
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
@@ -48,7 +49,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
         # get inputs
         mz, charge, seq, helix, gravy = inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]
 
-        charge_repeated = tf.repeat(tf.expand_dims(charge / 1e3, axis=1), seq_len, axis=1)
+        charge_repeated = tf.repeat(tf.expand_dims(charge / 1e3, axis=1), self.__seq_len, axis=1)
         # sequence learning
         x_recurrent = self.gru1(self.emb(seq))
         x_recurrent = self.gru2(tf.keras.layers.Concatenate()([x_recurrent, charge_repeated]))
