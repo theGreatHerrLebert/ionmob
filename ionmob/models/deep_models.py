@@ -28,7 +28,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
 
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
-        self.emb = tf.keras.layers.Embedding(number_tokens + 1, 128)
+        self.emb = tf.keras.layers.Embedding(input_dim=number_tokens + 1, output_dim=128, input_length=40)
         self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=True))
         self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=False, 
                                                                       recurrent_dropout=0.2))
@@ -47,8 +47,11 @@ class DeepRecurrentModel(tf.keras.models.Model):
         """
         # get inputs
         mz, charge, seq, helix, gravy = inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]
+
+        charge_repeated = tf.repeat(tf.expand_dims(charge, axis=2), 40, axis=1)
         # sequence learning
-        x_recurrent = self.gru2(self.gru1(tf.keras.layers.Concatenate()([self.emb(seq), charge])))
+        x_recurrent = self.gru1(self.emb(seq))
+        x_recurrent = self.gru2(tf.keras.layers.Concatenate()([x_recurrent, charge_repeated]))
         # concat to feed to dense layers
         concat = tf.keras.layers.Concatenate()([charge, x_recurrent, helix, gravy])
         # regularize
@@ -93,7 +96,7 @@ if __name__ == '__main__':
     model = DeepRecurrentModel(np.array([[0.0, 0.0, 0.0, 0.0]], dtype=np.float32),
                                np.array([[0.0, 0.0, 0.0, 0.0]], dtype=np.float32), 83)
 
-    model.build([(None, 1), (None, 4), (None, 83,), (None, 1), (None, 1)])
+    model.build([(None, 1), (None, 4), (None, 40), (None, 1), (None, 1)])
 
     model.compile(loss=tf.keras.losses.MeanAbsoluteError(), loss_weights=[1., 0.0],
                   optimizer=tf.keras.optimizers.Adam(1e-3), metrics=['mae'])
