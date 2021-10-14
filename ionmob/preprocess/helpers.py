@@ -4,6 +4,7 @@ import re
 
 from itertools import combinations
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
