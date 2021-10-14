@@ -48,7 +48,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
         # get inputs
         mz, charge, seq, helix, gravy = inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]
         # sequence learning
-        x_recurrent = self.gru2(self.gru1(self.emb(tf.keras.layers.Concatenate()[seq, charge])))
+        x_recurrent = self.gru2(self.gru1(self.emb(tf.keras.layers.Concatenate()([seq, charge]))))
         # concat to feed to dense layers
         concat = tf.keras.layers.Concatenate()([charge, x_recurrent, helix, gravy])
         # regularize
