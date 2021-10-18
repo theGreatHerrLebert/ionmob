@@ -17,4 +17,4 @@ amino_acids={   'Lysine': 'K',
                 'Asparagine': 'N',
                 'Proline': 'P',
                 'Histidine': 'H',
-                'Aspartic Acid': 'D'       }
+                'Aspartic Acid': 'D'}

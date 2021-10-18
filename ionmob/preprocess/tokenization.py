@@ -23,7 +23,7 @@ def get_token_pattern_str(
     Returns:
         str: the pattern string describing the rule for regex to find individual tokens in a sequence.
     """
-    return "(" + modification_pattern + "|" + "|".join(letters)  + ")" 
+    return "(" + modification_pattern + "|" + "|".join(letters) + ")"
 
 
 token_pattern_MaxQuant_v2 = re.compile(get_token_pattern_str(
@@ -90,7 +90,7 @@ def merize(degree: int=2, separator: str="") -> Iterator[str]:
 
 if __name__ == "__main__":
     sequence = '_AADM(Oxidation (M))Z(Oxidation (Z))VIEAVFEDLSLK_'
-    token_pattern = token_pattern_MaxQuant_v1dot8
+    token_pattern = token_pattern_MaxQuant_v1
     tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
     list(tokenize_tag_first_and_last(token_pattern, sequence))
     Counter(tokenize_tag_first_and_last(token_pattern, sequence))
