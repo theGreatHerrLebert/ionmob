@@ -50,7 +50,7 @@ def get_prediction_data(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray
     charges_one_hot = tf.one_hot(charge - 1, 4)
 
     seq_tokens = [sequence_to_tokens(s, drop_sequence_ends) for s in sequence]
-    seq_padded = tf.keras.preprocessing.sequence.pad_sequences(tokenizer.texts_to_sequences(seq_tokens), 40,
+    seq_padded = tf.keras.preprocessing.sequence.pad_sequences(tokenizer.texts_to_sequences(seq_tokens), 50,
                                                                padding='post')
 
     # calculate meta features

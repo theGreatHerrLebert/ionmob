@@ -23,7 +23,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, gru_1=128, gru_2=64):
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, gru_1=128, gru_2=64, rdo=0.0):
         super(DeepRecurrentModel, self).__init__()
         self.__seq_len = seq_len
 
@@ -32,7 +32,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
         self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
         self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_1, return_sequences=True))
         self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_2, return_sequences=False,
-                                                                      recurrent_dropout=0.2))
+                                                                      recurrent_dropout=rdo))
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
                                             kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
@@ -64,7 +64,7 @@ class DeepAttentionModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, attn_dim=128, gru_dim=64, n_heads=4):
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, attn_dim=128, gru_dim=64):
         super(DeepAttentionModel, self).__init__()
         self.__seq_len = seq_len
 
@@ -72,12 +72,13 @@ class DeepAttentionModel(tf.keras.models.Model):
         self.emb_1 = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
         self.emb_2 = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
 
-        self.cnn_layer = tf.keras.layers.Conv1D(filters=100, kernel_size=8, padding='same')
+        self.cnn_layer = tf.keras.layers.Conv1D(filters=512, kernel_size=8, padding='same')
         self.attn = tf.keras.layers.Attention()
         self.gru = tf.keras.layers.GRU(gru_dim, return_sequences=False)
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
                                             kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
+
         self.dense2 = tf.keras.layers.Dense(64, activation='relu')
 
         self.dropout = tf.keras.layers.Dropout(0.3)
