@@ -69,7 +69,7 @@ class DeepAttentionModel(tf.keras.models.Model):
         super(DeepAttentionModel, self).__init__()
         self.__seq_len = seq_len
 
-        self.linear = ProjectToInitialCCS(slopes, intercepts, name='LinearProjector')
+        self.linear = ProjectToInitialCCS(slopes, intercepts)
         self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
 
         self.attention = tf.keras.layers.Attention()
