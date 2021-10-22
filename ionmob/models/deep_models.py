@@ -30,6 +30,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
         self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
+
         self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_1, return_sequences=True))
         self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_2, return_sequences=False,
                                                                       recurrent_dropout=rdo))
@@ -71,10 +72,12 @@ class DeepAttentionModel(tf.keras.models.Model):
         self.linear = ProjectToInitialCCS(slopes, intercepts)
         self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
 
-        self.attn = tf.keras.layers.Attention()
+        self.attention = tf.keras.layers.Attention()
 
-        self.gru_1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_dim, return_sequences=True))
-        self.gru_2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_dim, return_sequences=False))
+        self.gru_enc = tf.keras.layers.GRU(gru_dim, return_state=True, return_sequences=True)
+        self.gru_dec = tf.keras.layers.GRU(gru_dim, return_state=True, return_sequences=True)
+
+        self.gru_pred = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_dim, return_sequences=False))
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
                                             kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
@@ -93,11 +96,15 @@ class DeepAttentionModel(tf.keras.models.Model):
         mz, charge, seq, helix, gravy = inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]
         # sequence learning
 
-        query_embeddings = self.emb(seq)
-        value_embeddings = self.emb(seq)
+        embedding = self.emb(seq)
+        encoder_out, encoder_state = self.gru_enc(embedding)
+        decoder_out, decoder_state = self.gru_dec(embedding, initial_state=encoder_state)
 
-        query_value_attention_seq = self.attn([query_embeddings, value_embeddings])
-        x_recurrent = self.gru_2(self.gru_1(tf.keras.layers.Concatenate()([query_value_attention_seq, query_embeddings])))
+        attn_out = self.attention([encoder_out, decoder_out])
+
+        seq_concat_attn = tf.keras.layers.Concatenate()([decoder_out, attn_out])
+
+        x_recurrent = self.gru_pred(seq_concat_attn)
 
         # concat to feed to dense layers
         concat = tf.keras.layers.Concatenate()([charge, x_recurrent, helix, gravy])
