@@ -65,7 +65,7 @@ class DeepAttentionModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, attn_dim=128, gru_enc_dec_dim=64, r_dim=128):
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, gru_enc_dec_dim=64, r_dim=128):
         super(DeepAttentionModel, self).__init__()
         self.__seq_len = seq_len
 
