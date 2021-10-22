@@ -65,7 +65,7 @@ class DeepAttentionModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, attn_dim=128, gru_dim=64):
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, attn_dim=128, gru_enc_dec_dim=64, r_dim=128):
         super(DeepAttentionModel, self).__init__()
         self.__seq_len = seq_len
 
@@ -74,10 +74,10 @@ class DeepAttentionModel(tf.keras.models.Model):
 
         self.attention = tf.keras.layers.Attention()
 
-        self.gru_enc = tf.keras.layers.GRU(gru_dim, return_state=True, return_sequences=True)
-        self.gru_dec = tf.keras.layers.GRU(gru_dim, return_state=True, return_sequences=True)
+        self.gru_enc = tf.keras.layers.GRU(gru_enc_dec_dim, return_state=True, return_sequences=True)
+        self.gru_dec = tf.keras.layers.GRU(gru_enc_dec_dim, return_sequences=True)
 
-        self.gru_pred = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_dim, return_sequences=False))
+        self.gru_pred = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(r_dim, return_sequences=False))
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
                                             kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
@@ -98,7 +98,7 @@ class DeepAttentionModel(tf.keras.models.Model):
 
         embedding = self.emb(seq)
         encoder_out, encoder_state = self.gru_enc(embedding)
-        decoder_out, decoder_state = self.gru_dec(embedding, initial_state=encoder_state)
+        decoder_out = self.gru_dec(embedding, initial_state=encoder_state)
 
         attn_out = self.attention([encoder_out, decoder_out])
 
