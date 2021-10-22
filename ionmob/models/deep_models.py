@@ -74,19 +74,19 @@ class DeepAttentionModel(tf.keras.models.Model):
 
         self.attention = tf.keras.layers.Attention()
 
-        self.gru_enc = tf.keras.layers.GRU(gru_enc_dec_dim, return_state=True, return_sequences=True, name='Encoder')
-        self.gru_dec = tf.keras.layers.GRU(gru_enc_dec_dim, return_sequences=True, name='Decoder')
+        self.gru_enc = tf.keras.layers.GRU(gru_enc_dec_dim, return_state=True, return_sequences=True)
+        self.gru_dec = tf.keras.layers.GRU(gru_enc_dec_dim, return_sequences=True)
 
-        self.gru_pred = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(r_dim, return_sequences=False), name='Final RNN')
+        self.gru_pred = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(r_dim, return_sequences=False))
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
-                                            kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3), name='Dense 1')
+                                            kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
 
-        self.dense2 = tf.keras.layers.Dense(64, activation='relu', name='Dense 2')
+        self.dense2 = tf.keras.layers.Dense(64, activation='relu')
 
         self.dropout = tf.keras.layers.Dropout(0.3, name='Dropout')
 
-        self.out = tf.keras.layers.Dense(1, activation=None, name='Output')
+        self.out = tf.keras.layers.Dense(1, activation=None)
 
     def call(self, inputs):
         """
