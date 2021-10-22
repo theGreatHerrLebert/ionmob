@@ -69,12 +69,12 @@ class DeepAttentionModel(tf.keras.models.Model):
         self.__seq_len = seq_len
 
         self.linear = ProjectToInitialCCS(slopes, intercepts)
-        self.emb_1 = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
-        self.emb_2 = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
+        self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
 
-        self.cnn_layer = tf.keras.layers.Conv1D(filters=512, kernel_size=8, padding='same')
         self.attn = tf.keras.layers.Attention()
-        self.gru = tf.keras.layers.GRU(gru_dim, return_sequences=False)
+
+        self.gru_1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_dim, return_sequences=True))
+        self.gru_2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_dim, return_sequences=False))
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
                                             kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
@@ -93,14 +93,11 @@ class DeepAttentionModel(tf.keras.models.Model):
         mz, charge, seq, helix, gravy = inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]
         # sequence learning
 
-        query_embeddings = self.emb_1(seq)
-        value_embeddings = self.emb_2(seq)
+        query_embeddings = self.emb(seq)
+        value_embeddings = self.emb(seq)
 
-        query_seq_encoding = self.cnn_layer(query_embeddings)
-        value_seq_encoding = self.cnn_layer(value_embeddings)
-
-        query_value_attention_seq = self.attn([query_seq_encoding, value_seq_encoding])
-        x_recurrent = self.gru(query_value_attention_seq)
+        query_value_attention_seq = self.attn([query_embeddings, value_embeddings])
+        x_recurrent = self.gru_2(self.gru_1(tf.keras.layers.Concatenate()([query_value_attention_seq, query_embeddings])))
 
         # concat to feed to dense layers
         concat = tf.keras.layers.Concatenate()([charge, x_recurrent, helix, gravy])
