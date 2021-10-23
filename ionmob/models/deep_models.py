@@ -23,13 +23,13 @@ class DeepRecurrentModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, gru_1=128, gru_2=64, rdo=0.0):
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_1=64, gru_2=128, rdo=0.0):
         super(DeepRecurrentModel, self).__init__()
         self.__seq_len = seq_len
 
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
-        self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
+        self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=emb_dim, input_length=seq_len)
 
         self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_1, return_sequences=True))
         self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_2, return_sequences=False,
@@ -65,7 +65,7 @@ class DeepAttentionModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, gru_enc_dec_dim=64, r_dim=128):
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_enc_dec_dim=64, r_dim=128):
         super(DeepAttentionModel, self).__init__()
         self.__seq_len = seq_len
 
