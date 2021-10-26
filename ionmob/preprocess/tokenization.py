@@ -92,12 +92,12 @@ def merize(degree: int = 2, separator: str = "") -> Iterator[str]:
 if __name__ == "__main__":
     sequence = '_AADM(Oxidation (M))Z(Oxidation (Z))VIEAVFEDLSLK_'
     token_pattern = token_pattern_MaxQuant_v1
-<<<<<<< HEAD
+
     tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
-=======
+
     tokenize_tag_first_and_last = tag_first_and_last(
         first_prefix="!")(tokenize)
->>>>>>> 164a958cc4f70c28bfd6403ef0516b4824e6e95f
+
     list(tokenize_tag_first_and_last(token_pattern, sequence))
     print(Counter(tokenize_tag_first_and_last(token_pattern, sequence)))
 
