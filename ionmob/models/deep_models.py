@@ -130,18 +130,17 @@ class ConvEncoder(tf.keras.layers.Layer):
         self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=emb_dim, input_length=seq_len)
         self.conv1 = tf.keras.layers.Conv2D(16, (5, 5), dilation_rate=1, activation="relu")
         self.conv2 = tf.keras.layers.Conv2D(32, (5, 5), dilation_rate=2, activation="relu")
-        self.conv3 = tf.keras.layers.Conv2D(64, (5, 5), dilation_rate=3, activation="relu")
         self.mp = tf.keras.layers.GlobalMaxPool2D()
         self.out = tf.keras.layers.Dense(128, activation='relu')
 
     def call(self, inputs):
         embedded = tf.expand_dims(self.emb(inputs), axis=3)
-        x_convolved = self.mp(self.conv3(self.conv2(self.conv1(embedded))))
+        x_convolved = self.conv2(self.conv1(embedded))
         return self.out(tf.keras.layers.Flatten()(x_convolved))
 
 
 class SeqConvNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercepts, num_tokens=83, seq_len=50, emb_dim=32):
+    def __init__(self, slopes, intercepts, num_tokens=83, seq_len=50, emb_dim=16):
         super(SeqConvNet, self).__init__()
 
         self.linear = ProjectToInitialCCS(slopes, intercepts)
