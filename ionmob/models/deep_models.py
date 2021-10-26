@@ -144,7 +144,7 @@ class ConvEncoder(tf.keras.models.Model):
 
 
 class KmerDeepNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercpets):
+    def __init__(self, slopes, intercepts):
         super(KmerDeepNet, self).__init__()
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
