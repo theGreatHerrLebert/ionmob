@@ -1,7 +1,7 @@
 from __future__ import annotations
 import pandas as pd
 import numpy as np
-from typing import Callable
+from typing import Callable, Dict
 import copy
 
 
@@ -30,7 +30,7 @@ class Experiment:
         return cls(name, *args)
 
     @classmethod
-    def _from_whole_DataFrame(cls, name: str, raw_dict: dict, df: pd.DataFrame) -> Experiment:
+    def _from_whole_DataFrame(cls, name: str, raw_dict: Dict[int, str], df: pd.DataFrame) -> Experiment:
         # instantiate empty experiment and fill mit df
         new_exp = cls.empty_experiment(name)
         new_exp.data = df
@@ -127,7 +127,7 @@ class Experiment:
     #                 pass
     #     return mask
     @staticmethod
-    def add_main_feat_values(df, condition_main, secondary_level=False):
+    def add_main_feat_values(df: pd.DataFrame, condition_main: str, secondary_level: bool = False):
         """
         adds columns with values of respective main_feature to each row. For each column in target_cols that contains a container data type, a
         seperate colum with name max_feat_{colname} is generated with the max value of respective container 
@@ -156,7 +156,7 @@ class Experiment:
         return pd.concat([df, main_feat_df], axis=1)
 
     @staticmethod
-    def calc_diffs_to_main_feat(df, cols, secondary_level=False):
+    def calc_diffs_to_main_feat(df: pd.DataFrame, cols: list, secondary_level: bool = False):
         """
         calculates difference between value in cols and corresponding main_feature value of respective main_feature
         @df: pandas DataFrame object
@@ -178,7 +178,7 @@ class Experiment:
                    secondary_col] = df[col] - df[main_col]
         return df
 
-    def prep_feat_analysis(self, condition_main, secondary_level=False):
+    def prep_feat_analysis(self, condition_main: str, secondary_level: bool = False):
         """wraps pipeline for preperation for modality class assignment
         @df: pandas DataFrame
         @condition_main: column on which the main feat identification is based
