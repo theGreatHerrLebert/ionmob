@@ -210,11 +210,6 @@ def agg_feats_after_merge(df: pd.DataFrame, ccs_agg_func: Callable[[pd.Series], 
 def merge_experiments(coll_exs: List[Experiment], new_name: str) -> Experiment:
     dfs = [ex.data.copy() for ex in coll_exs]
 
-    # bevor concat noch die raw_file spalte zurückübersetzen damit bei neuer experiment konstruktion
-    # diese wieder in integer übersetzt werden können
-
-    # ids noch erforderlich bzw korrekt? wahrscheinlich nicht mehr korrekt
-
     def get_combined_dict_of_exs():
         """combines the int_to_raw members of Experiment to form new int_to_raw dict"""
         raw_file_names = []
