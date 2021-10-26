@@ -144,13 +144,13 @@ class ConvEncoder(tf.keras.models.Model):
 
 
 class KmerDeepNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercepts):
+    def __init__(self, slopes, intercepts, activation=None):
         super(KmerDeepNet, self).__init__()
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
-        self.d1 = tf.keras.layers.Dense(128, activation='relu')
-        self.d2 = tf.keras.layers.Dense(64, activation='relu')
-        self.d3 = tf.keras.layers.Dense(32, activation='relu')
+        self.d1 = tf.keras.layers.Dense(128, activation=activation)
+        self.d2 = tf.keras.layers.Dense(64, activation=activation)
+        self.d3 = tf.keras.layers.Dense(32, activation=activation)
         self.dropout = tf.keras.layers.Dropout(0.3)
         self.out = tf.keras.layers.Dense(1, activation=None)
 
