@@ -123,24 +123,40 @@ class DeepAttentionModel(tf.keras.models.Model):
         return self.linear([mz, charge]) + self.out(d2), self.out(d2)
 
 
-class ConvEncoder(tf.keras.models.Model):
-    def __init__(self, len_alphabet=64, embedding_dim=32):
-        super(self).__init__()
-        self.emb = tf.keras.layers.Embedding(
-            len_alphabet, output_dim=embedding_dim)
-        self.conv1 = tf.keras.layers.Conv2D(
-            (5, 5), dilation_rate=1, activation="relu")
-        self.conv2 = tf.keras.layers.Conv2D(
-            (5, 5), dilation_rate=1, activation="relu")
+class ConvEncoder(tf.keras.layers.Layer):
+    def __init__(self, num_tokens=83, seq_len=50, emb_dim=16):
+        super(ConvEncoder, self).__init__()
+        self.emb = tf.keras.layers.Embedding(input_dim=num_tokens, output_dim=emb_dim, input_length=seq_len)
+        self.conv1 = tf.keras.layers.Conv2D(32, (emb_dim, 5), dilation_rate=1, activation="relu")
+        self.conv2 = tf.keras.layers.Conv2D(128, (1, 5), dilation_rate=2, activation="relu")
+        self.mp = tf.keras.layers.GlobalMaxPool2D()
         self.out = tf.keras.layers.Dense(128, activation='relu')
 
     def call(self, inputs):
-        charge, seq = inputs[0], inputs[1]
+        seq = inputs[0]
         embedded = self.emb(seq)
-        x_conved = self.conv1(embedded)
-        x_conved = self.conv2(x_conved)
-        concat = tf.keras.layers.Concatenate()([x_conved, charge])
-        return self.out(concat)
+        x_convolved = self.mp(self.conv2(self.conv1(embedded)))
+        return self.out(tf.keras.layers.Flatten()(x_convolved))
+
+
+class SeqConvNet(tf.keras.models.Model):
+    def __init__(self, slopes, intercepts, num_tokens=83, seq_len=50, emb_dim=16):
+        super(SeqConvNet, self).__init__()
+        self.linear = ProjectToInitialCCS(slopes, intercepts)
+        self.convencoder = ConvEncoder(num_tokens, seq_len, emb_dim)
+        self.d1 = tf.keras.layers.Dense(64, activation='relu')
+        self.d2 = tf.keras.layers.Dense(32, activation='relu')
+        self.dropout = tf.keras.layers.Dropout(0.3)
+        self.out = tf.keras.layers.Dense(1, activation=None)
+
+    def call(self, inputs):
+        mz, charge, sequence = inputs[0], inputs[1], inputs[2]
+
+        seq_convolved = self.convencoder(sequence)
+        concat = tf.keras.layers.Concatenate()([charge, seq_convolved])
+        seq_deep = self.d2(self.dropout(self.d1(concat)))
+
+        return self.linear([mz, charge]) + self.out(seq_deep)
 
 
 class KmerDeepNet(tf.keras.models.Model):
@@ -204,9 +220,4 @@ if __name__ == '__main__':
 
     print(model.summary())
 
-    # determine length of your sequence alphabet and save in len_alph
-    # len_alph = ....
-    # m = ConvEncoder(len_alphabet = len_alph)
-    # for building the graph pass the dimensions of your inputs (first dim represents batch size)
-    # m.build([(None, 1,), (None, 4), (None, 1,), (None, 1344,)])
-    # m.summary()
+    e = ConvEncoder()
