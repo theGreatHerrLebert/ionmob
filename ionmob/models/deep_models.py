@@ -124,28 +124,31 @@ class DeepAttentionModel(tf.keras.models.Model):
 
 
 class ConvEncoder(tf.keras.layers.Layer):
-    def __init__(self, num_tokens=83, seq_len=50, emb_dim=16):
+    def __init__(self, num_tokens=83, seq_len=50, emb_dim=32):
         super(ConvEncoder, self).__init__()
 
         self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=emb_dim, input_length=seq_len)
-        self.conv1 = tf.keras.layers.Conv2D(16, (int(emb_dim / 2), 5), dilation_rate=1, activation="relu", padding='same')
-        self.conv2 = tf.keras.layers.Conv2D(8, (5, 1), dilation_rate=2, activation="relu")
-        self.mp = tf.keras.layers.GlobalMaxPool1D()
+        self.conv1 = tf.keras.layers.Conv2D(16, (5, 5), dilation_rate=1, activation="relu")
+        self.conv2 = tf.keras.layers.Conv2D(32, (5, 5), dilation_rate=2, activation="relu")
+        self.conv3 = tf.keras.layers.Conv2D(64, (5, 5), dilation_rate=3, activation="relu")
+        self.mp = tf.keras.layers.GlobalMaxPool2D()
         self.out = tf.keras.layers.Dense(128, activation='relu')
 
     def call(self, inputs):
-        seq = inputs
-        embedded = tf.expand_dims(self.emb(seq), axis=2)
-        x_convolved = tf.squeeze(self.conv2(self.conv1(embedded)))
-        return self.out(tf.keras.layers.Flatten()(self.mp(x_convolved)))
+        embedded = tf.expand_dims(self.emb(inputs), axis=3)
+        x_convolved = self.mp(self.conv3(self.conv2(self.conv1(embedded))))
+        return self.out(tf.keras.layers.Flatten()(x_convolved))
 
 
 class SeqConvNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercepts, num_tokens=83, seq_len=50, emb_dim=16):
+    def __init__(self, slopes, intercepts, num_tokens=83, seq_len=50, emb_dim=32):
         super(SeqConvNet, self).__init__()
+
         self.linear = ProjectToInitialCCS(slopes, intercepts)
+
         self.convencoder = ConvEncoder(num_tokens, seq_len, emb_dim)
-        self.d1 = tf.keras.layers.Dense(64, activation='relu')
+
+        self.d1 = tf.keras.layers.Dense(128, activation='relu')
         self.d2 = tf.keras.layers.Dense(32, activation='relu')
         self.dropout = tf.keras.layers.Dropout(0.3)
         self.out = tf.keras.layers.Dense(1, activation=None)
