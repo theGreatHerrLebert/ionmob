@@ -123,43 +123,43 @@ class DeepAttentionModel(tf.keras.models.Model):
         return self.linear([mz, charge]) + self.out(d2), self.out(d2)
 
 
-    class ConvEncoder(tf.keras.models.Model):
-        def __init__(self, len_alphabet=64, embedding_dim=32):
-            super(self).__init__()
-            self.emb = tf.keras.layers.Embedding(
-                len_alphabet, output_dim=embedding_dim)
-            self.conv1 = tf.keras.layers.Conv2D(
-                (5, 5), dilation_rate=1, activation="relu")
-            self.conv2 = tf.keras.layers.Conv2D(
-                (5, 5), dilation_rate=1, activation="relu")
-            self.out = tf.keras.layers.Dense(128, activation='relu')
+class ConvEncoder(tf.keras.models.Model):
+    def __init__(self, len_alphabet=64, embedding_dim=32):
+        super(self).__init__()
+        self.emb = tf.keras.layers.Embedding(
+            len_alphabet, output_dim=embedding_dim)
+        self.conv1 = tf.keras.layers.Conv2D(
+            (5, 5), dilation_rate=1, activation="relu")
+        self.conv2 = tf.keras.layers.Conv2D(
+            (5, 5), dilation_rate=1, activation="relu")
+        self.out = tf.keras.layers.Dense(128, activation='relu')
 
-        def call(self, inputs):
-            charge, seq = inputs[0], inputs[1]
-            embedded = self.emb(seq)
-            x_conved = self.conv1(embedded)
-            x_conved = self.conv2(x_conved)
-            concat = tf.keras.layers.Concatenate()([x_conved, charge])
-            return self.out(concat)
+    def call(self, inputs):
+        charge, seq = inputs[0], inputs[1]
+        embedded = self.emb(seq)
+        x_conved = self.conv1(embedded)
+        x_conved = self.conv2(x_conved)
+        concat = tf.keras.layers.Concatenate()([x_conved, charge])
+        return self.out(concat)
 
 
-    class KmerDeepNet(tf.keras.models.Model):
-        def __init__(self, slopes, intercpets):
-            super(KmerDeepNet, self).__init__()
-            self.linear = ProjectToInitialCCS(slopes, intercepts)
+class KmerDeepNet(tf.keras.models.Model):
+    def __init__(self, slopes, intercpets):
+        super(KmerDeepNet, self).__init__()
+        self.linear = ProjectToInitialCCS(slopes, intercepts)
 
-            self.d1 = tf.keras.layers.Dense(128, activation='relu')
-            self.d2 = tf.keras.layers.Dense(64, activation='relu')
-            self.d3 = tf.keras.layers.Dense(32, activation='relu')
-            self.dropout = tf.keras.layers.Dropout(0.3)
-            self.out = tf.keras.layers.Dense(1, activation=None)
+        self.d1 = tf.keras.layers.Dense(128, activation='relu')
+        self.d2 = tf.keras.layers.Dense(64, activation='relu')
+        self.d3 = tf.keras.layers.Dense(32, activation='relu')
+        self.dropout = tf.keras.layers.Dropout(0.3)
+        self.out = tf.keras.layers.Dense(1, activation=None)
 
-        def call(self, inputs):
-            mz, charge, k_mers = inputs[0], inputs[1], inputs[2]
-            concat = tf.keras.layers.Concatenate()([charge, k_mers])
-            kmer_deep = self.d3(self.d2(self.dropout(self.d1(concat))))
+    def call(self, inputs):
+        mz, charge, k_mers = inputs[0], inputs[1], inputs[2]
+        concat = tf.keras.layers.Concatenate()([charge, k_mers])
+        kmer_deep = self.d3(self.d2(self.dropout(self.d1(concat))))
 
-            return self.linear([mz, charge]) + self.out(kmer_deep)
+        return self.linear([mz, charge]) + self.out(kmer_deep)
 
 
 if __name__ == '__main__':
