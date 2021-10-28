@@ -6,7 +6,6 @@ class ProjectToInitialCCS(tf.keras.layers.Layer):
     """
     Simple linear regression model, calculates ccs value as linear mapping from mz, charge -> ccs
     """
-
     def __init__(self, slopes, intercepts):
         super(ProjectToInitialCCS, self).__init__()
         self.slopes = tf.constant([slopes])
@@ -23,7 +22,6 @@ class DeepRecurrentModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-
     def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_1=64, gru_2=128, rdo=0.0):
 
         super(DeepRecurrentModel, self).__init__()
@@ -228,5 +226,3 @@ if __name__ == '__main__':
                   optimizer=tf.keras.optimizers.Adam(1e-3), metrics=['mae'])
 
     print(model.summary())
-
-    e = ConvEncoder()
