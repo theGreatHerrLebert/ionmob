@@ -163,16 +163,16 @@ class SeqConvNet(tf.keras.models.Model):
 
 
 class KmerNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercepts, activation=None, dropout=0.3, l_1_reg=1e-2, l_2_reg=1e-3):
+    def __init__(self, slopes, intercepts, activation=None, dropout=0.3, l1_reg=1e-2, l2_reg=1e-3):
         super(KmerNet, self).__init__()
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
         self.d1 = tf.keras.layers.Dense(128, activation=activation,
-                                        kernel_regularizer=tf.keras.regularizers.l1_l2(l_1_reg, l_2_reg))
+                                        kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
         self.d2 = tf.keras.layers.Dense(64, activation=activation,
-                                        kernel_regularizer=tf.keras.regularizers.l1_l2(l_1_reg, l_2_reg))
+                                        kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
         self.d3 = tf.keras.layers.Dense(32, activation=activation,
-                                        kernel_regularizer=tf.keras.regularizers.l1_l2(l_1_reg, l_2_reg))
+                                        kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
         self.dropout = tf.keras.layers.Dropout(dropout)
         self.out = tf.keras.layers.Dense(1, activation=None)
 
