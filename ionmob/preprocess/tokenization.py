@@ -4,6 +4,7 @@ import string
 from itertools import islice, product
 from typing import Iterator, Iterable
 import functools
+import numpy as np
 
 
 def get_token_pattern_str(
