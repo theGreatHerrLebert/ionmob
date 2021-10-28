@@ -32,7 +32,7 @@ token_pattern_MaxQuant_v2 = re.compile(get_token_pattern_str(
 ))
 
 token_pattern_MaxQuant_v1 = re.compile(get_token_pattern_str(
-    modification_pattern="[A-Z][(][a-zA-Z]+ [(][A-Z][)][)]",
+    modification_pattern="[A-Z][(][a-zA-Z]+[)]",
     letters=string.ascii_uppercase
 ))
 
@@ -87,6 +87,59 @@ def merize(degree: int = 2, separator: str = "") -> Iterator[str]:
                 yield separator.join(prev_lst)
         return wrapper
     return decorator
+
+
+def create_vocab_set(counter_list):
+    """
+    create a dictionary that maps from tokens to indices
+    :param counter_list: a list of counters that counted unique tokens in a set of sequences
+    :return: a dictonary: token -> index
+    """
+    ret_set = set()
+    for counter in counter_list:
+        ret_set = ret_set.union(set(counter))
+
+    rs = sorted(list(ret_set))
+    return dict(zip(rs, range(0, len(rs))))
+
+
+def create_counter_vector(counter, index_dict):
+    """
+
+    :param counter:
+    :param index_dict:
+    :return: a vector of len(all_tokens) that counted occurences of each token in a given sequence
+    """
+    counter_vector = np.zeros(len(index_dict))
+
+    for (k, v) in counter.items():
+        counter_vector[index_dict[k]] = v
+
+    return counter_vector
+
+
+def create_indexed_vocab(token_pattern, sequences, degree=2):
+    """
+    ::
+    ::
+    """
+    tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!", last_prefix="", last_suffix="#")(tokenize)
+
+    nmer_tokenize = merize(degree)(tokenize_tag_first_and_last)
+
+    seq_counter = [Counter(nmer_tokenize(token_pattern, sequence)) for sequence in sequences]
+
+    # get an empty dictionary with all tokens in vocabulary
+    index_dict = create_vocab_set(seq_counter)
+
+    return index_dict, nmer_tokenize
+
+
+def create_nmer_counts(indexed_vocab, token_pattern, sequences, nmer_tokenize_function):
+    count_vec = np.array([create_counter_vector(counter, indexed_vocab) for counter in
+                          [Counter(nmer_tokenize_function(token_pattern, sequence)) for sequence in sequences]])
+    return count_vec
+
 
 
 if __name__ == "__main__":
