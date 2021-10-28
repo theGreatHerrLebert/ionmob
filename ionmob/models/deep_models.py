@@ -162,15 +162,18 @@ class SeqConvNet(tf.keras.models.Model):
         return self.linear([mz, charge]) + self.out(seq_deep)
 
 
-class KmerDeepNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercepts, activation=None):
-        super(KmerDeepNet, self).__init__()
+class KmerNet(tf.keras.models.Model):
+    def __init__(self, slopes, intercepts, activation=None, dropout=0.3):
+        super(KmerNet, self).__init__()
         self.linear = ProjectToInitialCCS(slopes, intercepts)
 
-        self.d1 = tf.keras.layers.Dense(128, activation=activation)
-        self.d2 = tf.keras.layers.Dense(64, activation=activation)
-        self.d3 = tf.keras.layers.Dense(32, activation=activation)
-        self.dropout = tf.keras.layers.Dropout(0.3)
+        self.d1 = tf.keras.layers.Dense(128, activation=activation,
+                                        kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
+        self.d2 = tf.keras.layers.Dense(64, activation=activation,
+                                        kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
+        self.d3 = tf.keras.layers.Dense(32, activation=activation,
+                                        kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
+        self.dropout = tf.keras.layers.Dropout(dropout)
         self.out = tf.keras.layers.Dense(1, activation=None)
 
     def call(self, inputs):
