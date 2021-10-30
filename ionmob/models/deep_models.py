@@ -187,6 +187,20 @@ class KmerNet(tf.keras.models.Model):
         return self.linear([mz, charge]) + self.out(kmer_deep)
 
 
+class SimpleKmerNet(tf.keras.models.Model):
+    def __init__(self, slopes, intercepts, dropout=0.3, l1_reg=1e-2, l2_reg=1e-3):
+        super(SimpleKmerNet, self).__init__()
+
+        self.linear = ProjectToInitialCCS(slopes, intercepts)
+
+        self.dense = tf.keras.layers.Dense(1, activation=None,
+                                        kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
+
+    def call(self, inputs):
+        mz, charge, k_mers = inputs[0], inputs[1], inputs[2]     
+        return self.linear([mz, charge]) + self.dense(k_mers)
+
+
 if __name__ == '__main__':
 
     early_stopper = tf.keras.callbacks.EarlyStopping(
