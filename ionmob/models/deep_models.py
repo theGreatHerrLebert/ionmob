@@ -239,10 +239,5 @@ if __name__ == '__main__':
     model.compile(loss=tf.keras.losses.MeanAbsoluteError(), loss_weights=[1., 0.0],
                   optimizer=tf.keras.optimizers.Adam(1e-3), metrics=['mae'])
 
-<<<<<<< HEAD
     print(model.summary())
-=======
     print(model.summary())
-
-    e = ConvEncoder()
->>>>>>> 409e62be41f2015e3f39147057dd266c47cb1d72
