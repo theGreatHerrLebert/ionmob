@@ -43,7 +43,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
                                             kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
         self.dense2 = tf.keras.layers.Dense(64, activation='relu')
 
-        self.dropout = tf.keras.layers.Dropout(0.3)
+        self.dropout = tf.keras.layers.Dropout(rdo)
 
         self.out = tf.keras.layers.Dense(1, activation=None)
 
