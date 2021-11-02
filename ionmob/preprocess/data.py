@@ -1,11 +1,11 @@
 import numpy as np
 import tensorflow as tf
-from ionmob.preprocess.helpers import sequence_to_tokens, get_helix_score, get_gravy_score
+from ionmob.preprocess.helpers import sequence_to_tokens, get_helix_score, get_gravy_score, sequence_with_charge
 
 
 def get_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray, ccs: np.ndarray,
                    tokenizer: tf.keras.preprocessing.text.Tokenizer,
-                   drop_sequence_ends: bool = False) -> tf.data.Dataset:
+                   drop_sequence_ends: bool = False, add_charge=False) -> tf.data.Dataset:
     """
     takes data and puts them into a tensorflow dataset for easy tf interop
     :param mz: arrays of mz values
@@ -20,21 +20,23 @@ def get_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray, ccs
 
         masses, charges_one_hot, seq_padded, helix_score, gravy_score, ccs = get_training_data(mz, charge, sequence,
                                                                                                ccs, tokenizer,
-                                                                                               drop_sequence_ends)
+                                                                                               drop_sequence_ends,
+                                                                                               add_charge)
         return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded,
                                                     helix_score, gravy_score), ccs))
 
     else:
         masses, charges_one_hot, seq_padded, helix_score, gravy_score = get_prediction_data(mz, charge, sequence,
                                                                                             tokenizer,
-                                                                                            drop_sequence_ends)
+                                                                                            drop_sequence_ends,
+                                                                                            add_charge)
         dummy_ccs = np.expand_dims(np.zeros(masses.shape[0]), 1)
         return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded,
                                                     helix_score, gravy_score), dummy_ccs))
 
 
 def get_prediction_data(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray,
-                        tokenizer: tf.keras.preprocessing.text.Tokenizer, drop_sequence_ends: bool):
+                        tokenizer: tf.keras.preprocessing.text.Tokenizer, drop_sequence_ends: bool, add_charge=False):
     """
     takes data for prediction and preprocesses it
     :param mz: arrays of mz values
@@ -50,8 +52,12 @@ def get_prediction_data(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray
     charges_one_hot = tf.one_hot(charge - 1, 4)
 
     seq_tokens = [sequence_to_tokens(s, drop_sequence_ends) for s in sequence]
-    seq_padded = tf.keras.preprocessing.sequence.pad_sequences(tokenizer.texts_to_sequences(seq_tokens), 50,
-                                                               padding='post')
+    if add_charge:
+        seq_w_c = sequence_with_charge(tokenizer.texts_to_sequences(seq_tokens), charge)
+        seq_padded = tf.keras.preprocessing.sequence.pad_sequences(seq_w_c, 50, padding='post')
+    else:
+        seq_padded = tf.keras.preprocessing.sequence.pad_sequences(tokenizer.texts_to_sequences(seq_tokens), 50,
+                                                                   padding='post')
 
     # calculate meta features
     gravy_score = np.expand_dims(np.array([get_gravy_score(s) for s in sequence]), 1)
@@ -61,7 +67,7 @@ def get_prediction_data(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray
     return masses, charges_one_hot, seq_padded, helix_score, gravy_score
 
 
-def get_training_data(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends):
+def get_training_data(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends, add_charge):
     """
     takes data for training and preprocesses it
     :param mz: arrays of mz values
@@ -76,7 +82,8 @@ def get_training_data(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends):
     ccs = np.expand_dims(ccs, 1)
 
     masses, charges_one_hot, seq_padded, helix_score, gravy_score = get_prediction_data(mz, charge, sequence,
-                                                                                        tokenizer, drop_sequence_ends)
+                                                                                        tokenizer, drop_sequence_ends,
+                                                                                        add_charge)
 
     # generate dataset
     return masses, charges_one_hot, seq_padded, helix_score, gravy_score, ccs

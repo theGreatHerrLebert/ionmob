@@ -9,6 +9,14 @@ import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
 
+def sequence_with_charge(seqs_tokenized, charges):
+    s_w_c = []
+    for (s, c) in list(zip(seqs_tokenized, charges)):
+        s_w_c.append(s + [str(c)])
+
+    return s_w_c
+
+
 def get_non_overlapping_pairs(ds_ref, ds_test):
     """
     reduce a dataframe to only contain seq, charge pairs not present in ref dataset
