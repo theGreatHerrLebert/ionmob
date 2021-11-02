@@ -12,7 +12,7 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 def sequence_with_charge(seqs_tokenized, charges):
     s_w_c = []
     for (s, c) in list(zip(seqs_tokenized, charges)):
-        s_w_c.append(s + [str(c)])
+        s_w_c.append([str(c)] + s)
 
     return s_w_c
 
