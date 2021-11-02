@@ -34,7 +34,6 @@ class DeepRecurrentModel(tf.keras.models.Model):
         self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_1, return_sequences=True))
         self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_2, return_sequences=False,
                                                                       recurrent_dropout=rdo))
-        self.emb = tf.keras.layers.Embedding(number_tokens + 1, 128)
         self.gru1 = tf.keras.layers.Bidirectional(
             tf.keras.layers.GRU(64, return_sequences=True))
         self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=False,
