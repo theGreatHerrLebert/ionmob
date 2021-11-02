@@ -34,10 +34,6 @@ class DeepRecurrentModel(tf.keras.models.Model):
         self.gru1 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_1, return_sequences=True))
         self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(gru_2, return_sequences=False,
                                                                       recurrent_dropout=rdo))
-        self.gru1 = tf.keras.layers.Bidirectional(
-            tf.keras.layers.GRU(64, return_sequences=True))
-        self.gru2 = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(64, return_sequences=False,
-                                                                      recurrent_dropout=0.2))
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
                                             kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
@@ -56,8 +52,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
         # sequence learning
         x_recurrent = self.gru2(self.gru1(self.emb(seq)))
         # concat to feed to dense layers
-        concat = tf.keras.layers.Concatenate()(
-            [charge, x_recurrent, helix, gravy])
+        concat = tf.keras.layers.Concatenate()([charge, x_recurrent, helix, gravy])
         # regularize
         d1 = self.dropout(self.dense1(concat))
         d2 = self.dense2(d1)
