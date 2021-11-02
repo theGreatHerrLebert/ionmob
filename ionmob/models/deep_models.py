@@ -22,7 +22,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_1=64, gru_2=128, rdo=0.0, do=0.0):
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_1=64, gru_2=64, rdo=0.0, do=0.0):
 
         super(DeepRecurrentModel, self).__init__()
         self.__seq_len = seq_len
@@ -37,7 +37,8 @@ class DeepRecurrentModel(tf.keras.models.Model):
 
         self.dense1 = tf.keras.layers.Dense(128, activation='relu',
                                             kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
-        self.dense2 = tf.keras.layers.Dense(64, activation='relu')
+        self.dense2 = tf.keras.layers.Dense(64, activation='relu',
+                                            kernel_regularizer=tf.keras.regularizers.l1_l2(1e-3, 1e-3))
 
         self.dropout = tf.keras.layers.Dropout(do)
 

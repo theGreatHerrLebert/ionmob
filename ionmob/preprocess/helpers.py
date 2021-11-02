@@ -9,6 +9,23 @@ import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
 
+def calculate_mean_diff_per_charge(data):
+
+    ret_list = []
+
+    for c in sorted(list(set(data.charge.values))):
+        tmp = data[data['charge'] == c]
+
+        ccs = tmp.ccs.values
+        ccs_pred = tmp.ccs_predicted.values
+        mean_error = np.mean(np.abs(ccs - ccs_pred))
+        ret_list.append(mean_error)
+
+    ret_list = [np.round(x, 2) for x in ret_list]
+
+    return ret_list, np.round(np.mean(np.abs(data.ccs.values - data.ccs_predicted.values)), 2)
+
+
 def sequence_with_charge(seqs_tokenized, charges):
     s_w_c = []
     for (s, c) in list(zip(seqs_tokenized, charges)):
