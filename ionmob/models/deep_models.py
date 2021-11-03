@@ -42,10 +42,11 @@ class DeepRecurrentModel(tf.keras.models.Model):
         super(DeepRecurrentModel, self).__init__()
         self.__seq_len = seq_len
 
+        # decide between inital linear or sqrt projection
         if sqrt:
-            self.linear = ProjectToInitialSqrtCCS(slopes, intercepts)
+            self.initial = ProjectToInitialSqrtCCS(slopes, intercepts)
         else:
-            self.linear = ProjectToInitialCCS(slopes, intercepts)
+            self.initial = ProjectToInitialCCS(slopes, intercepts)
 
         self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=emb_dim, input_length=seq_len)
 
@@ -76,7 +77,7 @@ class DeepRecurrentModel(tf.keras.models.Model):
         d1 = self.dropout(self.dense1(concat))
         d2 = self.dense2(d1)
         # combine simple linear hypotheses with deep part
-        return self.linear([mz, charge]) + self.out(d2), self.out(d2)
+        return self.initial([mz, charge]) + self.out(d2), self.out(d2)
 
 
 class DeepAttentionModel(tf.keras.models.Model):
