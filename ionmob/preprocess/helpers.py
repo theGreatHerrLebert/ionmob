@@ -8,8 +8,44 @@ import pandas as pd
 import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
+from scipy.optimize import curve_fit
+
+def get_sqrt_slopes_and_intercepts(data):
+    """
+
+    Args:
+        data:
+
+    Returns:
+
+    """
+    slopes, intercepts = [0.0], [0.0]
+
+    for c in range(2, 5):
+        def fit_func(x, a, b):
+            return a * np.sqrt(x) + b
+
+        tmp = data[data['charge'] == c]
+        x = tmp.mz
+        y = tmp.ccs
+
+        popt, _ = curve_fit(fit_func, x, y)
+
+        slopes.append(popt[0])
+        intercepts.append(popt[1])
+
+    return np.array(slopes, np.float32), np.array(intercepts, np.float32)
+
 
 def calculate_mean_diff_per_charge(data):
+    """
+
+    Args:
+        data:
+
+    Returns:
+
+    """
 
     ret_list = []
 
@@ -27,6 +63,15 @@ def calculate_mean_diff_per_charge(data):
 
 
 def sequence_with_charge(seqs_tokenized, charges):
+    """
+
+    Args:
+        seqs_tokenized:
+        charges:
+
+    Returns:
+
+    """
     s_w_c = []
     for (s, c) in list(zip(seqs_tokenized, charges)):
         s_w_c.append([str(c)] + s)

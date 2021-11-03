@@ -17,17 +17,35 @@ class ProjectToInitialCCS(tf.keras.layers.Layer):
         return tf.expand_dims(tf.reduce_sum((self.slopes * mz + self.intercepts) * tf.squeeze(charge), axis=1), 1)
 
 
+class ProjectToInitialSqrtCCS(tf.keras.layers.Layer):
+    """
+    Simple linear regression model, calculates ccs value as linear mapping from mz, charge -> ccs
+    """
+    def __init__(self, slopes, intercepts):
+        super(ProjectToInitialSqrtCCS, self).__init__()
+        self.slopes = tf.constant([slopes])
+        self.intercepts = tf.constant([intercepts])
+
+    def call(self, inputs):
+        mz, charge = inputs[0], inputs[1]
+        # since charge is one-hot encoded, can use it to gate linear prediction by charge state
+        return tf.expand_dims(tf.reduce_sum((self.slopes * tf.sqrt(mz) + self.intercepts) * tf.squeeze(charge), axis=1), 1)
+
+
 class DeepRecurrentModel(tf.keras.models.Model):
     """
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_1=64, gru_2=64, rdo=0.0, do=0.0):
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_1=64, gru_2=64, rdo=0.0, do=0.0, sqrt=True):
 
         super(DeepRecurrentModel, self).__init__()
         self.__seq_len = seq_len
 
-        self.linear = ProjectToInitialCCS(slopes, intercepts)
+        if sqrt:
+            self.linear = ProjectToInitialSqrtCCS(slopes, intercepts)
+        else:
+            self.linear = ProjectToInitialCCS(slopes, intercepts)
 
         self.emb = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=emb_dim, input_length=seq_len)
 
