@@ -175,10 +175,14 @@ class SeqConvNet(tf.keras.models.Model):
 
 
 class KmerNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercepts, activation=None, dropout=0.3, l1_reg=1e-2, l2_reg=1e-3):
+    def __init__(self, slopes, intercepts, activation=None, dropout=0.3, l1_reg=1e-2, l2_reg=1e-3, sqrt=True):
         super(KmerNet, self).__init__()
 
-        self.linear = ProjectToInitialCCS(slopes, intercepts)
+         # decide between inital linear or sqrt projection
+        if sqrt:
+            self.initial = ProjectToInitialSqrtCCS(slopes, intercepts)
+        else:
+            self.initial = ProjectToInitialCCS(slopes, intercepts)
 
         self.d1 = tf.keras.layers.Dense(128, activation=activation,
                                         kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
@@ -196,7 +200,7 @@ class KmerNet(tf.keras.models.Model):
         concat = tf.keras.layers.Concatenate()([charge, k_mers])
         kmer_deep = self.d3(self.d2(self.dropout(self.d1(concat))))
 
-        return self.linear([mz, charge]) + self.out(kmer_deep)
+        return self.initial([mz, charge]) + self.out(kmer_deep)
 
 
 class SimpleKmerNet(tf.keras.models.Model):
