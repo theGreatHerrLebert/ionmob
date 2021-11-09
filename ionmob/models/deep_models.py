@@ -4,7 +4,7 @@ import tensorflow as tf
 
 class ProjectToInitialCCS(tf.keras.layers.Layer):
     """
-    Simple linear regression model, calculates ccs value as linear mapping from mz, charge -> ccs
+    Simple linear regression layer, calculates ccs value as linear mapping from mz, charge -> ccs
     """
     def __init__(self, slopes, intercepts):
         super(ProjectToInitialCCS, self).__init__()
@@ -19,7 +19,7 @@ class ProjectToInitialCCS(tf.keras.layers.Layer):
 
 class ProjectToInitialSqrtCCS(tf.keras.layers.Layer):
     """
-    Simple linear regression model, calculates ccs value as linear mapping from mz, charge -> ccs
+    Simple sqrt regression layer, calculates ccs value as linear mapping from mz, charge -> ccs
     """
     def __init__(self, slopes, intercepts):
         super(ProjectToInitialSqrtCCS, self).__init__()
@@ -30,6 +30,19 @@ class ProjectToInitialSqrtCCS(tf.keras.layers.Layer):
         mz, charge = inputs[0], inputs[1]
         # since charge is one-hot encoded, can use it to gate linear prediction by charge state
         return tf.expand_dims(tf.reduce_sum((self.slopes * tf.sqrt(mz) + self.intercepts) * tf.squeeze(charge), axis=1), 1)
+    
+
+class SqrtModel(tf.keras.models.Model):
+    """
+    expands sqrt layer into a callable model
+    """
+    def __init__(self, slopes, intercepts):
+        super(SqrtModel, self).__init__()
+        self.sqrt_layer = ProjectToInitialSqrtCCS(slopes, intercepts)
+    
+    def call(self, inputs):
+        mz, charge = inputs[0], inputs[1]
+        return self.sqrt_layer((mz, charge))
 
 
 class DeepRecurrentModel(tf.keras.models.Model):
