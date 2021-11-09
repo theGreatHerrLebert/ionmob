@@ -27,11 +27,8 @@ def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
 
         tripples = list(filter(lambda x: x[1] == c, list(zip(mz, charge, ccs))))
         mz, charge, ccs = [x[0] for x in tripples], [x[1] for x in tripples], [x[2] for x in tripples]
-        
-        x = mz
-        y = ccs
 
-        popt, _ = curve_fit(fit_func, x, y)
+        popt, _ = curve_fit(fit_func, np.array(mz), np.array(ccs))
 
         slopes.append(popt[0])
         intercepts.append(popt[1])
