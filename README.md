@@ -4,10 +4,10 @@ Prediction Framework for Peptide Ion-Mobilities
 ```ionmob``` is a python package for predicting collisional cross section - **CCS** - values of peptides.
 It not only comes with several pretrained regression models for this task but also introduces a full pipeline to link data preprocessing, model training and ccs value inference.
 
-# What is a peptide CCS value?
+### What is a peptide CCS value?
 A scalar value that describes 
 
-# Why would I want to predict CCS values of peptides in silico?
+### Why would I want to predict CCS values of peptides in silico?
 Recently, there has been renewed interest in possibilities that open up to 
 
 ### I am NOT a machine learning expert, can I still use ```ionmob```?
