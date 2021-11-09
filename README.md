@@ -3,7 +3,7 @@ A Prediction Framework for Peptide Ion-Mobilities
 
 ```ionmob``` is a python package for predicting **CCS** values of peptides.
 Not only does it contain several pre-trained regression models for this task, but it also introduces a full pipeline to link data preprocessing, model training and CCS value inference.
-Models are implemented with the newest versions of either TensorFlow or scikit-learn. 
+Models are implemented with the newest versions of either [TensorFlow](https://www.tensorflow.org/) or [scikit-learn](https://scikit-learn.org/stable/). 
 Please feel free to use, alter or extend ```ionmob``` in any way that suits you as it free and open source under the **GNU General Public License v3.0**.
 
 ### What is a peptide CCS value?
