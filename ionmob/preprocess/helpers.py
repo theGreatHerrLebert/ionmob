@@ -10,7 +10,7 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
 from scipy.optimize import curve_fit
 
-def get_sqrt_slopes_and_intercepts(data):
+def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
     """
 
     Args:
@@ -25,9 +25,11 @@ def get_sqrt_slopes_and_intercepts(data):
         def fit_func(x, a, b):
             return a * np.sqrt(x) + b
 
-        tmp = data[data['charge'] == c]
-        x = tmp.mz
-        y = tmp.ccs
+        tripples = list(filter(lambda x: x[1] == c, list(zip(data.mz.values, data.charge.values, data.ccs.values))))
+        mz, charge, ccs = [x[0] for x in tripples], [x[1] for x in tripples], [x[2] for x in tripples]
+        
+        x = mz
+        y = ccs
 
         popt, _ = curve_fit(fit_func, x, y)
 
