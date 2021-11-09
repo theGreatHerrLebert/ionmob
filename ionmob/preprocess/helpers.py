@@ -25,7 +25,7 @@ def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
         def fit_func(x, a, b):
             return a * np.sqrt(x) + b
 
-        tripples = list(filter(lambda x: x[1] == c, list(zip(mz.values, charge.values, ccs.values))))
+        tripples = list(filter(lambda x: x[1] == c, list(zip(mz, charge, ccs))))
         mz, charge, ccs = [x[0] for x in tripples], [x[1] for x in tripples], [x[2] for x in tripples]
         
         x = mz
