@@ -2,12 +2,14 @@
 A Prediction Framework for Peptide Ion-Mobilities
 
 ```ionmob``` is a python package for predicting **CCS** values of peptides.
-It not only comes with several pretrained regression models for this task but also introduces a full pipeline to link data preprocessing, model training and ccs value inference.
+Not only does it contain several pre-trained regression models for this task, but it also introduces a full pipeline to link data preprocessing, model training and CCS value inference.
+Models are implemented with the newest versions of either TensorFlow or scikit-learn. 
+Please feel free to use ```ionmob``` in any way that pleases you as it free and open source under the GPL-3 license.
 
 ### What is a peptide CCS value?
 The rotationally-averaged collision cross-section - **CCS** - is a scalar value that describes a physical property of a specific peptide, namely its ion mobility. 
-The ion mobility is ued as an additional dimension of separation in high-throughput mass spectrometry. 
-It complements retention time and mass-to-charge ratio measurements, ultimately yielding increased peptide identification capability.
+The ion mobility is used as an additional separating dimension in high throughput mass spectrometry.
+It supplements the measurements of the retention time and the mass-to-charge ratio and ultimately leads to improved peptide identification.
 
 ### Why would I want to predict CCS values of peptides in silico?
 The CCS of a peptide is a relatively coarse descriptor of its 3D structure. 
