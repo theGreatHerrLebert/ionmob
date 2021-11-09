@@ -1,7 +1,50 @@
 import numpy as np
 import tensorflow as tf
 from ionmob.preprocess.helpers import sequence_to_tokens, get_helix_score, get_gravy_score, sequence_with_charge
+from ionmob.preprocess.tokenization import token_pattern_MaxQuant_v1, create_nmer_counts
 
+
+def twomer_model_dataset(vocab, tok_func, mz, charge, sequence, ccs=None, pattern=token_pattern_MaxQuant_v1):
+    """
+    :param vocab: a dictionary enumerating all possible tokens: index -> token
+    :param tok_func: a function that turns a sequence into a token count
+    :param mz: array of mz values
+    :param charge: array of charge state values
+    :param sequence: array of sequences as strings
+    :param ccs: if not none, returned dataset will also contain target ccs values
+    :param pattern: a modification pattern to also identify PTMs
+    :return: a tensorflow dataset containing ((mz, charge_one_hot, token_count_vector), ccs?) 
+    """
+    
+    counts = create_nmer_counts(vocab, pattern, sequence, tok_func)
+    c_oh = tf.one_hot(charge - 1, 4)
+    m = np.array(np.expand_dims(mz, 1), dtype=np.float32)
+    
+    if ccs is not None:
+        return tf.data.Dataset.from_tensor_slices(((m, c_oh, counts), ccs))
+
+    ccs = np.zeros(m.shape[0])
+    return tf.data.Dataset.from_tensor_slices(((m, c_oh, counts), ccs))
+
+
+def sqrt_model_dataset(mz, charge, ccs=None):
+    """
+    :param mz: array of mz values
+    :param charge: array of charges
+    :param ccs: if not none, will also add ccs values to dataset
+    :param bs: batch size of returned tensorflow dataset
+    :return: a tensorflow dataset ready to be predicted with a SqrtModel
+    """
+    
+    c_oh = tf.one_hot(charge - 1, 4)
+    m = np.array(np.expand_dims(mz, 1), dtype=np.float32)
+    
+    if ccs is not None:
+        return tf.data.Dataset.from_tensor_slices(((m, c_oh), ccs))
+
+    ccs = np.zeros(m.shape[0])
+    return tf.data.Dataset.from_tensor_slices(((m, c_oh), ccs))
+  
 
 def get_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray, ccs: np.ndarray,
                    tokenizer: tf.keras.preprocessing.text.Tokenizer,
