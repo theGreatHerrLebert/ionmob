@@ -12,12 +12,9 @@ from scipy.optimize import curve_fit
 
 def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
     """
-
     Args:
         data:
-
     Returns:
-
     """
     slopes, intercepts = [0.0], [0.0]
 
@@ -25,10 +22,12 @@ def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
         def fit_func(x, a, b):
             return a * np.sqrt(x) + b
 
-        tripples = list(filter(lambda x: x[1] == c, list(zip(mz, charge, ccs))))
-        mz, charge, ccs = [x[0] for x in tripples], [x[1] for x in tripples], [x[2] for x in tripples]
+        tripples = list(filter(lambda x: x[1] == c, zip(mz, charge, ccs)))
+        
+        mz_tmp, charge_tmp = np.array([x[0] for x in tripples]), np.array([x[1] for x in tripples])
+        ccs_tmp = np.array([x[2] for x in tripples])
 
-        popt, _ = curve_fit(fit_func, np.array(mz), np.array(ccs))
+        popt, _ = curve_fit(fit_func, mz_tmp, ccs_tmp)
 
         slopes.append(popt[0])
         intercepts.append(popt[1])
