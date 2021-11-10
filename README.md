@@ -11,7 +11,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 The rotationally-averaged collision cross-section - **CCS** - is a scalar value that describes a physical property of an ion with respect to a charge neutral gas. 
 It can be directly linked to its ion mobility. 
 The ion mobility is used as an additional separating dimension in high throughput mass spectrometry.
-It supplements the measurements of the retention time and the mass-to-charge ratio and ultimately leads to improved peptide identification.
+It supplements the measurements of retention times and mass-to-charge ratios and ultimately leads to improved peptide identification.
 
 ### Why do we measure CCS values of ions?
 The CCS value of an ion is a coarse descriptor of its 3D structure. 
