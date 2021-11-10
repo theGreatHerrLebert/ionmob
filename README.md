@@ -63,5 +63,5 @@ plt.legend()
 plt.show()
 ```
 <p align="center">
-  <img src="docs/images/sqrt_model.png" width="700" title="hover text">
+  <img src="docs/images/sqrt_model.png" width="800" title="prediction vs ground truth">
 </p>
