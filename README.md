@@ -1,5 +1,5 @@
 # ionmob
-### A Framework for Modelling of Peptide Collision Cross-Section with Traditional and Deep Machine Learning Methods
+### A Framework for Predicting Collision Cross Section Values of Peptide-Ions with Traditional and Deep Machine Learning Methods
 
 ```ionmob``` is a python package for predicting **CCS** values of peptides.
 Not only does it contain several pre-trained regression models for this task, but it also introduces a full pipeline to link data preprocessing, model training and CCS value inference.
