@@ -64,7 +64,7 @@ plt.show()
 ```
 
 <p align="center">
-  <img src="docs/images/sqrt_model.png" width="800" title="prediction vs ground truth">
+  <img src="docs/images/sqrt_model.png" width="700" title="prediction vs ground truth">
 </p>
 
 ```python
