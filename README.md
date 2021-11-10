@@ -38,8 +38,11 @@ We made sure that our framework provides a modular set of tools for more experie
 
 ### A simple example of inference
 ```python
-def foo():
-    if not bar:
-        return True
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+
+from matplotlib import pyplot as plt
+from ionmob.preprocess.data import sqrt_model_dataset
 ```
 
