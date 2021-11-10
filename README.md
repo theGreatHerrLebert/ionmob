@@ -44,5 +44,22 @@ import tensorflow as tf
 
 from matplotlib import pyplot as plt
 from ionmob.preprocess.data import sqrt_model_dataset
+
+# read data and a predictor
+data = pd.read_hdf('test_data.h5')
+sqrtModel = tf.keras.models.load_model('pretrained-models/SqrtModel')
+
+# create a dataset for prediction and append predicted ccs values to it
+tensorflow_ds = sqrt_model_dataset(data.mz, data.charge, data.ccs).batch(1024)
+ccs_predicted = sqrtModel.predict(tensorflow_ds)
+data['ccs_predicted'] = ccs_predicted
+
+# plot ground truth vs prediction 
+color_dict = {2:'blue', 3:'orange', 4:'lightgreen'}
+plt.figure(figsize=(8, 4), dpi=120)
+plt.scatter(data.mz, data.ccs, s=10, alpha=.5, label='ground truth')
+plt.scatter(data.mz, data.ccs_predicted, s=10, alpha=.5, c='red', label='prediction')
+plt.legend()
+plt.show()
 ```
 
