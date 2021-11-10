@@ -63,3 +63,4 @@ plt.legend()
 plt.show()
 ```
 
+![plot](./docs/images/sqrt_model.png)
