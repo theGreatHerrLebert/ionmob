@@ -62,5 +62,8 @@ plt.scatter(data.mz, data.ccs_predicted, s=10, alpha=.5, c='red', label='predict
 plt.legend()
 plt.show()
 ```
+<p align="center">
+  <img src="docs/images/sqrt_model.png" width="350" title="hover text">
+</p>
 
 ![plot]('./docs/images/sqrt_model.png')
