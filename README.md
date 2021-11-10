@@ -63,4 +63,14 @@ plt.legend()
 plt.show()
 ```
 
-![plot](./docs/images/sqrt_model.png)
+<p align="center">
+  <img src="docs/images/sqrt_model.png" width="800" title="prediction vs ground truth">
+</p>
+
+```python
+sqrtModel.evaluate(tensorflow_ds)
+```
+
+4/4 [==============================] - 0s 3ms/step - loss: 2.8155 - mae: 15.1297
+
+[2.815500259399414, 15.129722595214844]
