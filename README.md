@@ -37,7 +37,7 @@ All you need is a little bit of python scripting experience.
 We made sure that our framework provides a modular set of tools for more experienced coders that want to implement their own models, training strategies or data preprocessing pipelines.
 
 ### A simple example of inference
-```
+```python
 def foo():
     if not bar:
         return True
