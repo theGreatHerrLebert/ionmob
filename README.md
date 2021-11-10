@@ -70,8 +70,6 @@ plt.show()
 ```python
 sqrtModel.evaluate(tensorflow_ds)
 ```
-
-This produces the following:
 4/4 [==============================] - 0s 3ms/step - loss: 2.8155 - mae: 15.1297
 
 [2.815500259399414, 15.129722595214844]
