@@ -48,11 +48,6 @@ We will demonstrate how to do this with some of our provided example datasets:
 
 ```python
 import pandas as pd
-import numpy as np
-import tensorflow as tf
-
-from matplotlib import pyplot as plt
-from ionmob.preprocess.data import sqrt_model_dataset
 
 # read data and a predictor
 data = pd.read_hdf('Tenzer.h5')
@@ -61,7 +56,7 @@ data.head()
 
 This is what the data looks like:
 
-|       mz |   charge | sequence                                      |     ccs | origin     |
+|       mz |   charge | sequence                                      |   ccs   | origin     |
 |---------:|---------:|:----------------------------------------------|--------:|:-----------|
 |  801.89  |        2 | \_AAAAAAAAGGAGDSGDAVTK\_                      | 433.825 | Tenzer-lab |
 | 1482.86  |        3 | \_AAAAAPASEDEDDEDDEDDEDDDDDEEDDSEEEAMETTPAK\_ | 701.41  | Tenzer-lab |
@@ -69,31 +64,31 @@ This is what the data looks like:
 |  471.28  |        2 | \_AAAAVVAAAAR\_                               | 348.332 | Tenzer-lab |
 |  516.27  |        3 | \_AAADALSDLEIKDSK\_                           | 467.791 | Tenzer-lab |
 
+Lets compare accuracy for two predictors.
+One that only does a zero-information square-root fit on ion mz values and a deep model that also uses information on peptide sequences. 
+The latter also needs a so called tokenizer: a tool that translates sequence symbols into a numerical representation. 
+It is specific for a pretrained model and therefore needs also to be loaded as well:
 
 ```python
-import pandas as pd
 import numpy as np
 import tensorflow as tf
-
 from matplotlib import pyplot as plt
 from ionmob.preprocess.data import sqrt_model_dataset
 
-# read data and a predictor
-data = pd.read_hdf('test_data.h5')
+# read the pretrained predictors
 sqrtModel = tf.keras.models.load_model('pretrained-models/SqrtModel')
+gruModel = tf.keras.models.load_model('pretrained-models/GRUPredictor/')
+tokenizer = tokenizer_from_json('pretrained-models/tokenizer.json')
 
-# create a dataset for prediction and append predicted ccs values to it
-tensorflow_ds = sqrt_model_dataset(data.mz, data.charge, data.ccs).batch(1024)
-ccs_predicted = sqrtModel.predict(tensorflow_ds)
+# create a tensorflow dataset for prediction and append predicted ccs values to it
+tensorflow_ds_sqrt = sqrt_model_dataset(data.mz, data.charge, data.ccs).batch(1024)
+ccs_predicted_sqrt = sqrtModel.predict(tensorflow_ds_sqrt)
 data['ccs_predicted'] = ccs_predicted
 
-# plot ground truth vs prediction 
-color_dict = {2:'blue', 3:'orange', 4:'lightgreen'}
-plt.figure(figsize=(8, 4), dpi=120)
-plt.scatter(data.mz, data.ccs, s=10, alpha=.5, label='ground truth')
-plt.scatter(data.mz, data.ccs_predicted, s=10, alpha=.5, c='red', label='prediction')
-plt.legend()
-plt.show()
+tensorflow_ds_deep = get_tf_dataset(data.mz, data.charge, data.sequence, data.ccs, tokenizer, 
+                                    drop_sequence_ends=False, add_charge=True).batch(1024)
+ccs_predicted_deep, _ = deepModel.predict(tensorflow_ds_deep)
+data['ccs_predicted_deep'] = ccs_predicted_deep
 ```
 
 <p align="center">
