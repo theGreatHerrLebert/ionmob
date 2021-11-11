@@ -23,6 +23,8 @@ setup(
     install_requires=[
         "tensorflow >=2.4",
         "pandas >=1.1",
-        "scipy >=1.5"
+        "scipy >=1.5",
+        "sklearn >=1.0.0",
+        "h5py >=3.0.0"
     ],
 )
