@@ -112,7 +112,8 @@ print(f"sqrt mean absolute error        : {mean_abs_error(data.ccs, data.ccs_pre
 print(f"gru  mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_gru)}")
 ```
 
-This then produces: 
+This then gives us CCS accuracies of: 
+
 ```python
 sqrt mean absolute percent error: 2.58
 gru  mean absolute percent error: 1.84
@@ -120,6 +121,38 @@ gru  mean absolute percent error: 1.84
 sqrt mean absolute error        : 12.69
 gru  mean absolute error        : 9.04
 ```
+
+Lets visualize the predictions compared to the ccs measurements:
+
+```python
+from matplotlib import pyplot as plt
+
+# visualize the charge states in different colors
+color_dict = {2:'red', 3:'orange', 4:'lightgreen'}
+
+# create the plot
+fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 4), dpi=200, sharey=True, sharex=True)
+
+ax1.set_title('sqrt fit prediction')
+ax1.set_ylabel('CCS')
+ax1.set_xlabel('MZ')
+ax2.set_xlabel('MZ')
+ax2.set_title('deep prediction')
+
+ax1.scatter(data.mz, data.ccs, s=10, alpha=.5, label='ground truth')
+ax1.scatter(data.mz, data.ccs_predicted_sqrt, s=10, alpha=.5, c=[color_dict[x] for x in data.charge], 
+            label='prediction')
+ax2.scatter(data.mz, data.ccs, s=10, alpha=.5, label='ground truth')
+ax2.scatter(data.mz, data.ccs_predicted_gru, s=10, alpha=.2, c=[color_dict[x] for x in data.charge], 
+            label='prediction')
+
+ax1.legend()
+ax2.legend()
+plt.show()
+```
+
+This will result in the following plot:
+
 <p align="center">
   <img src="docs/images/sqrt_model.png" width="700" title="prediction vs ground truth">
 </p>
