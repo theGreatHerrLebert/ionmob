@@ -197,7 +197,7 @@ def tokenizer_from_json(path: str):
     return tf.keras.preprocessing.text.tokenizer_from_json(data)
 
 
-def get_gravy_score(seq: str, drop_ends: bool=True, normalize=True):
+def get_gravy_score(seq: str, drop_ends: bool = True, normalize: bool = True):
     """
     calculate normalized gravy scores for a given sequence
     :param seq: peptide sequence
