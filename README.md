@@ -44,7 +44,7 @@ This will ultimately help to push prediction accuracy to a point where it provid
 Let us assume that you want to have a look at prediction performance for two different ionmob predictors on data of peptide identifications that came from some source. 
 For ionmob models, you should at least have the following information per peptide: **mz, charge, sequence, ccs**. 
 CCS values are optional in the general case but are required if you want to compare CCS predictions to CCS measurements.
-We will demonstrate how to do this with some of our provided example datasets:
+We will demonstrate how to do this with one of our provided example datasets:
 
 ```python
 import pandas as pd
