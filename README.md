@@ -84,13 +84,13 @@ tokenizer = tokenizer_from_json('pretrained-models/tokenizer.json')
 # create dataset for sqrt prediction and predict
 tensorflow_ds_sqrt = sqrt_model_dataset(data.mz, data.charge, data.ccs).batch(1024)
 ccs_predicted_sqrt = sqrtModel.predict(tensorflow_ds_sqrt)
-data['ccs_predicted'] = ccs_predicted
+data['ccs_predicted_s'] = ccs_predicted_sqrt
 
 # create dataset for deep prediction and predict
 tensorflow_ds_deep = get_tf_dataset(data.mz, data.charge, data.sequence, data.ccs, tokenizer, 
                                     drop_sequence_ends=False, add_charge=True).batch(1024)
 ccs_predicted_gru, _ = gruModel.predict(tensorflow_ds_deep)
-data['ccs_predicted_gru'] = ccs_predicted_gru
+data['ccs_predicted_g'] = ccs_predicted_gru
 ```
 
 Let's compare prediction accuracies and plot how the two different predictors map their inputs to ccs values:
@@ -105,11 +105,11 @@ def mean_perc_error(ccs, ccs_pred):
     return np.round(np.mean([np.abs((x[0] - x[1]) / x[0]) * 100 for x in np.c_[ccs, ccs_pred]]), 2)
 
 # show results
-print(f"sqrt mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_predicted_sqrt)}")
-print(f"gru  mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_predicted_gru)}")
+print(f"sqrt mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_predicted_s)}")
+print(f"gru  mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_predicted_g)}")
 print("")
-print(f"sqrt mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_sqrt)}")
-print(f"gru  mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_gru)}")
+print(f"sqrt mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_s)}")
+print(f"gru  mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_g)}")
 ```
 
 This then gives us CCS accuracies of: 
@@ -140,10 +140,10 @@ ax2.set_xlabel('MZ')
 ax2.set_title('deep prediction')
 
 ax1.scatter(data.mz, data.ccs, s=10, alpha=.5, label='ground truth')
-ax1.scatter(data.mz, data.ccs_predicted_sqrt, s=10, alpha=.5, c=[color_dict[x] for x in data.charge], 
+ax1.scatter(data.mz, data.ccs_predicted_s, s=10, alpha=.5, c=[color_dict[x] for x in data.charge], 
             label='prediction')
 ax2.scatter(data.mz, data.ccs, s=10, alpha=.5, label='ground truth')
-ax2.scatter(data.mz, data.ccs_predicted_gru, s=10, alpha=.2, c=[color_dict[x] for x in data.charge], 
+ax2.scatter(data.mz, data.ccs_predicted_g, s=10, alpha=.2, c=[color_dict[x] for x in data.charge], 
             label='prediction')
 
 ax1.legend()
