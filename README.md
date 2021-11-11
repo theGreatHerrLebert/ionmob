@@ -156,7 +156,7 @@ This code will result in the following plot:
   <img src="docs/images/sqrt_model.png" width="900" title="prediction vs ground truth">
 </p>
 
-### Getting some insight into driving factors of ion-mobility
+### Getting insight into driving factors of ion-mobility
 Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility. 
 By using an in silico digest of the human proteome, we will now visit some of them, namely the gravy score, heliccality of peptides. we will also have a look at position of histidines.
 
