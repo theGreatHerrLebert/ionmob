@@ -66,7 +66,7 @@ This is what the data looks like:
 
 Lets compare accuracy for two predictors.
 One that only does a zero-information square-root fit on ion mz values and a deep model that also uses information on peptide sequences. 
-The latter also needs a so called tokenizer: a tool that translates sequence symbols into a numerical representation. 
+The latter also needs a so called [tokenizer](https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/text/Tokenizer): a tool that translates sequence symbols into a numerical representation. 
 It is specific for a pretrained model and therefore needs also to be loaded as well:
 
 ```python
