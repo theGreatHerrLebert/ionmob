@@ -92,7 +92,7 @@ ccs_predicted_gru, _ = gruModel.predict(tensorflow_ds_deep)
 data['ccs_predicted_g'] = ccs_predicted_gru
 ```
 
-Let's compare prediction accuracies and plot how the two different predictors map their inputs to ccs values:
+Let's compare prediction accuracies:
 ```python
 import numpy as np
 
@@ -121,7 +121,7 @@ sqrt mean absolute error        : 12.69
 gru  mean absolute error        : 9.04
 ```
 
-Lets visualize the predictions compared to the ccs measurements:
+Finally, let's visualize the predictions compared to the ccs measurements:
 
 ```python
 from matplotlib import pyplot as plt
