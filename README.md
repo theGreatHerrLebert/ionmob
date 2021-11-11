@@ -157,8 +157,8 @@ This code will result in the following plot:
 </p>
 
 ### Getting some insight into driving factors of ion-mobility
-Some recent papers that worked on ion-mobility prediction like Meier et al[^fn1] and Chang et al[^fn2] identified factors that drive differences in ion mobility. 
-By using an in silico digest of the human proteome, we will now visit some of them, namely the gravy score, heliccality and position of histidines of peptides.
+Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility. 
+By using an in silico digest of the human proteome, we will now visit some of them, namely the gravy score, heliccality of peptides. we will also have a look at position of histidines.
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
