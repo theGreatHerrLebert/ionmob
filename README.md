@@ -110,10 +110,16 @@ print(f"gru  mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_pr
 print("")
 print(f"sqrt mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_sqrt)}")
 print(f"gru  mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_gru)}")
-
 ```
 
+This then produces: 
+```python
+sqrt mean absolute percent error: 2.58
+gru  mean absolute percent error: 1.84
 
+sqrt mean absolute error        : 12.69
+gru  mean absolute error        : 9.04
+```
 <p align="center">
   <img src="docs/images/sqrt_model.png" width="700" title="prediction vs ground truth">
 </p>
