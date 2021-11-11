@@ -151,7 +151,7 @@ ax2.legend()
 plt.show()
 ```
 
-This will result in the following plot:
+This colde will result in the following plot:
 
 <p align="center">
   <img src="docs/images/sqrt_model.png" width="700" title="prediction vs ground truth">
