@@ -44,14 +44,25 @@ This will ultimately help to push prediction accuracy to a point where it provid
 Let us assume that you want to have a look at a predictors performance on your own data of peptide identifications that came from some source. 
 For ionmob models, you should at least have the following information per peptide: [mz, charge, sequence (CCS)]. 
 CCS values are optional but are obviously required if you want to compare CCS predictions to CCS measurements.
-A table ready to be used could look like this:
+We will demonstrate how to do this with some of our provided example datasets:
+
 ```python
+import pandas as pd
+import numpy as np
+import tensorflow as tf
 
+from matplotlib import pyplot as plt
+from ionmob.preprocess.data import sqrt_model_dataset
+
+# read data and a predictor
+data = pd.read_hdf('Tenzer.h5')
+data.head()
 ```
-This is what the table looks like:
 
-|       mz |   charge | sequence                                    |     ccs | origin     |
-|---------:|---------:|:--------------------------------------------|--------:|:-----------|
+This is what the data looks like:
+
+|       mz |   charge | sequence                                      |     ccs | origin     |
+|---------:|---------:|:----------------------------------------------|--------:|:-----------|
 |  801.89  |        2 | \_AAAAAAAAGGAGDSGDAVTK\_                      | 433.825 | Tenzer-lab |
 | 1482.86  |        3 | \_AAAAAPASEDEDDEDDEDDEDDDDDEEDDSEEEAMETTPAK\_ | 701.41  | Tenzer-lab |
 |  410.205 |        2 | \_AAAACLDK\_                                  | 296.58  | Tenzer-lab |
