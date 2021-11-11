@@ -32,9 +32,13 @@ Definetly yes!
 We implemented and pretrained models of different complexity that allow for in silico prediction of CCS values for peptide ions of different charge states out-of-the-box. 
 They are easily integratable into your existing proteomics workflows.
 All you need is a little bit of python scripting experience.
+A short introduction can be found down below, or you could have a look at our collection of example notebooks!
 
 ### I AM a machine learning expert/experienced coder, what is in it for me?
-We made sure that our framework provides a modular set of tools for more experienced coders that want to implement their own models, training strategies or data preprocessing pipelines.
+We made sure that our framework provides a modular set of tools for more experienced coders that want to implement their own models, training strategies or data preprocessing pipelines. 
+Have a look at our example notebooks for advanced workflow implementation. 
+Feel also free to contribute any optimizations, models or ideas that you come up with.
+This will ultimately help to push prediction accuracy to a point where it provides a huge benefit for rescoring of peptide identifications!
 
 ### A simple example of inference
 ```python
