@@ -83,8 +83,7 @@ tokenizer = tokenizer_from_json('pretrained-models/tokenizer.json')
 
 # create dataset for sqrt prediction and predict
 tensorflow_ds_sqrt = sqrt_model_dataset(data.mz, data.charge, data.ccs).batch(1024)
-ccs_predicted_sqrt = sqrtModel.predict(tensorflow_ds_sqrt)
-data['ccs_predicted_s'] = ccs_predicted_sqrt
+data['ccs_predicted_s'] = sqrtModel.predict(tensorflow_ds_sqrt)
 
 # create dataset for deep prediction and predict
 tensorflow_ds_deep = get_tf_dataset(data.mz, data.charge, data.sequence, data.ccs, tokenizer, 
@@ -106,10 +105,10 @@ def mean_perc_error(ccs, ccs_pred):
 
 # show results
 print(f"sqrt mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_predicted_s)}")
-print(f"gru  mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_predicted_g)}")
+print(f"gru mean absolute percent error : {mean_perc_error(data.ccs, data.ccs_predicted_g)}")
 print("")
 print(f"sqrt mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_s)}")
-print(f"gru  mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_g)}")
+print(f"gru mean absolute error         : {mean_abs_error(data.ccs, data.ccs_predicted_g)}")
 ```
 
 This then gives us CCS accuracies of: 
