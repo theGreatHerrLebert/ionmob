@@ -159,3 +159,6 @@ This code will result in the following plot:
 ### Getting some insight into driving factors of ion-mobility
 Some recent papers that worked on ion-mobility prediction like Meier et al[^fn1] and Chang et al[^fn2] identified factors that drive differences in ion mobility. 
 By using an in silico digest of the human proteome, we will now visit some of them, namely the gravy score, heliccality and position of histidines of peptides.
+
+[^fn1]: And the footnote!
+[^fn2]: And the footnote!
