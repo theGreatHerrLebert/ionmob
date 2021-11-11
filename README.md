@@ -70,7 +70,6 @@ The latter also needs a so called tokenizer: a tool that translates sequence sym
 It is specific for a pretrained model and therefore needs also to be loaded as well:
 
 ```python
-import numpy as np
 import tensorflow as tf
 from matplotlib import pyplot as plt
 from ionmob.preprocess.data import sqrt_model_dataset
@@ -78,26 +77,43 @@ from ionmob.preprocess.data import sqrt_model_dataset
 # read the pretrained predictors
 sqrtModel = tf.keras.models.load_model('pretrained-models/SqrtModel')
 gruModel = tf.keras.models.load_model('pretrained-models/GRUPredictor/')
+
+# read tokenizer for deep model
 tokenizer = tokenizer_from_json('pretrained-models/tokenizer.json')
 
-# create a tensorflow dataset for prediction and append predicted ccs values to it
+# create dataset for sqrt prediction and predict
 tensorflow_ds_sqrt = sqrt_model_dataset(data.mz, data.charge, data.ccs).batch(1024)
 ccs_predicted_sqrt = sqrtModel.predict(tensorflow_ds_sqrt)
 data['ccs_predicted'] = ccs_predicted
 
+# create dataset for deep prediction and predict
 tensorflow_ds_deep = get_tf_dataset(data.mz, data.charge, data.sequence, data.ccs, tokenizer, 
                                     drop_sequence_ends=False, add_charge=True).batch(1024)
-ccs_predicted_deep, _ = deepModel.predict(tensorflow_ds_deep)
-data['ccs_predicted_deep'] = ccs_predicted_deep
+ccs_predicted_gru, _ = gruModel.predict(tensorflow_ds_deep)
+data['ccs_predicted_gru'] = ccs_predicted_gru
 ```
+
+Let's compare prediction accuracies and plot how the two different predictors map their inputs to ccs values:
+```python
+import numpy as np
+
+# define error functions
+def mean_abs_error(ccs, ccs_pred):
+    return np.round(np.mean([np.abs(x[0] - x[1]) for x in np.c_[ccs, ccs_pred]]), 2)
+
+def mean_perc_error(ccs, ccs_pred):
+    return np.round(np.mean([np.abs((x[0] - x[1]) / x[0]) * 100 for x in np.c_[ccs, ccs_pred]]), 2)
+
+# show results
+print(f"sqrt mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_predicted_sqrt)}")
+print(f"gru  mean absolute percent error: {mean_perc_error(data.ccs, data.ccs_predicted_gru)}")
+print("")
+print(f"sqrt mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_sqrt)}")
+print(f"gru  mean absolute error        : {mean_abs_error(data.ccs, data.ccs_predicted_gru)}")
+
+```
+
 
 <p align="center">
   <img src="docs/images/sqrt_model.png" width="700" title="prediction vs ground truth">
 </p>
-
-```python
-sqrtModel.evaluate(tensorflow_ds)
-```
-4/4 [==============================] - 0s 3ms/step - loss: 2.8155 - mae: 15.1297
-
-[2.815500259399414, 15.129722595214844]
