@@ -41,6 +41,24 @@ Feel also free to contribute any optimizations, models or ideas that you come up
 This will ultimately help to push prediction accuracy to a point where it provides a huge benefit for rescoring of peptide identifications!
 
 ### A simple example of inference
+Let us assume that you want to have a look at a predictors performance on your own data of peptide identifications that came from some source. 
+For ionmob models, you should at least have the following information per peptide: [mz, charge, sequence (CCS)]. 
+CCS values are optional but are obviously required if you want to compare CCS predictions to CCS measurements.
+A table ready to be used could look like this:
+```python
+
+```
+This is what the table looks like:
+
+|       mz |   charge | sequence                                    |     ccs | origin     |
+|---------:|---------:|:--------------------------------------------|--------:|:-----------|
+|  801.89  |        2 | _AAAAAAAAGGAGDSGDAVTK_                      | 433.825 | Tenzer-lab |
+| 1482.86  |        3 | _AAAAAPASEDEDDEDDEDDEDDDDDEEDDSEEEAMETTPAK_ | 701.41  | Tenzer-lab |
+|  410.205 |        2 | _AAAACLDK_                                  | 296.58  | Tenzer-lab |
+|  471.28  |        2 | _AAAAVVAAAAR_                               | 348.332 | Tenzer-lab |
+|  516.27  |        3 | _AAADALSDLEIKDSK_                           | 467.791 | Tenzer-lab |
+
+
 ```python
 import pandas as pd
 import numpy as np
