@@ -42,7 +42,7 @@ This will ultimately help to push prediction accuracy to a point where it provid
 
 ### A simple example of inference
 Let us assume that you want to have a look at a predictors performance on your own data of peptide identifications that came from some source. 
-For ionmob models, you should at least have the following information per peptide: [mz, charge, sequence (CCS)]. 
+For ionmob models, you should at least have the following information per peptide: **mz, charge, sequence (CCS)**. 
 CCS values are optional but are obviously required if you want to compare CCS predictions to CCS measurements.
 We will demonstrate how to do this with some of our provided example datasets:
 
