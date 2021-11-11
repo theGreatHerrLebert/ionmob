@@ -130,7 +130,7 @@ from matplotlib import pyplot as plt
 color_dict = {2:'red', 3:'orange', 4:'lightgreen'}
 
 # create the plot
-fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 4), dpi=200, sharey=True, sharex=True)
+fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12,4), dpi=200, sharey=True, sharex=True)
 
 ax1.set_title('sqrt fit prediction')
 ax1.set_ylabel('CCS')
