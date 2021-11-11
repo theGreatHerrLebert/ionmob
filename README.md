@@ -52,11 +52,11 @@ This is what the table looks like:
 
 |       mz |   charge | sequence                                    |     ccs | origin     |
 |---------:|---------:|:--------------------------------------------|--------:|:-----------|
-|  801.89  |        2 | _AAAAAAAAGGAGDSGDAVTK_                      | 433.825 | Tenzer-lab |
-| 1482.86  |        3 | _AAAAAPASEDEDDEDDEDDEDDDDDEEDDSEEEAMETTPAK_ | 701.41  | Tenzer-lab |
-|  410.205 |        2 | _AAAACLDK_                                  | 296.58  | Tenzer-lab |
-|  471.28  |        2 | _AAAAVVAAAAR_                               | 348.332 | Tenzer-lab |
-|  516.27  |        3 | _AAADALSDLEIKDSK_                           | 467.791 | Tenzer-lab |
+|  801.89  |        2 | \_AAAAAAAAGGAGDSGDAVTK\_                      | 433.825 | Tenzer-lab |
+| 1482.86  |        3 | \_AAAAAPASEDEDDEDDEDDEDDDDDEEDDSEEEAMETTPAK\_ | 701.41  | Tenzer-lab |
+|  410.205 |        2 | \_AAAACLDK\_                                  | 296.58  | Tenzer-lab |
+|  471.28  |        2 | \_AAAAVVAAAAR\_                               | 348.332 | Tenzer-lab |
+|  516.27  |        3 | \_AAADALSDLEIKDSK\_                           | 467.791 | Tenzer-lab |
 
 
 ```python
