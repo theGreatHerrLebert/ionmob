@@ -307,7 +307,7 @@ fig.show()
 This code then creates:
 
 <p align="center">
-  <img src="docs/images/sqrt_model.png" width="900" title="prediction vs ground truth">
+  <img src="docs/images/gravy_helix_linear_correlation.png" width="900" title="prediction vs ground truth">
 </p>
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
