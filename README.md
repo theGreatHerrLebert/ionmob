@@ -251,27 +251,17 @@ Once again let's visualize this to get a better feel for what the numbers are te
 ```python
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-# linear fit to extract hypothesis lines
-reg_gravy = LinearRegression().fit(np.expand_dims(x, -1), np.expand_dims(y_gravy, -1))
-reg_helix = LinearRegression().fit(np.expand_dims(x, -1), np.expand_dims(y_helix, -1))
-
-def line(x, a, b):
-    return x * a + b
-
-y_line_gravy = [line(x, reg_gravy.coef_, reg_gravy.intercept_) for x in charge_2.deep_normalized.values]
-y_line_helix = [line(x, reg_helix.coef_, reg_helix.intercept_) for x in charge_2.deep_normalized.values]
-
 # create the plot
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2, figsize=(16,12), dpi=200)
 
 ax1.set_title('linear correlation helicality, mobility')
-ax1.set_ylabel('gravy score')
+ax1.set_ylabel('helix score')
 ax1.set_xlabel('relative mobility trend')
 ax2.set_xlabel('MZ')
 ax2.set_title('Deep vs Sqrt prediction')
 
 im1 = ax1.scatter(charge_2.deep_normalized, charge_2.helix, c=charge_2.helix, alpha=.3, s=10, label='data points')
-im1 = ax1.scatter(charge_2.deep_normalized, y_line, s=10, c='red', label='linear trend')
+im1 = ax1.scatter(charge_2.deep_normalized, y_line_helix, s=10, c='red', label='linear trend')
 
 im2 = ax2.scatter(charge_2.mz, charge_2.ccs_predicted_gru, s=10, c=charge_2.helix - np.mean(data.gravy), alpha=.3, label='data points')
 im2 = ax2.scatter(charge_2.mz, charge_2.ccs_predicted_sqrt, s=2, c='red', alpha=.3, label='sqrt prediction')
@@ -290,7 +280,7 @@ ax4.set_xlabel('MZ')
 ax4.set_title('Deep vs Sqrt prediction')
 
 im3 = ax3.scatter(charge_2.deep_normalized, charge_2.gravy, c=charge_2.gravy, alpha=.3, s=10, label='data points')
-im3 = ax3.scatter(charge_2.deep_normalized, y_line, s=10, c='red', label='linear trend')
+im3 = ax3.scatter(charge_2.deep_normalized, y_line_gravy, s=10, c='red', label='linear trend')
 
 im4 = ax4.scatter(charge_2.mz, charge_2.ccs_predicted_gru, s=10, c=charge_2.gravy, alpha=.3, label='data points')
 im4 = ax4.scatter(charge_2.mz, charge_2.ccs_predicted_sqrt, s=2, c='red', alpha=.3, label='sqrt prediction')
