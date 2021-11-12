@@ -172,6 +172,8 @@ We will expand our mathematical formulation of the problem as follows:
 
 <img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{final}}(\mathrm{mz}, c, s \vert M) = \mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c) %2B M(s, \theta)">
 
+Where a slope <img src="https://render.githubusercontent.com/render/math?math=s_c">  and an intercept <img src="https://render.githubusercontent.com/render/math?math=b_c"> are fitseparately for each modeled charge state <img src="https://render.githubusercontent.com/render/math?math=c">.
+
 ```python
 import pandas as pd
 import numpy as np
