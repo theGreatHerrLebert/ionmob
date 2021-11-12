@@ -160,7 +160,7 @@ Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] 
 By using an in silico digest of the human proteome, we will now visit two of them, namely the gravy score and heliccality of peptides. 
 The idea is the following: We will start at an inital guess about an ions ccs value, derived from the simple formular:
 
-<img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c) = s_c\, \sqrt{\mathrm{mz}} + b_c">
+<img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c) = s_c \times \sqrt{\mathrm{mz}} + b_c">
 
 ```python
 import pandas as pd
