@@ -175,7 +175,7 @@ We will expand our mathematical formulation of the problem as follows:
 
 <img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{final}}(\mathrm{mz}, c, s \vert M) = \mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c) %2B M(s, \theta)">
 
-Here, a regressor $M$ (GRU-units) with parameter set $\theta$ was fit to further lower the mean absolut error (MAE) of predicted CCS values compared to the experimentally observed ones by gradient descent.
+Here, a regressor <img src="https://render.githubusercontent.com/render/math?math=M"> (GRU-units) with parameter set <img src="https://render.githubusercontent.com/render/math?math=\theta"> was fit to further lower the mean absolut error (MAE) of predicted CCS values compared to the experimentally observed ones by gradient descent.
 
 ```python
 import pandas as pd
