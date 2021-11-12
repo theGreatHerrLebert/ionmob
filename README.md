@@ -175,7 +175,7 @@ We will expand our mathematical formulation of the problem as follows:
 
 Here, a regressor <img src="https://render.githubusercontent.com/render/math?math=M"> (GRU-units) with parameter set <img src="https://render.githubusercontent.com/render/math?math=\theta"> was fit to further lower the mean absolut error (MAE) of predicted CCS values compared to the experimentally observed ones.
 For convenience, this predictor does not only return the final predicted ccs value but also the residue with respect to the initial fit, giving us an easy way to link specific features of a given sequence to its impact on ion mobility.
-We can now have a look how peptide gravy score and helicality are correlated with an increase or decrease of ion mobility with respect to our zero information fit:
+An implementation with ionmob to derive this could look like this:
 
 ```python
 import pandas as pd
@@ -207,7 +207,28 @@ ccs_predicted_sqrt = sqrtModel.predict(tensorflow_ds_sqrt)
 
 # predict with deep fit
 ccs_predicted_gru, deep_part = gruModel.predict(tensorflow_ds_deep)
+
+# append predictions to dataframe
+data['ccs_predicted_gru'] = ccs_predicted_gru
+data['ccs_predicted_sqrt'] = ccs_predicted_sqrt
+data['ccs_predicted_deep'] = sqrt
+
+# create normalized value of deep increase or decrease prediction of CCS
+data['deep_normalized'] = data.ccs_predicted_deep / data.mz
+
+# calculate gravy and helix scores for each sequence
+gravy = [get_gravy_score(s, normalize=False) for s in data.sequence]
+helix = [get_helix_score(s) for s in data.sequence]
+
+# append calculated values to dataframe
+data['gravy'] = gravy
+data['helix'] = helix
+
+# select a single charge state to deconvolce differences between charges
+charge_2 = data[data['charge'] == 2]
 ```
+
+We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the inital guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by deviding it by the m/z value of its ion.
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
