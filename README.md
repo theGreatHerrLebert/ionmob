@@ -121,7 +121,7 @@ sqrt mean absolute error        : 12.69
 gru  mean absolute error        : 9.04
 ```
 
-Finally, let's visualize the predictions compared to the ccs measurements:
+Finally, let's visualize the predictions compared to the CCS measurements:
 
 ```python
 from matplotlib import pyplot as plt
@@ -225,7 +225,7 @@ data['helix'] = helix
 charge_2 = data[data['charge'] == 2]
 ```
 
-We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the inital guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by deviding it by the m/z value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
+We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the initial guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by dividing it by the m/z value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
 
 ```python
 from scipy.stats import pearsonr
@@ -246,7 +246,7 @@ Gravy Pearson: [0.46 0.  ]
 Helix Pearson: [0.5 0. ]
 ```
 
-Once again lets visualize this to get a better feel for what the numbers are telling us:
+Once again let's visualize this to get a better feel for what the numbers are telling us:
 
 ```python
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -310,7 +310,7 @@ This code then creates:
   <img src="docs/images/gravy_helix_linear_correlation.png" width="900" title="prediction vs ground truth">
 </p>
 
-As we can observe, our predictor is able to reproduce findings that were already postulated by Chang et al. as well as Meier et al.: Higher gravy and helicality values indeed lead to higher CCS values (at least with respect to our trained predictor). This correlation is by no means perfect, but it lies in the nature of complex interactions that lead to a peptides 3D structure that they cannot be modelled by a simple set of descriptors. Ultimately, this is why a complex function modelling technique like Deep Learning can add something new!
+As we can observe, our predictor is able to reproduce findings that were already postulated by Chang et al. as well as Meier et al.: Higher gravy and helicality values indeed lead to higher CCS values (at least with respect to our trained predictor). This correlation is by no means perfect, but it lies in the nature of complex interactions that lead to a peptide's 3D structure that cannot be modelled by a simple set of descriptors. Ultimately, this is why a complex function modelling technique like Deep Learning can add something new!
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
