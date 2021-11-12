@@ -157,24 +157,24 @@ This code will result in the following plot:
 
 ### Getting insight into driving factors of ion-mobility
 Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility.
-By using an in silico digest of the human proteome, we will now visit two of them, namely the gravy score and helicality of peptides. 
-We will start at an inital guess about an ions ccs value, derived from the simple formular:
+By using an in silico digest of the human proteome, we will now visit two of them, namely the gravy score and helicality of peptides.
+We will start at an initial guess about an ions ccs value, derived from the simple formula:
 
 <img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c)=s_c\times\sqrt{\mathrm{mz}} %2B b_c">
 
-Where a slope <img src="https://render.githubusercontent.com/render/math?math=s_c">  and an intercept <img src="https://render.githubusercontent.com/render/math?math=b_c"> are fitseparately for each modeled charge state <img src="https://render.githubusercontent.com/render/math?math=c">.
-The reason why ion-mobility does add an additional dimension of separation is the fact that an ions CCS value does not always lie on that line. 
-If it would, CCS would be perfectly correlated with m/z and therefore add no new information. 
-The idea is now to look at the residues with respect to the square root fit, meaning the vertical difference to our inital guess. 
-This residue could be provided by any predictor. 
-We will look at our best performing one: the GRU-based predictor. 
+Where a slope <img src="https://render.githubusercontent.com/render/math?math=s_c">  and an intercept <img src="https://render.githubusercontent.com/render/math?math=b_c"> are fit separately for each modeled charge state <img src="https://render.githubusercontent.com/render/math?math=c">.
+The reason why ion-mobility does add an additional dimension of separation is the fact that an ion's CCS value does not always lie on that line.
+If it would, CCS would be perfectly correlated with m/z and therefore add no new information.
+The idea is now to look at the residues with respect to the square root fit, meaning the vertical difference to our initial guess.
+This residue could be provided by any predictor.
+We will look at our best performing one: the GRU-based predictor.
 It is based on deep GRU-units that can take into account sequence specific higher-order information derived from training data.
 We will expand our mathematical formulation of the problem as follows:
 
 <img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{final}}(\mathrm{mz}, c, s \vert M) = \mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c) %2B M(s, \theta)">
 
-Here, a regressor <img src="https://render.githubusercontent.com/render/math?math=M"> (GRU-units) with parameter set <img src="https://render.githubusercontent.com/render/math?math=\theta"> was fit to further lower the mean absolut error (MAE) of predicted CCS values compared to the experimentally observed ones. 
-For convenience, this predictor does not only return the final predicted ccs value but also the residue with respect to the initial fit, giving us an easy way to link specific features of a given sequence to its impact on ion mobility. 
+Here, a regressor <img src="https://render.githubusercontent.com/render/math?math=M"> (GRU-units) with parameter set <img src="https://render.githubusercontent.com/render/math?math=\theta"> was fit to further lower the mean absolut error (MAE) of predicted CCS values compared to the experimentally observed ones.
+For convenience, this predictor does not only return the final predicted ccs value but also the residue with respect to the initial fit, giving us an easy way to link specific features of a given sequence to its impact on ion mobility.
 We can now have a look how peptide gravy score and helicality are correlated with an increase or decrease of ion mobility with respect to our zero information fit:
 
 ```python
@@ -199,7 +199,7 @@ tokenizer = tokenizer_from_json('pretrained-models/tokenizer.json')
 
 # generate tensorflow datasets for prediction
 tensorflow_ds_sqrt = sqrt_model_dataset(data.mz, data.charge, None).batch(1024)
-tensorflow_ds_deep = get_tf_dataset(data.mz, data.charge, data.sequence, None, tokenizer, 
+tensorflow_ds_deep = get_tf_dataset(data.mz, data.charge, data.sequence, None, tokenizer,
                                     drop_sequence_ends=False, add_charge=True).batch(1024)
 
 # predict with sqrt-fit
