@@ -1,3 +1,4 @@
+---
 # ionmob
 ### A Framework for Predicting Collision Cross Section Values of Peptide-Ions with Traditional and Deep Machine Learning Methods
 
@@ -10,12 +11,14 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**ionmob**](#ionmob)
 * [**What is a peptide CCS value?**](###What is a peptide CCS value?)
 
+---
 ### What is a peptide CCS value?
 The rotationally-averaged collision cross-section - **CCS** - is a scalar value that describes a physical property of an ion with respect to a charge neutral gas.
 It can be directly linked to its ion mobility.
 The ion mobility is used as an additional separating dimension in high throughput mass spectrometry.
 It supplements the measurements of retention times and mass-to-charge ratios and ultimately leads to improved peptide identification.
 
+---
 ### Why do we measure CCS values of ions?
 The CCS value of an ion is a coarse descriptor of its 3D structure.
 Since peptides are chains (strings) of amino acids, there exist permutations in nature that have exactly the same mass and chemical properties.
@@ -24,12 +27,14 @@ Furthermore, post translational modifications (PTMs) might have only a small imp
 Since both a permutation of sequence as well as PTMs have significant impact on 3D structure, one can use ion mobility separation to distinguish between them.
 CCS value calculations then give us a measure on how extensively their rotationally-averaged collision cross-section differed.
 
+---
 ### Why would I want to predict CCS values of peptides in silico?
 First, a predictor might give you insight into factors that drive ion mobility.
 This information could then be used to optimize your laboratory workflows or uncover yet unknown relationships.
 Second, the high reproducibility of measured CCS values in the lab make it an ideal candidate to increase confidence in peptide identifications from database searches.
 We think: The recent triumph of ion mobility enhanced mass spectrometry paves the way for expressive predictors by providing previously unavailable amounts of training data!
 
+---
 ### I am NOT a machine learning expert, can I still use ```ionmob```?
 Definitely yes!
 We implemented and pretrained models of different complexity that allow for in silico prediction of CCS values for peptide ions of different charge states out-of-the-box.
@@ -37,12 +42,14 @@ They are easily integratable into your existing proteomics workflows.
 All you need is a little bit of python scripting experience.
 A short introduction can be found down below, or you could have a look at our collection of example notebooks!
 
+---
 ### I AM a machine learning expert/experienced coder, what is in it for me?
 We made sure that our framework provides a modular set of tools for more experienced coders that want to implement their own models, training strategies or data preprocessing pipelines.
 Have a look at our example notebooks for advanced workflow implementation.
 Feel also free to contribute any optimizations, models or ideas that you come up with.
 This will ultimately help to push prediction accuracy to a point where it provides a huge benefit for rescoring of peptide identifications!
 
+---
 ### A simple example of ccs prediction and performance evaluation with pre-trained models
 Let us assume that you want to have a look at prediction performance for two different ionmob predictors on data of peptide identifications that came from some source.
 For ionmob models, you should at least have the following information per peptide: **mz, charge, sequence, ccs**.
@@ -158,6 +165,7 @@ This code will result in the following plot:
   <img src="docs/images/sqrt_model.png" width="900" title="prediction vs ground truth">
 </p>
 
+---
 ### Getting insight into driving factors of ion-mobility
 Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility.
 By using an in silico digest of the human proteome, we will now visit two of them, namely the gravy score and helicality of peptides.
