@@ -164,13 +164,11 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 
-
 from matplotlib import pyplot as plt
 from scipy.stats import pearsonr
 from sklearn.linear_model import LinearRegression
 
-from ionmob.preprocess.helpers import get_gravy_score, get_helix_score
-from ionmob.preprocess.helpers import tokenizer_from_json
+from ionmob.preprocess.helpers import get_gravy_score, get_helix_score, tokenizer_from_json
 from ionmob.preprocess.data import get_tf_dataset, sqrt_model_dataset
 
 # read in silico digested human proteome to gain insight into predictors behaviour
