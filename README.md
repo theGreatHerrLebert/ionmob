@@ -164,7 +164,7 @@ We will start at an initial guess about an ions ccs value, derived from the simp
 
 Where a slope <img src="https://render.githubusercontent.com/render/math?math=s_c">  and an intercept <img src="https://render.githubusercontent.com/render/math?math=b_c"> are fit separately for each modeled charge state <img src="https://render.githubusercontent.com/render/math?math=c">.
 The reason why ion-mobility does add an additional dimension of separation is the fact that an ion's CCS value does not always lie on that line.
-If it would, CCS would be perfectly correlated with m/z and therefore add no new information.
+If it did, CCS would be perfectly correlated with m/z and therefore add no new information.
 The idea is now to look at the residues with respect to the square root fit, meaning the vertical difference to our initial guess.
 This residue could be provided by any predictor.
 We will look at our best performing one: the GRU-based predictor.
