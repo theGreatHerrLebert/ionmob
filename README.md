@@ -25,7 +25,7 @@ CCS value calculations then give us a measure on how extensively their rotationa
 First, a predictor might give you insight into factors that drive ion mobility.
 This information could then be used to optimize your laboratory workflows or uncover yet unknown relationships.
 Second, the high reproducibility of measured CCS values in the lab make it an ideal candidate to increase confidence in peptide identifications from database searches.
-We think: The recent triumph of ion mobility enhanced mass spectrometry pave the way for expressive predictors by providing previously unavailable amounts of training data!
+We think: The recent triumph of ion mobility enhanced mass spectrometry paves the way for expressive predictors by providing previously unavailable amounts of training data!
 
 ### I am NOT a machine learning expert, can I still use ```ionmob```?
 Definitely yes!
