@@ -304,6 +304,11 @@ cbar.ax.set_yticklabels(['< -4', '0', '> 4'])
 
 fig.show()
 ```
+This code then creates:
+
+<p align="center">
+  <img src="docs/images/sqrt_model.png" width="900" title="prediction vs ground truth">
+</p>
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
