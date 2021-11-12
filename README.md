@@ -9,11 +9,11 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 
 * [**ionmob**](#ionmob)
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value)
-* [**Why do we measure CCS values of ions?**](#Why-do-we-measure-CCS-values-of-ions)
+* [**Why do we measure CCS values of ions?**](#why-do-we-measure-CCS-values-of-ions)
 * [**Why would I want to predict CCS values of peptides in silico?**](#why-would-I-want-to-predict-CCS-values-of-peptides-in-silico)
-* [**Can I still use ionmob even if am no machine learning expert?**](#Can-I-still-use-ionmob-even-if-am-no-machine-learning-expert?)
-* [**What can I do with ionmob if I am an experienced coder?**](#What-can-I-do-with-ionmob-if-I-am-an-experienced-coder?)
-* [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#A-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
+* [**Can I still use ionmob even if I am no machine learning expert?**](#can-I-still-use-ionmob-even-if-I-am-no-machine-learning-expert?)
+* [**What can I do with ionmob if I am an experienced coder?**](#what-can-I-do-with-ionmob-if-I-am-an-experienced-coder?)
+* [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#a-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value?)
 
 ---
@@ -40,7 +40,7 @@ Second, the high reproducibility of measured CCS values in the lab make it an id
 We think: The recent triumph of ion mobility enhanced mass spectrometry paves the way for expressive predictors by providing previously unavailable amounts of training data!
 
 ---
-### Can I still use ionmob even if am no machine learning expert?
+### Can I still use ionmob even if I am no machine learning expert?
 Definitely yes!
 We implemented and pretrained models of different complexity that allow for in silico prediction of CCS values for peptide ions of different charge states out-of-the-box.
 They are easily integratable into your existing proteomics workflows.
