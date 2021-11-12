@@ -159,9 +159,7 @@ This code will result in the following plot:
 Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility.
 By using an in silico digest of the human proteome, we will now visit two of them, namely the gravy score and heliccality of peptides. 
 The idea is the following: We will start at an inital guess about an ions ccs value, derived from the simple formular: 
-$$
-CCS_i(mz, c) = s_c * \sqrt{mz} + b_c
-$$
+$CCS_i(mz, c) = s_c * \sqrt{mz} + b_c$
 
 ```python
 import pandas as pd
