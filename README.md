@@ -48,7 +48,7 @@ All you need is a little bit of python scripting experience.
 A short introduction can be found down below, or you could have a look at our collection of example notebooks!
 
 ---
-### What can I do with ionmob if I am an experienced coder??
+### What can I do with ionmob if I am an experienced coder?
 We made sure that our framework provides a modular set of tools for more experienced coders that want to implement their own models, training strategies or data preprocessing pipelines.
 Have a look at our example notebooks for advanced workflow implementation.
 Feel also free to contribute any optimizations, models or ideas that you come up with.
