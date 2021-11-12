@@ -1,3 +1,34 @@
+---
+
+title: Help Center
+
+navigation:
+
+  - section: Help Center
+
+  - document: overview_doc
+
+    label: Overview
+
+  - document: data_sources_doc
+
+    label: Data Sources
+
+  - document: data_definitions_doc
+
+    label: Data Definitions
+
+  - document: faq_doc
+
+    label: FAQ
+
+  - document: release_notes_doc
+
+    label: Release Notes
+
+---
+
+
 # ionmob
 ### A Framework for Predicting Collision Cross Section Values of Peptide-Ions with Traditional and Deep Machine Learning Methods
 
