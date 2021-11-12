@@ -310,7 +310,7 @@ This code then creates:
   <img src="docs/images/gravy_helix_linear_correlation.png" width="900" title="prediction vs ground truth">
 </p>
 
-As we can observe, our predictor is able to reproduce findings that were already postulated by Chang et al. as well as Meier et al.: Higher gravy and helicality values indeed lead to higher CCS values (at least with respect to our trained predictor). This correlation is by no means perfect, but it lies in the nature of complex interactions that lead to a peptide's 3D structure that cannot be modelled by a simple set of descriptors. Ultimately, this is why a complex function modelling technique like Deep Learning can add something new!
+As we can observe, our predictor is able to reproduce findings that were already postulated by Chang et al. as well as Meier et al.: Higher gravy and helicality values indeed lead to higher CCS values (at least with respect to our trained predictor). This correlation is by no means perfect, but it lies in the nature of complex interactions that lead to a peptide's 3D structure that they cannot easily be modelled by a simple set of descriptors. Ultimately, this is why a complex function modelling technique like Deep Learning can add something new!
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
