@@ -183,9 +183,6 @@ import numpy as np
 import tensorflow as tf
 
 from matplotlib import pyplot as plt
-from scipy.stats import pearsonr
-from sklearn.linear_model import LinearRegression
-
 from ionmob.preprocess.helpers import get_gravy_score, get_helix_score, tokenizer_from_json
 from ionmob.preprocess.data import get_tf_dataset, sqrt_model_dataset
 
@@ -228,7 +225,85 @@ data['helix'] = helix
 charge_2 = data[data['charge'] == 2]
 ```
 
-We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the inital guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by deviding it by the m/z value of its ion.
+We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the inital guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by deviding it by the m/z value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
+
+```python
+from scipy.stats import pearsonr
+from sklearn.linear_model import LinearRegression
+
+# extract values to correlate
+x = charge_2.deep_normalized.values
+y_gravy = charge_2.gravy.values
+y_helix = charge_2.helix.values
+
+print('Gravy Pearson:', np.round(pearsonr(x, y_gravy), 2))
+print('Helix Pearson:', np.round(pearsonr(x, y_helix), 2))
+```
+This gives us pearson correlation and p values for both gravy and helicality analysis:
+
+```python
+Gravy Pearson: [0.46 0.  ]
+Helix Pearson: [0.5 0. ]
+```
+
+Once again lets visualize this to get a better feel for what the numbers are telling us:
+
+```python
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+# linear fit to extract hypothesis lines
+reg_gravy = LinearRegression().fit(np.expand_dims(x, -1), np.expand_dims(y_gravy, -1))
+reg_helix = LinearRegression().fit(np.expand_dims(x, -1), np.expand_dims(y_helix, -1))
+
+def line(x, a, b):
+    return x * a + b
+
+y_line_gravy = [line(x, reg_gravy.coef_, reg_gravy.intercept_) for x in charge_2.deep_normalized.values]
+y_line_helix = [line(x, reg_helix.coef_, reg_helix.intercept_) for x in charge_2.deep_normalized.values]
+
+# create the plot
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2, figsize=(16,12), dpi=200)
+
+ax1.set_title('linear correlation helicality, mobility')
+ax1.set_ylabel('gravy score')
+ax1.set_xlabel('relative mobility trend')
+ax2.set_xlabel('MZ')
+ax2.set_title('Deep vs Sqrt prediction')
+
+im1 = ax1.scatter(charge_2.deep_normalized, charge_2.helix, c=charge_2.helix, alpha=.3, s=10, label='data points')
+im1 = ax1.scatter(charge_2.deep_normalized, y_line, s=10, c='red', label='linear trend')
+
+im2 = ax2.scatter(charge_2.mz, charge_2.ccs_predicted_gru, s=10, c=charge_2.helix - np.mean(data.gravy), alpha=.3, label='data points')
+im2 = ax2.scatter(charge_2.mz, charge_2.ccs_predicted_sqrt, s=2, c='red', alpha=.3, label='sqrt prediction')
+ax1.legend()
+ax2.legend()
+
+divider = make_axes_locatable(ax2)
+cax = divider.append_axes('right', size='2%', pad=0.05)
+cbar = fig.colorbar(im1, cax=cax, orientation='vertical', ticks=[0, 0.5, 1])
+cbar.ax.set_yticklabels(['0', '0.5', '1'])
+
+ax3.set_title('linear correlation gravy, mobility')
+ax3.set_ylabel('gravy score')
+ax3.set_xlabel('relative mobility trend')
+ax4.set_xlabel('MZ')
+ax4.set_title('Deep vs Sqrt prediction')
+
+im3 = ax3.scatter(charge_2.deep_normalized, charge_2.gravy, c=charge_2.gravy, alpha=.3, s=10, label='data points')
+im3 = ax3.scatter(charge_2.deep_normalized, y_line, s=10, c='red', label='linear trend')
+
+im4 = ax4.scatter(charge_2.mz, charge_2.ccs_predicted_gru, s=10, c=charge_2.gravy, alpha=.3, label='data points')
+im4 = ax4.scatter(charge_2.mz, charge_2.ccs_predicted_sqrt, s=2, c='red', alpha=.3, label='sqrt prediction')
+ax3.legend()
+ax4.legend()
+
+divider = make_axes_locatable(ax4)
+cax = divider.append_axes('right', size='2%', pad=0.05)
+cbar = fig.colorbar(im3, cax=cax, orientation='vertical', ticks=[0, 0.5, 1])
+cbar.ax.set_yticklabels(['< -4', '0', '> 4'])
+
+fig.show()
+```
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
