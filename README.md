@@ -1,34 +1,3 @@
----
-
-title: Help Center
-
-navigation:
-
-  - section: Help Center
-
-  - document: overview_doc
-
-    label: Overview
-
-  - document: data_sources_doc
-
-    label: Data Sources
-
-  - document: data_definitions_doc
-
-    label: Data Definitions
-
-  - document: faq_doc
-
-    label: FAQ
-
-  - document: release_notes_doc
-
-    label: Release Notes
-
----
-
-
 # ionmob
 ### A Framework for Predicting Collision Cross Section Values of Peptide-Ions with Traditional and Deep Machine Learning Methods
 
@@ -37,6 +6,9 @@ Not only does it contain several pre-trained regression models for this task, bu
 Models are implemented with recent versions of either [TensorFlow](https://www.tensorflow.org/) or [scikit-learn](https://scikit-learn.org/stable/).
 Please feel free to use, alter or extend ```ionmob``` in any way that suits you as it is free and open source under the **GNU General Public License v3.0**.
 Feel also free to let us know about missing functionality, bugs, or contributions you would like to make!
+
+* [**ionmob**](#ionmob)
+  * [**What is a peptide CCS value?**](#What is a peptide CCS value?)
 
 ### What is a peptide CCS value?
 The rotationally-averaged collision cross-section - **CCS** - is a scalar value that describes a physical property of an ion with respect to a charge neutral gas.
