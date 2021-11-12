@@ -159,5 +159,39 @@ This code will result in the following plot:
 Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility. 
 By using an in silico digest of the human proteome, we will now visit some of them, namely the gravy score and heliccality of peptides.
 
+```python
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+
+
+from matplotlib import pyplot as plt
+from scipy.stats import pearsonr
+from sklearn.linear_model import LinearRegression
+
+from ionmob.preprocess.helpers import get_gravy_score, get_helix_score
+from ionmob.preprocess.helpers import tokenizer_from_json
+from ionmob.preprocess.data import get_tf_dataset, sqrt_model_dataset
+
+# read in silico digested human proteome to gain insight into predictors behaviour
+data = pd.read_hdf(Synthetic.h5').sample(frac=0.25)
+
+# read predictors and tokenizer
+gruModel = tf.keras.models.load_model('pretrained-models/GRUPredictor/')
+sqrtModel = tf.keras.models.load_model('pretrained-models/SqrtModel/')
+tokenizer = tokenizer_from_json('pretrained-models/tokenizer.json')
+
+# generate tensorflow datasets for prediction
+tensorflow_ds_sqrt = sqrt_model_dataset(data.mz, data.charge, None).batch(1024)
+tensorflow_ds_deep = get_tf_dataset(data.mz, data.charge, data.sequence, None, tokenizer, 
+                                    drop_sequence_ends=False, add_charge=True).batch(1024)
+
+# predict with sqrt-fit
+ccs_predicted_sqrt = sqrtModel.predict(tensorflow_ds_sqrt)
+
+# predict with deep fit
+ccs_predicted_gru, deep_part = gruModel.predict(tensorflow_ds_deep)
+```
+
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
