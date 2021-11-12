@@ -8,7 +8,7 @@ Please feel free to use, alter or extend ```ionmob``` in any way that suits you 
 Feel also free to let us know about missing functionality, bugs, or contributions you would like to make!
 
 * [**ionmob**](#ionmob)
-  * [**What is a peptide CCS value?**](#What is a peptide CCS value?)
+* [**What is a peptide CCS value?**](###What is a peptide CCS value?)
 
 ### What is a peptide CCS value?
 The rotationally-averaged collision cross-section - **CCS** - is a scalar value that describes a physical property of an ion with respect to a charge neutral gas.
