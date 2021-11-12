@@ -8,7 +8,6 @@ Please feel free to use, alter or extend ```ionmob``` in any way that suits you 
 Feel also free to let us know about missing functionality, bugs, or contributions you would like to make!
 
 * [**ionmob**](#ionmob)
-* [**What is a peptide CCS value?**](###What is a peptide CCS value?)
 
 ---
 ### What is a peptide CCS value?
