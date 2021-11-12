@@ -144,10 +144,9 @@ ax1.scatter(data.mz, data.ccs_predicted_s, s=10, alpha=.5, c=[color_dict[x] for 
 ax2.scatter(data.mz, data.ccs, s=10, alpha=.5, label='ground truth')
 ax2.scatter(data.mz, data.ccs_predicted_g, s=10, alpha=.2, c=[color_dict[x] for x in data.charge],
             label='prediction')
-
 ax1.legend()
 ax2.legend()
-plt.show()
+fig.show()
 ```
 
 This code will result in the following plot:
