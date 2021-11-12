@@ -40,7 +40,7 @@ Second, the high reproducibility of measured CCS values in the lab make it an id
 We think: The recent triumph of ion mobility enhanced mass spectrometry paves the way for expressive predictors by providing previously unavailable amounts of training data!
 
 ---
-### I am NOT a machine learning expert, can I still use ionmob?
+### Can I still use ionmob even if am no machine learning expert?
 Definitely yes!
 We implemented and pretrained models of different complexity that allow for in silico prediction of CCS values for peptide ions of different charge states out-of-the-box.
 They are easily integratable into your existing proteomics workflows.
@@ -48,7 +48,7 @@ All you need is a little bit of python scripting experience.
 A short introduction can be found down below, or you could have a look at our collection of example notebooks!
 
 ---
-### I AM a machine learning expert/experienced coder, what is in it for me?
+### What can I do with ionmob if I am an experienced coder??
 We made sure that our framework provides a modular set of tools for more experienced coders that want to implement their own models, training strategies or data preprocessing pipelines.
 Have a look at our example notebooks for advanced workflow implementation.
 Feel also free to contribute any optimizations, models or ideas that you come up with.
