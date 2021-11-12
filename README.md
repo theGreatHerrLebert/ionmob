@@ -211,7 +211,7 @@ ccs_predicted_gru, deep_part = gruModel.predict(tensorflow_ds_deep)
 # append predictions to dataframe
 data['ccs_predicted_gru'] = ccs_predicted_gru
 data['ccs_predicted_sqrt'] = ccs_predicted_sqrt
-data['ccs_predicted_deep'] = sqrt
+data['ccs_predicted_deep'] = deep_part
 
 # create normalized value of deep increase or decrease prediction of CCS
 data['deep_normalized'] = data.ccs_predicted_deep / data.mz
