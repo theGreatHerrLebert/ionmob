@@ -11,8 +11,8 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value)
 * [**Why do we measure CCS values of ions?**](#Why-do-we-measure-CCS-values-of-ions)
 * [**Why would I want to predict CCS values of peptides in silico?**](#why-would-I-want-to-predict-CCS-values-of-peptides-in-silico)
-* [**I am NOT a machine learning expert, can I still use ionmob?**](#i-am-NOT-a-machine-learning-expert-can-I-still-use-ionmob?)
-* [**I AM a machine learning expert/experienced coder, what is in it for me?**](#I-AM-a-machine-learning-expert/experienced-coder-what-is-in-it-for-me?)
+* [**Can I still use ionmob even if am no machine learning expert?**](#Can-I-still-use-ionmob-even-if-am-no-machine-learning-expert?)
+* [**What can I do with ionmob if I am an experienced coder?**](#What-can-I-do-with-ionmob-if-I-am-an-experienced-coder?)
 * [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#A-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value?)
 
