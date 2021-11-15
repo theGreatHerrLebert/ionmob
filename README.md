@@ -44,7 +44,7 @@ Definitely yes!
 We implemented and pretrained models of different complexity that allow for in silico prediction of CCS values for peptide ions of different charge states out-of-the-box.
 They are easily integratable into your existing proteomics workflows.
 All you need is a little bit of python scripting experience.
-A short introduction can be found down below, or you could have a look at our collection of example notebooks!
+A short introduction can be found down below, or you could have a look at our collection of example notebooks.
 
 ---
 ### What can I do with ionmob if I am an experienced coder?
