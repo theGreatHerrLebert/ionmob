@@ -328,7 +328,7 @@ This code then creates:
 As we can observe, our predictor is able to reproduce findings that were already postulated by Chang et al. as well as Meier et al.: Higher gravy and helicality values indeed lead to higher CCS values (at least with respect to our trained predictor). 
 This correlation is by no means perfect, but it lies in the nature of complex interactions that lead to a peptide's 3D structure that they cannot easily be modelled by a simple set of descriptors. 
 Ultimately, this is why a complex function modelling technique like Deep Learning can add something new!
-Implement your own ideas like amino acid counts or specific AA positions by altering [this notebook](/notebook/MobilityDrivingFactors.ipynb).
+Implement your own ideas to uncover driving factors like amino acid counts or specific AA positions by altering [this notebook](/notebook/MobilityDrivingFactors.ipynb).
 
 ### Implementing a custom deep ion-mobility predictor
 
