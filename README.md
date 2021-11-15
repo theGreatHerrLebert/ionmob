@@ -373,9 +373,76 @@ tokenizer = fit_tokenizer(seq_tokenized)
 # have a look at tokens
 print(tokenizer.word_index)
 ```
+
 The tokenizer now knows 41 tokens, 20 of which are Amino Acids and 21 are PTMs.
+
 ```python
 {'L': 1, 'E': 2, 'S': 3, 'A': 4, 'V': 5, 'D': 6, 'G': 7, 'P': 8, 'T': 9, 'I': 10, 'Q': 11, 'K': 12, 'N': 13, 'R': 14, 'F': 15, 'H': 16, 'Y': 17, 'M-OX': 18, 'C': 19, 'M': 20, 'W': 21, 'A-AC': 22, 'M-OX-AC': 23, 'S-AC': 24, 'M-AC': 25, 'T-AC': 26, 'G-AC': 27, 'V-AC': 28, 'E-AC': 29, 'P-AC': 30, 'C-AC': 31, 'L-AC': 32, 'K-AC': 33, 'D-AC': 34, 'N-AC': 35, 'Q-AC': 36, 'R-AC': 37, 'I-AC': 38, 'F-AC': 39, 'H-AC': 40, 'Y-AC': 41}
+```
+
+To build on top of a simple sqrt-fit has proved to be a very efficient way to help a deep predictor to reach high accuracy  as well as fast convergence. 
+Ionmob implements its own layer that is able to project all charge states at the same time, making it very convenient to add it to your own predictor.
+It is done in two steps: first, fit slopes and intercepts for the initial prediction separately. 
+Second, use the gained values to initialize a initial projection layer.
+Ionmob makes use of charge state one-hot encoding to gate the prediction based on a given charge state.
+If you are interested in the intrinsics, have a look at the implementation.
+
+```python
+slopes, intercepts = get_sqrt_slopes_and_intercepts(data_train.mz, data_train.charge, data_train.ccs)
+initial_layer = ProjectToInitialSqrtCCS(slopes, intercepts)
+
+# just make sure that everything worked by testing the projection
+initial_ccs = initial_layer([np.expand_dims(data_train.mz, 1), tf.one_hot(data_train.charge - 1, 4)]).numpy()
+
+# visualize to make sure all went as intended
+plt.figure(figsize=(8, 4), dpi=120)
+plt.scatter(data_train.mz, initial_ccs, s=10, label='sqrt projection')
+plt.xlabel('Mz')
+plt.ylabel('CCS')
+plt.legend()
+plt.show()
+```
+
+The most flexible way to implement a new predictor is to subclass a tensorflow module or keras model. 
+We will do the latter, as it is the prominent way to generate new predictors for ionmob. 
+Let's set up a predictor that uses 1-D convolutions to extract additional information from the sequence of an ion. 
+All layers that should be part of the model are defined in the constructor, the execution is defined by specifying the call method.
+
+```python
+class ConvolutionalCCSPredictor(tf.keras.models.Model):
+    
+    def __init__(self, slopes, intercepts, num_tokens=44, seq_len=50):
+        super(ConvolutionalCCSPredictor, self).__init__()
+        # the inital sqrt projection
+        self.initial = ProjectToInitialSqrtCCS(slopes, intercepts)
+        
+        # the deep sequence processor
+        self.embedding = tf.keras.layers.Embedding(input_dim=num_tokens + 1, output_dim=128, input_length=seq_len)
+        self.conv1d = tf.keras.layers.Conv1D(filters=32, kernel_size=8, activation='relu')
+        self.mp1d = tf.keras.layers.MaxPool1D(pool_size=2)
+        self.conv1d_2 = tf.keras.layers.Conv1D(filters=64, kernel_size=8, activation='relu')
+        
+        # the deep regression tail
+        self.dense = tf.keras.layers.Dense(128, activation='relu')
+        self.dropout = tf.keras.layers.Dropout(0.5)
+        self.dense_2 = tf.keras.layers.Dense(64, activation='relu')
+        self.out = tf.keras.layers.Dense(1, activation=None)
+
+    def call(self, inputs):
+        # read inputs
+        mz, charge, sequence, _, _ = inputs
+        
+        # calculate sequence part
+        deep = self.conv1d_2(self.mp1d(self.conv1d(self.embedding(sequence))))
+        
+        # concat with mz and charge
+        concat = tf.keras.layers.Concatenate()([tf.keras.layers.Flatten()(deep), tf.sqrt(mz), charge])
+        
+        # deep regression
+        dense = self.dense_2(self.dropout(self.dense(concat)))
+        
+        # output is sqrt-fit + deep-regression
+        return self.initial([mz, charge]) + self.out(dense)
 ```
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
