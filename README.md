@@ -14,7 +14,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**What can I do with ionmob if I am an experienced coder?**](#what-can-I-do-with-ionmob-if-I-am-an-experienced-coder)
 * [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#a-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
 * [**Getting insight into driving factors of ion-mobility**](#Getting-insight-into-driving-factors-of-ion-mobility)
-* [**Implementing a custom deep ion-mobility predictor**](#Implementing-a-custom-deep-ion-mobility-predictor)
+* [**Implementing a custom deep CCS predictor**](#Implementing-a-custom-deep-CCS-predictor)
 
 ---
 ### What is a peptide CCS value?
@@ -330,7 +330,7 @@ This correlation is by no means perfect, but it lies in the nature of complex in
 Ultimately, this is why a complex function modelling technique like Deep Learning can add something new!
 Implement your own ideas to uncover driving factors like amino acid counts or specific AA positions by altering [this notebook](/notebook/MobilityDrivingFactors.ipynb).
 
-### Implementing a custom deep ion-mobility predictor
+### Implementing a custom deep CCS predictor
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
