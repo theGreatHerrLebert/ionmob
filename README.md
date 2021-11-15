@@ -426,7 +426,7 @@ All layers that should be part of the model are defined in the constructor, the 
 ```python
 class ConvolutionalCCSPredictor(tf.keras.models.Model):
     
-    def __init__(self, slopes, intercepts, num_tokens=44, seq_len=50):
+    def __init__(self, slopes, intercepts, num_tokens=41, seq_len=50):
         super(ConvolutionalCCSPredictor, self).__init__()
         # the inital sqrt projection
         self.initial = ProjectToInitialSqrtCCS(slopes, intercepts)
