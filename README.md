@@ -12,6 +12,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**Why would I want to predict CCS values of peptides in silico?**](#why-would-I-want-to-predict-CCS-values-of-peptides-in-silico)
 * [**Can I still use ionmob even if I am no machine learning expert?**](#can-I-still-use-ionmob-even-if-I-am-no-machine-learning-expert)
 * [**What can I do with ionmob if I am an experienced coder?**](#what-can-I-do-with-ionmob-if-I-am-an-experienced-coder)
+* [**Install**](#install)
 * [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#a-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
 * [**Getting insight into driving factors of ion-mobility**](#Getting-insight-into-driving-factors-of-ion-mobility)
 * [**Implementing a custom deep CCS predictor**](#Implementing-a-custom-deep-CCS-predictor)
@@ -53,6 +54,15 @@ We made sure that our framework provides a modular set of tools for more experie
 Have a look at our example notebooks for advanced workflow implementation.
 Feel also free to contribute any optimizations, models or ideas that you come up with.
 This will ultimately help to push prediction accuracy to a point where it provides a huge benefit for rescoring of peptide identifications!
+
+---
+### Install
+We recommend to install ionmob into a separate [python virtual environment](https://docs.python.org/3/tutorial/venv.html). Once activated, you can install the ionmob package into it as follows: 
+```
+git clone https://github.com/theGreatHerrLebert/ionmob.git
+cd ionmob
+pip install -e .
+```
 
 ---
 ### A simple example of ccs prediction and performance evaluation with pre-trained models
@@ -330,6 +340,7 @@ This correlation is by no means perfect, but it lies in the nature of complex in
 Ultimately, this is why a complex function modelling technique like Deep Learning can add something new!
 Implement your own ideas to uncover driving factors like amino acid counts or specific AA positions by altering [this notebook](/notebook/MobilityDrivingFactors.ipynb).
 
+---
 ### Implementing a custom deep CCS predictor
 Say you come up with your very own idea for a deep CCS predictor architecture and want to build on top of ionmob.
 It is recomended that you have a NVIDIA CUDA enabled GPU with cuDNN bianries available in your working environment,
