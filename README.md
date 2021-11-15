@@ -403,7 +403,11 @@ plt.legend()
 plt.show()
 ```
 
-The most flexible way to implement a new predictor is to subclass a tensorflow module or keras model. 
+<p align="center">
+  <img src="docs/images/sqrt_fit.png" width="500" title="sqrt fit">
+</p>
+
+The most flexible way to implement a new predictor is to subclass a [tensorflow module or keras model](https://www.tensorflow.org/guide/keras/custom_layers_and_models). 
 We will do the latter, as it is the prominent way to generate new predictors for ionmob. 
 Let's set up a predictor that uses 1-D convolutions to extract additional information from the sequence of an ion. 
 All layers that should be part of the model are defined in the constructor, the execution is defined by specifying the call method.
