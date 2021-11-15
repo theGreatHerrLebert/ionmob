@@ -510,6 +510,10 @@ plt.legend()
 plt.show()
 ```
 
+<p align="center">
+  <img src="docs/images/loss_train_valid.png" width="500" title="training and validation loss">
+</p>
+
 some analysis here
 ```pytho
 model.evaluate(tf_test)
