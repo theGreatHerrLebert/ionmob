@@ -264,6 +264,15 @@ Once again let's visualize this to get a better feel for what the numbers are te
 from sklearn.linear_model import LinearRegression
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+def line(x, a, b):
+    return x * a + b
+
+reg_gravy = LinearRegression().fit(np.expand_dims(x, -1), np.expand_dims(y_gravy, -1))
+reg_helix = LinearRegression().fit(np.expand_dims(x, -1), np.expand_dims(y_helix, -1))
+
+y_line_gravy = [line(x, reg_gravy.coef_, reg_gravy.intercept_) for x in charge_2.deep_normalized.values]
+y_line_helix = [line(x, reg_helix.coef_, reg_helix.intercept_) for x in charge_2.deep_normalized.values]
+
 # create the plot
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2, figsize=(16,12), dpi=200)
 
