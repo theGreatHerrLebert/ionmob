@@ -17,8 +17,8 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 
 ---
 ### What is a peptide CCS value?
-The rotationally-averaged collision cross-section - **CCS** - is a scalar value that describes a physical property of an ion with respect to a charge neutral gas.
-It can be directly linked to its ion mobility.
+The rotationally-averaged collision cross-section - **CCS** - is a scalar value that describes a physical property of an ion.
+It can be directly linked to its ion mobility, meaning its interactive behaviour with respect to a charge neutral gas.
 The ion mobility is used as an additional separating dimension in high throughput mass spectrometry.
 It supplements the measurements of retention times and mass-to-charge ratios and ultimately leads to improved peptide identification.
 
