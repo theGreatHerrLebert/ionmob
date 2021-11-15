@@ -224,7 +224,7 @@ data['ccs_predicted_sqrt'] = ccs_predicted_sqrt
 data['ccs_predicted_deep'] = deep_part
 
 # create normalized value of deep increase or decrease prediction of CCS
-data['deep_normalized'] = data.ccs_predicted_deep / data.mz
+data['deep_normalized'] = data.ccs_predicted_deep / np.sqrt(data.mz.values)
 
 # calculate gravy and helix scores for each sequence
 gravy = [get_gravy_score(s, normalize=False) for s in data.sequence]
@@ -254,8 +254,8 @@ print('Helix Pearson:', np.round(pearsonr(x, y_helix), 2))
 This gives us pearson correlation and p values for both gravy and helicality analysis:
 
 ```python
-Gravy Pearson: [0.46 0.  ]
-Helix Pearson: [0.5 0. ]
+Gravy Pearson: [0.49 0.  ]
+Helix Pearson: [0.52 0.  ]
 ```
 
 Once again let's visualize this to get a better feel for what the numbers are telling us:
