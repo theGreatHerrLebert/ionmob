@@ -445,5 +445,71 @@ class ConvolutionalCCSPredictor(tf.keras.models.Model):
         return self.initial([mz, charge]) + self.out(dense)
 ```
 
+Callbacks are a convenient way to further automate your training procedure. 
+We will use two different callbacks that observe model performance on validation data.
+The first one is a learning rate reducer: Should the loss not go down after three consecutive epochs on the validation set, the reducer is going to reduce the learning rate by an order of magnitude.
+
+```python
+early_stopper = tf.keras.callbacks.EarlyStopping(
+    monitor='val_loss',
+    patience=5
+)
+
+reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+    monitor='val_loss', 
+    factor=1e-1,
+    patience=2,
+    monde='auto',
+    min_delta=1e-5,
+    cooldown=0,
+    min_lr=1e-7
+)
+
+cbs = [early_stopper, reduce_lr]
+```
+
+We are now ready to instanciate our predictor, build it and then compile it with a desired objective function and optimizer. 
+The models' summary tells us that it has a total of 178,785 trainable parameters.
+
+```python
+# create a recurrent predictor
+model = ConvolutionalCCSPredictor(slopes, intercepts)
+
+# set input shapes: mz, charge_one_hot, max_seq_len, helix_score, gravy_score
+model.build([(None, 1), (None, 4), (None, 50), (None, 1), (None, 1)])
+
+model.compile(loss=tf.keras.losses.MeanAbsoluteError(),
+              optimizer=tf.keras.optimizers.Adam(1e-2), metrics=['mae'])
+
+tf_train = get_tf_dataset(data_train.mz, data_train.charge, data_train.sequence, 
+                          data_train.ccs, tokenizer, 
+                          drop_sequence_ends=True, add_charge=False).shuffle(int(1e7)).batch(1024)
+
+tf_valid = get_tf_dataset(data_valid.mz, data_valid.charge, data_valid.sequence, 
+                          data_valid.ccs, tokenizer, 
+                          drop_sequence_ends=True, add_charge=False).shuffle(int(1e7)).batch(1024)
+
+tf_test = get_tf_dataset(data_test.mz, data_test.charge, data_test.sequence, 
+                          data_test.ccs, tokenizer, drop_sequence_ends=True, add_charge=False).batch(1024)
+
+history = model.fit(tf_train, validation_data=tf_valid, 
+                    epochs=50, verbose=False, callbacks=cbs)
+
+# plot training and validation loss 
+plt.figure(figsize=(8, 4), dpi=120)
+plt.plot(history.history['loss'], label='training')
+plt.plot(history.history['val_loss'], label='validation')
+plt.xlabel('epoch')
+plt.ylabel('loss')
+plt.legend()
+plt.show()
+```
+
+some analysis here
+```pytho
+model.evaluate(tf_test)
+
+```
+
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
