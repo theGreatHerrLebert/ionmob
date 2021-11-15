@@ -169,6 +169,7 @@ This code will result in the following plot:
 <p align="center">
   <img src="docs/images/sqrt_model.png" width="900" title="prediction vs ground truth">
 </p>
+You can also try this yourself by cloning this repository and running [this notebook](notebook/CheckAccuracy.ipynb).
 
 ---
 ### Getting insight into driving factors of ion-mobility
