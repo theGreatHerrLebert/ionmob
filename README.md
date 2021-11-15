@@ -383,7 +383,7 @@ The tokenizer now knows 41 tokens, 20 of which are Amino Acids and 21 are PTMs.
 It has proven to be a very efficient way to build on top of a simple sqrt-fit to help a deep predictor reach high accuracy  as well as fast convergence. 
 Ionmob implements its own layer that is able to project all charge states at the same time, making it very convenient to add it to your own predictor.
 It is done in two steps: first, fit slopes and intercepts for the initial prediction separately. 
-Second, use the gained values to initialize a initial projection layer.
+Second, use the gained values to initialize an initial projection layer.
 Ionmob makes use of charge state one-hot encoding to gate the prediction based on a given charge state.
 If you are interested in the intrinsics, have a look at the implementation.
 
