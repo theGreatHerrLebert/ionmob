@@ -448,6 +448,7 @@ class ConvolutionalCCSPredictor(tf.keras.models.Model):
 Callbacks are a convenient way to further automate your training procedure. 
 We will use two different callbacks that observe model performance on validation data.
 The first one is a learning rate reducer: Should the loss not go down after three consecutive epochs on the validation set, the reducer is going to reduce the learning rate by an order of magnitude.
+If there is still no improvement on performance, the early stopper will stop the training procedure after another 2 epochs.
 
 ```python
 early_stopper = tf.keras.callbacks.EarlyStopping(
@@ -509,6 +510,9 @@ some analysis here
 ```pytho
 model.evaluate(tf_test)
 
+4/4 [==============================] - 0s 16ms/step - loss: 11.5374 - mae: 11.5374
+
+[11.537385940551758, 11.537385940551758]
 ```
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
