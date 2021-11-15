@@ -242,7 +242,6 @@ We are now ready to have a look at how both gravy score and helix score of a giv
 
 ```python
 from scipy.stats import pearsonr
-from sklearn.linear_model import LinearRegression
 
 # extract values to correlate
 x = charge_2.deep_normalized.values
@@ -262,6 +261,7 @@ Helix Pearson: [0.5 0. ]
 Once again let's visualize this to get a better feel for what the numbers are telling us:
 
 ```python
+from sklearn.linear_model import LinearRegression
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 # create the plot
