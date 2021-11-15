@@ -385,7 +385,7 @@ Ionmob implements its own layer that is able to project all charge states at the
 It is done in two steps: first, fit slopes and intercepts for the initial prediction separately. 
 Second, use the gained values to initialize an initial projection layer.
 Ionmob makes use of charge state one-hot encoding to gate the prediction based on a given charge state.
-If you are interested in the intrinsics, have a look at the implementation.
+If you are interested in the intrinsics, [have a look at the implementation](https://github.com/theGreatHerrLebert/ionmob/blob/8f9378c51149d9e1df89fc4550baeebed2176a22/ionmob/models/deep_models.py#L20).
 
 ```python
 slopes, intercepts = get_sqrt_slopes_and_intercepts(data_train.mz, data_train.charge, data_train.ccs)
