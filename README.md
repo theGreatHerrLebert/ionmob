@@ -181,7 +181,7 @@ The reason why ion-mobility does add an additional dimension of separation is th
 If it did, CCS would be perfectly correlated with m/z and therefore add no new information.
 We can improve our inital CCS prediction modell by also predicting the residues with respect to the square root fit, meaning the vertical difference to our initial value.
 These residues could be provided by any predictor but let's use our best performing model: the GRU-based predictor.
-It is based on deep [GRU-units]("http://karpathy.github.io/2015/05/21/rnn-effectiveness/") that can take into account sequence specific higher-order information derived from training data.
+It is based on deep [GRU-units](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) that can take into account sequence specific higher-order information derived from training data.
 We will expand our mathematical formulation of the problem as follows:
 
 <img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{final}}(\mathrm{mz}, c, s \vert M) = \mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c) %2B M(s, \theta)">
