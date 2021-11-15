@@ -331,6 +331,52 @@ Ultimately, this is why a complex function modelling technique like Deep Learnin
 Implement your own ideas to uncover driving factors like amino acid counts or specific AA positions by altering [this notebook](/notebook/MobilityDrivingFactors.ipynb).
 
 ### Implementing a custom deep CCS predictor
+Say you come up with your very own idea for a deep CCS predictor architecture and want to build on top of ionmob.
+It is recomended that you have a NVIDIA CUDA enabled GPU with cuDNN bianries available in your working environment,
+otherwise training may take quite some time.
+We  will assume that a dataset for training was already generated, including all necesarry steps for preprocessing.
+For this demonstration, we can use ionmob datasets. 
+Let's use sets from different sources for training, validation and test.
+This way, we make sure that we do not overestimate model performace.
+We will start our model implementation by fitting a tokenizer.
+```python
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import os
+from datetime import datetime
+
+import os
+# suppress CUDA specific logs 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+tf.config.experimental.set_virtual_device_configuration(gpus[0], 
+                                        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2048)])
+
+from matplotlib import pyplot as plt
+from ionmob.alignment.experiment import Experiment
+
+from ionmob.models.deep_models import ProjectToInitialSqrtCCS
+from ionmob.preprocess.data import get_tf_dataset
+from ionmob.preprocess.helpers import get_sqrt_slopes_and_intercepts, sequence_to_tokens, sequence_with_charge, fit_tokenizer
+
+data_train = pd.read_hdf('../../ionmob/data/Meier.h5')
+data_valid = pd.read_hdf('../../ionmob/data/Tenzer.h5')
+data_test = pd.read_hdf('../../ionmob/data/Chang.h5')
+
+# tokenize sequences 
+seq_tokenized = [sequence_to_tokens(s, drop_ends=True) for s in data_train.sequence.values]
+# fit a tokenizer
+tokenizer = fit_tokenizer(seq_tokenized)
+# have a look at tokens
+print(tokenizer.word_index)
+```
+The tokenizer now knows 41 tokens, 20 of which are Amino Acids and 21 are PTMs.
+```python
+{'L': 1, 'E': 2, 'S': 3, 'A': 4, 'V': 5, 'D': 6, 'G': 7, 'P': 8, 'T': 9, 'I': 10, 'Q': 11, 'K': 12, 'N': 13, 'R': 14, 'F': 15, 'H': 16, 'Y': 17, 'M-OX': 18, 'C': 19, 'M': 20, 'W': 21, 'A-AC': 22, 'M-OX-AC': 23, 'S-AC': 24, 'M-AC': 25, 'T-AC': 26, 'G-AC': 27, 'V-AC': 28, 'E-AC': 29, 'P-AC': 30, 'C-AC': 31, 'L-AC': 32, 'K-AC': 33, 'D-AC': 34, 'N-AC': 35, 'Q-AC': 36, 'R-AC': 37, 'I-AC': 38, 'F-AC': 39, 'H-AC': 40, 'Y-AC': 41}
+```
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
