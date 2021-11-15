@@ -380,7 +380,7 @@ The tokenizer now knows 41 tokens, 20 of which are Amino Acids and 21 are PTMs.
 {'L': 1, 'E': 2, 'S': 3, 'A': 4, 'V': 5, 'D': 6, 'G': 7, 'P': 8, 'T': 9, 'I': 10, 'Q': 11, 'K': 12, 'N': 13, 'R': 14, 'F': 15, 'H': 16, 'Y': 17, 'M-OX': 18, 'C': 19, 'M': 20, 'W': 21, 'A-AC': 22, 'M-OX-AC': 23, 'S-AC': 24, 'M-AC': 25, 'T-AC': 26, 'G-AC': 27, 'V-AC': 28, 'E-AC': 29, 'P-AC': 30, 'C-AC': 31, 'L-AC': 32, 'K-AC': 33, 'D-AC': 34, 'N-AC': 35, 'Q-AC': 36, 'R-AC': 37, 'I-AC': 38, 'F-AC': 39, 'H-AC': 40, 'Y-AC': 41}
 ```
 
-To build on top of a simple sqrt-fit has proved to be a very efficient way to help a deep predictor to reach high accuracy  as well as fast convergence. 
+It has proved to be a very efficient way to build on top of a simple sqrt-fit to help a deep predictor reach high accuracy  as well as fast convergence. 
 Ionmob implements its own layer that is able to project all charge states at the same time, making it very convenient to add it to your own predictor.
 It is done in two steps: first, fit slopes and intercepts for the initial prediction separately. 
 Second, use the gained values to initialize a initial projection layer.
