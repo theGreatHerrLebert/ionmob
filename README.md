@@ -514,7 +514,8 @@ plt.show()
   <img src="docs/images/loss_train_valid.png" width="500" title="training and validation loss">
 </p>
 
-some analysis here
+As we can see from the plot above, loss quickly stops to improve on validation data while it is still falling on training data. The reduction of the learning rate is clearly visible after epoch 9. We can now have a look at test performance and report our CCS prediction accuracy.
+
 ```pytho
 model.evaluate(tf_test)
 
@@ -522,6 +523,7 @@ model.evaluate(tf_test)
 
 [11.537385940551758, 11.537385940551758]
 ```
+It is arround 11.5. Not too bad compared to the naive approach which gave us a value of arround 13.
 
 [^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
