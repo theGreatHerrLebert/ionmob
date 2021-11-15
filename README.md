@@ -362,9 +362,9 @@ from ionmob.models.deep_models import ProjectToInitialSqrtCCS
 from ionmob.preprocess.data import get_tf_dataset
 from ionmob.preprocess.helpers import get_sqrt_slopes_and_intercepts, sequence_to_tokens, sequence_with_charge, fit_tokenizer
 
-data_train = pd.read_hdf('../../ionmob/data/Meier.h5')
-data_valid = pd.read_hdf('../../ionmob/data/Tenzer.h5')
-data_test = pd.read_hdf('../../ionmob/data/Chang.h5')
+data_train = pd.read_hdf('data/Meier.h5')
+data_valid = pd.read_hdf('data/Tenzer.h5')
+data_test = pd.read_hdf('data/Chang.h5')
 
 # tokenize sequences 
 seq_tokenized = [sequence_to_tokens(s, drop_ends=True) for s in data_train.sequence.values]
