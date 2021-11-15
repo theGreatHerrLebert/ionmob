@@ -12,7 +12,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**Why would I want to predict CCS values of peptides in silico?**](#why-would-I-want-to-predict-CCS-values-of-peptides-in-silico)
 * [**Can I still use ionmob even if I am no machine learning expert?**](#can-I-still-use-ionmob-even-if-I-am-no-machine-learning-expert)
 * [**What can I do with ionmob if I am an experienced coder?**](#what-can-I-do-with-ionmob-if-I-am-an-experienced-coder)
-* [**Install**](#install)
+* [**Installation**](#installation)
 * [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#a-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
 * [**Getting insight into driving factors of ion-mobility**](#Getting-insight-into-driving-factors-of-ion-mobility)
 * [**Implementing a custom deep CCS predictor**](#Implementing-a-custom-deep-CCS-predictor)
@@ -56,7 +56,7 @@ Feel also free to contribute any optimizations, models or ideas that you come up
 This will ultimately help to push prediction accuracy to a point where it provides a huge benefit for rescoring of peptide identifications!
 
 ---
-### Install
+### Installation
 We recommend to install ionmob into a separate [python virtual environment](https://docs.python.org/3/tutorial/venv.html). Once activated, you can install the ionmob package into it as follows: 
 ```
 git clone https://github.com/theGreatHerrLebert/ionmob.git
