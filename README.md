@@ -193,7 +193,7 @@ By using an in silico digest of the human proteome, we can estimate the impact o
 
 Where a slope <img src="https://render.githubusercontent.com/render/math?math=s_c">  and an intercept <img src="https://render.githubusercontent.com/render/math?math=b_c"> are fit separately for each modeled charge state <img src="https://render.githubusercontent.com/render/math?math=c">.
 The reason why ion-mobility does add an additional dimension of separation is the fact that an ion's CCS value does not always lie on that line.
-If it did, CCS would be perfectly correlated with m/z and therefore add no new information.
+If it did, CCS would be perfectly correlated with mz and therefore add no new information.
 We can improve our inital CCS prediction modell by also predicting the residues with respect to the square root fit, meaning the vertical difference to our initial value.
 These residues could be provided by any predictor but let's use our best performing model: the GRU-based predictor.
 It uses deep [GRU-units](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) that can take into account sequence specific higher-order information derived from training data.
@@ -253,7 +253,7 @@ data['helix'] = helix
 charge_2 = data[data['charge'] == 2]
 ```
 
-We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the initial guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by dividing it by the square-root m/z value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
+We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the initial guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by dividing it by the square-root mz value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
 
 ```python
 from scipy.stats import pearsonr
