@@ -253,7 +253,7 @@ data['helix'] = helix
 charge_2 = data[data['charge'] == 2]
 ```
 
-We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the initial guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by dividing it by the square-root mz value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
+We are now ready to have a look at how both GRAVY score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted CCS with respect to the initial guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by dividing it by the square-root mz value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
 
 ```python
 from scipy.stats import pearsonr
@@ -273,7 +273,7 @@ Gravy Pearson: [0.49 0.  ]
 Helix Pearson: [0.52 0.  ]
 ```
 
-Once again let's visualize this to get a better feel for what the numbers are telling us:
+Once again, let's visualize this to get a better feel for what the numbers are telling us:
 
 ```python
 from sklearn.linear_model import LinearRegression
@@ -337,10 +337,10 @@ This code then creates:
   <img src="docs/images/gravy_helix_linear_correlation.png" width="900" title="prediction vs ground truth">
 </p>
 
-As we can observe, our predictor is able to reproduce findings that were already postulated by Chang et al. as well as Meier et al.: Higher gravy and helicality values indeed lead to higher CCS values (at least with respect to our trained predictor). 
+As we can observe, our predictor is able to reproduce findings that were already postulated by Chang et al. as well as Meier et al.: Higher GRAVY and helicality values indeed lead to higher CCS values (at least with respect to our trained predictor). 
 This correlation is by no means perfect, but it lies in the nature of complex interactions that lead to a peptide's 3D structure that they cannot easily be modelled by a simple set of descriptors. 
 Ultimately, this is why a complex function modelling technique like Deep Learning can add something new!
-Implement your own ideas to uncover driving factors like amino acid counts or specific AA positions by altering [this notebook](/notebook/MobilityDrivingFactors.ipynb).
+Implement your own ideas to uncover driving factors like amino acid counts or specific amino acid positions by altering [this notebook](/notebook/MobilityDrivingFactors.ipynb).
 
 ---
 ### Implementing a custom deep CCS predictor
@@ -352,6 +352,7 @@ For this demonstration, we can use ```ionmob``` datasets.
 Let's use sets from different sources for training, validation and test.
 This way, we make sure that we do not overestimate model performace.
 We will start our model implementation by fitting a tokenizer.
+
 ```python
 import pandas as pd
 import numpy as np
@@ -387,16 +388,16 @@ tokenizer = fit_tokenizer(seq_tokenized)
 print(tokenizer.word_index)
 ```
 
-The tokenizer now knows 41 tokens, 20 of which are Amino Acids and 21 are PTMs.
+The tokenizer now knows 41 tokens, 20 of which are amino acids and 21 are PTMs.
 
 ```python
 {'L': 1, 'E': 2, 'S': 3, 'A': 4, 'V': 5, 'D': 6, 'G': 7, 'P': 8, 'T': 9, 'I': 10, 'Q': 11, 'K': 12, 'N': 13, 'R': 14, 'F': 15, 'H': 16, 'Y': 17, 'M-OX': 18, 'C': 19, 'M': 20, 'W': 21, 'A-AC': 22, 'M-OX-AC': 23, 'S-AC': 24, 'M-AC': 25, 'T-AC': 26, 'G-AC': 27, 'V-AC': 28, 'E-AC': 29, 'P-AC': 30, 'C-AC': 31, 'L-AC': 32, 'K-AC': 33, 'D-AC': 34, 'N-AC': 35, 'Q-AC': 36, 'R-AC': 37, 'I-AC': 38, 'F-AC': 39, 'H-AC': 40, 'Y-AC': 41}
 ```
 
-It has proven to be a very efficient way to build on top of a simple sqrt-fit to help a deep predictor reach high accuracy  as well as fast convergence. 
+It has proven to be a very efficient way to build on top of a simple square-root fit to help a deep predictor reach high accuracy as well as fast convergence. 
 ```ionmob``` implements its own layer that is able to project all charge states at the same time, making it very convenient to add it to your own predictor.
-It is done in two steps: first, fit slopes and intercepts for the initial prediction separately. 
-Second, use the gained values to initialize an initial projection layer.
+It is done in two steps: First, fit slopes and intercepts for the initial prediction separately. 
+Second, use the gained values to initialize a first projection layer.
 ```ionmob``` makes use of charge state one-hot encoding to gate the prediction based on a given charge state.
 If you are interested in the intrinsics, [have a look at the implementation](https://github.com/theGreatHerrLebert/ionmob/blob/8f9378c51149d9e1df89fc4550baeebed2176a22/ionmob/models/deep_models.py#L20).
 
@@ -422,7 +423,7 @@ plt.show()
 
 The most flexible way to implement a new predictor is to subclass a [tensorflow module or keras model](https://www.tensorflow.org/guide/keras/custom_layers_and_models). 
 We will do the latter, as it is the prominent way to generate new predictors for ```ionmob```. 
-Let's set up a predictor that uses 1-D convolutions to extract additional information from the sequence of an ion. 
+Let's set up a predictor that uses 1D convolutions to extract additional information from the sequence of an ion. 
 All layers that should be part of the model are defined in the constructor, the execution is defined by specifying the call method.
 
 ```python
