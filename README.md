@@ -1,5 +1,5 @@
 # ionmob
-### A Framework for Predicting Collision Cross Section Values of Peptide-Ions with Traditional and Deep Machine Learning Methods
+### A Framework for Predicting Collision Cross Section (CCS) Values of Peptide-Ions with Traditional and Deep Machine Learning Methods
 
 ```ionmob``` is a python package for predicting **CCS** values of peptides.
 Not only does it contain several pre-trained regression models for this task, but it also introduces a full pipeline to link data preprocessing, model training and CCS value inference.
@@ -10,7 +10,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value)
 * [**Why do we measure CCS values of ions?**](#why-do-we-measure-CCS-values-of-ions)
 * [**Why would I want to predict CCS values of peptides in silico?**](#why-would-I-want-to-predict-CCS-values-of-peptides-in-silico)
-* [**Can I still use ionmob even if I am no machine learning expert?**](#can-I-still-use-ionmob-even-if-I-am-no-machine-learning-expert)
+* [**Can I use ionmob if I am no machine learning expert?**](#can-I-use-ionmob-if-I-am-no-machine-learning-expert)
 * [**What can I do with ionmob if I am an experienced coder?**](#what-can-I-do-with-ionmob-if-I-am-an-experienced-coder)
 * [**Installation**](#installation)
 * [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#a-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
@@ -19,8 +19,8 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 
 ---
 ### What is a peptide CCS value?
-The rotationally-averaged collision cross-section - **CCS** - is a scalar value that describes a physical property of an ion.
-It can be directly linked to its ion mobility, meaning its interactive behaviour with respect to a charge neutral gas.
+The rotationally-averaged collision cross section - **CCS** - is a scalar value that describes a physical property of an ion.
+It can be directly linked to its ion mobility, meaning its interactive behaviour with respect to a charge-neutral gas.
 The ion mobility is used as an additional separating dimension in high throughput mass spectrometry.
 It supplements the measurements of retention times and mass-to-charge ratios and ultimately leads to improved peptide identification.
 
@@ -28,25 +28,27 @@ It supplements the measurements of retention times and mass-to-charge ratios and
 ### Why do we measure CCS values of ions?
 The CCS value of an ion is a coarse descriptor of its 3D structure.
 Since peptides are chains (strings) of amino acids, there exist permutations in nature that have exactly the same mass and chemical properties.
+Differences in AA sequence will result in differences in the 3D structure though.
 Distinguishing between such peptides with conventional methods like e.g. LC-MS-MS is therefore challenging.
 Furthermore, post translational modifications (PTMs) might have only a small impact on an ions mass but alter the functionality of a protein.
 Since both a permutation of sequence as well as PTMs have significant impact on 3D structure, one can use ion mobility separation to distinguish between them.
-CCS value calculations then give us a measure on how extensively their rotationally-averaged collision cross-section differed.
+CCS value calculation then gives us a measure how extensively their rotationally-averaged collision cross section differed.
 
 ---
 ### Why would I want to predict CCS values of peptides in silico?
 First, a predictor might give you insight into factors that drive ion mobility.
 This information could then be used to optimize your laboratory workflows or uncover yet unknown relationships.
 Second, the high reproducibility of measured CCS values in the lab make it an ideal candidate to increase confidence in peptide identifications from database searches.
-We think: The recent triumph of ion mobility enhanced mass spectrometry paves the way for expressive predictors by providing previously unavailable amounts of training data!
+We think, the recent triumph of ion mobility enhanced mass spectrometry paves the way for expressive predictors by providing previously unavailable amounts of training data!
 
 ---
-### Can I still use ionmob even if I am no machine learning expert?
+### Can I use ionmob if I am no machine learning expert?
 Definitely yes!
 We implemented and pretrained models of different complexity that allow for in silico prediction of CCS values for peptide ions of different charge states out-of-the-box.
 They are easily integratable into your existing proteomics workflows.
 All you need is a little bit of python scripting experience.
-A short introduction can be found down below, or you could have a look at our collection of example notebooks.
+A short introduction can be found down below. 
+Additionally, you can have a look at our collection of example notebooks.
 
 ---
 ### What can I do with ionmob if I am an experienced coder?
@@ -57,7 +59,7 @@ This will ultimately help to push prediction accuracy to a point where it provid
 
 ---
 ### Installation
-We recommend to install ionmob into a separate [python virtual environment](https://docs.python.org/3/tutorial/venv.html). Once activated, you can install the ionmob package into it as follows: 
+We recommend to install ```ionmob``` into a separate [python virtual environment](https://docs.python.org/3/tutorial/venv.html). Once activated, you can install the ionmob package into it as follows: 
 ```
 git clone https://github.com/theGreatHerrLebert/ionmob.git
 cd ionmob
@@ -66,8 +68,8 @@ pip install -e .
 
 ---
 ### A simple example of ccs prediction and performance evaluation with pre-trained models
-Let us assume that you want to have a look at prediction performance for two different ionmob predictors on data of peptide identifications that came from some source.
-For ionmob models, you should at least have the following information per peptide: **mz, charge, sequence, ccs**.
+Let us assume that you want to have a look at prediction performance for two different ```ionmob``` predictors on data of peptide identifications that came from some source.
+For ```ionmob``` models, you should at least have the following information per peptide: **mz, charge, sequence, ccs**.
 CCS values are optional in the general case but are required if you want to compare CCS predictions to CCS measurements.
 We will demonstrate how to do this with one of our provided example datasets:
 
@@ -201,7 +203,7 @@ We will expand our mathematical formulation of the problem as follows:
 
 Here, a regressor <img src="https://render.githubusercontent.com/render/math?math=M"> (GRU-units) with parameter set <img src="https://render.githubusercontent.com/render/math?math=\theta"> was fit to further lower the mean absolut error (MAE) of predicted CCS values compared to the experimentally observed ones.
 For convenience, this predictor does not only return the final predicted ccs value but also the residue with respect to the initial fit, giving us an easy way to link specific features of a given sequence to its impact on ion mobility.
-An implementation with ionmob to derive this could look like this:
+An implementation with ```ionmob``` to derive this could look like this:
 
 ```python
 import pandas as pd
@@ -342,11 +344,11 @@ Implement your own ideas to uncover driving factors like amino acid counts or sp
 
 ---
 ### Implementing a custom deep CCS predictor
-Say you come up with your very own idea for a deep CCS predictor architecture and want to build on top of ionmob.
+Say you come up with your very own idea for a deep CCS predictor architecture and want to build on top of ```ionmob```.
 It is recomended that you have a NVIDIA CUDA enabled GPU with cuDNN bianries available in your working environment,
 otherwise training may take quite some time.
 We  will assume that a dataset for training was already generated, including all necesarry steps for preprocessing.
-For this demonstration, we can use ionmob datasets. 
+For this demonstration, we can use ```ionmob``` datasets. 
 Let's use sets from different sources for training, validation and test.
 This way, we make sure that we do not overestimate model performace.
 We will start our model implementation by fitting a tokenizer.
@@ -392,10 +394,10 @@ The tokenizer now knows 41 tokens, 20 of which are Amino Acids and 21 are PTMs.
 ```
 
 It has proven to be a very efficient way to build on top of a simple sqrt-fit to help a deep predictor reach high accuracy  as well as fast convergence. 
-Ionmob implements its own layer that is able to project all charge states at the same time, making it very convenient to add it to your own predictor.
+```ionmob``` implements its own layer that is able to project all charge states at the same time, making it very convenient to add it to your own predictor.
 It is done in two steps: first, fit slopes and intercepts for the initial prediction separately. 
 Second, use the gained values to initialize an initial projection layer.
-Ionmob makes use of charge state one-hot encoding to gate the prediction based on a given charge state.
+```ionmob``` makes use of charge state one-hot encoding to gate the prediction based on a given charge state.
 If you are interested in the intrinsics, [have a look at the implementation](https://github.com/theGreatHerrLebert/ionmob/blob/8f9378c51149d9e1df89fc4550baeebed2176a22/ionmob/models/deep_models.py#L20).
 
 ```python
@@ -419,7 +421,7 @@ plt.show()
 </p>
 
 The most flexible way to implement a new predictor is to subclass a [tensorflow module or keras model](https://www.tensorflow.org/guide/keras/custom_layers_and_models). 
-We will do the latter, as it is the prominent way to generate new predictors for ionmob. 
+We will do the latter, as it is the prominent way to generate new predictors for ```ionmob```. 
 Let's set up a predictor that uses 1-D convolutions to extract additional information from the sequence of an ion. 
 All layers that should be part of the model are defined in the constructor, the execution is defined by specifying the call method.
 
@@ -536,5 +538,5 @@ model.evaluate(tf_test)
 ```
 It is arround 11.5. Not too bad compared to the naive approach which gave us a value of arround 13. Want to try it yourself? Use [this notebook](notebook/DeepModelTraining.ipynb).
 
-[^fn1]: Deep learning the collisional cross sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
+[^fn1]: Deep learning the collisional cross-sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
