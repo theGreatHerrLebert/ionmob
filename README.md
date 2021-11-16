@@ -488,7 +488,7 @@ cbs = [early_stopper, reduce_lr]
 ```
 
 We are now ready to instanciate our predictor, build it and then compile it with a desired objective function and optimizer. 
-The models' summary tells us that it has a total of 178,785 trainable parameters.
+The model's summary tells us that it has a total of 178,785 trainable parameters.
 
 ```python
 # create a recurrent predictor
