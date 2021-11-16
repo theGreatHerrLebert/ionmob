@@ -251,7 +251,7 @@ data['helix'] = helix
 charge_2 = data[data['charge'] == 2]
 ```
 
-We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the initial guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by dividing it by the m/z value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
+We are now ready to have a look at how both gravy score and helix score of a given peptide are correlated with an increase or decrease of the deep predicted ccs with respect to the initial guess. Since the impact is not equal along the mz axis, the deep residue value was normalized by dividing it by the square-root m/z value of its ion. We will calculate the pearson correlation to have some objective measure how strong they are correlated:
 
 ```python
 from scipy.stats import pearsonr
