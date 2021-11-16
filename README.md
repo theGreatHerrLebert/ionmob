@@ -187,7 +187,7 @@ You can also try this yourself by cloning this repository and running [this note
 ---
 ### Getting insight into driving factors of ion-mobility
 Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility.
-By using an in silico digest of the human proteome, we can estimate the impact of two of them, namely the gravy score and helicality of peptides. Our modelling approach will look like this: first an initial CCS value is calculated soley on an ions mass and charge. This is done using the simple formula below:
+By using an in silico digest of the human proteome, we can estimate the impact of two of them, namely the GRAVY score and helicality of peptides. Our modelling approach will look like this: first an initial CCS value is calculated soley on an ions mass and charge. This is done using the simple formula below:
 
 <img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c)=s_c\times\sqrt{\mathrm{mz}} %2B b_c">
 
