@@ -67,7 +67,7 @@ pip install -e .
 ```
 
 ---
-### A simple example of ccs prediction and performance evaluation with pre-trained models
+### A simple example of CCS prediction and performance evaluation with pre-trained models
 Let us assume that you want to have a look at prediction performance for two different ```ionmob``` predictors on data of peptide identifications that came from some source.
 For ```ionmob``` models, you should at least have the following information per peptide: **mz, charge, sequence, ccs**.
 CCS values are optional in the general case but are required if you want to compare CCS predictions to CCS measurements.
