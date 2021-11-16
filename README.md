@@ -30,7 +30,7 @@ The CCS value of an ion is a coarse descriptor of its 3D structure.
 Since peptides are chains (strings) of amino acids, there exist permutations in nature that have exactly the same mass and chemical properties.
 Differences in AA sequence will result in differences in the 3D structure though.
 Distinguishing between such peptides with conventional methods like e.g. LC-MS-MS is therefore challenging.
-Furthermore, post translational modifications (PTMs) might have only a small impact on an ions mass but alter the functionality of a protein.
+Furthermore, post translational modifications (PTMs) might have only a small impact on an ion's mass but alter the functionality of a protein.
 Since both a permutation of sequence as well as PTMs have significant impact on 3D structure, one can use ion mobility separation to distinguish between them.
 CCS value calculation then gives us a measure how extensively their rotationally-averaged collision cross section differed.
 
