@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='ionmob',
-    version='0.0.1',
+    version='0.1.1',
     description='predict peptide ion-mobilities',
     packages=['ionmob.models',
               'ionmob.preprocess',
@@ -23,6 +23,8 @@ setup(
     install_requires=[
         "tensorflow >=2.4",
         "pandas >=1.1",
-        "scipy >=1.5"
+        "scipy >=1.5",
+        "scikit-learn >=1.0.0",
+        "h5py >=3.0.0"
     ],
 )

@@ -4,8 +4,96 @@ import re
 
 from itertools import combinations
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
+
+from scipy.optimize import curve_fit
+
+def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
+    """
+    Args:
+        data:
+    Returns:
+    """
+    slopes, intercepts = [0.0], [0.0]
+
+    for c in range(2, 5):
+        def fit_func(x, a, b):
+            return a * np.sqrt(x) + b
+
+        tripples = list(filter(lambda x: x[1] == c, zip(mz, charge, ccs)))
+        
+        mz_tmp, charge_tmp = np.array([x[0] for x in tripples]), np.array([x[1] for x in tripples])
+        ccs_tmp = np.array([x[2] for x in tripples])
+
+        popt, _ = curve_fit(fit_func, mz_tmp, ccs_tmp)
+
+        slopes.append(popt[0])
+        intercepts.append(popt[1])
+
+    return np.array(slopes, np.float32), np.array(intercepts, np.float32)
+
+
+def calculate_mean_diff_per_charge(data):
+    """
+
+    Args:
+        data:
+
+    Returns:
+
+    """
+
+    ret_list = []
+
+    for c in sorted(list(set(data.charge.values))):
+        tmp = data[data['charge'] == c]
+
+        ccs = tmp.ccs.values
+        ccs_pred = tmp.ccs_predicted.values
+        mean_error = np.mean(np.abs(ccs - ccs_pred))
+        ret_list.append(mean_error)
+
+    ret_list = [np.round(x, 2) for x in ret_list]
+
+    return ret_list, np.round(np.mean(np.abs(data.ccs.values - data.ccs_predicted.values)), 2)
+
+
+def sequence_with_charge(seqs_tokenized, charges):
+    """
+
+    Args:
+        seqs_tokenized:
+        charges:
+
+    Returns:
+
+    """
+    s_w_c = []
+    for (s, c) in list(zip(seqs_tokenized, charges)):
+        s_w_c.append([str(c)] + s)
+
+    return s_w_c
+
+
+def get_non_overlapping_pairs(ds_ref, ds_test):
+    """
+    reduce a dataframe to only contain seq, charge pairs not present in ref dataset
+    :ds_ref: dataframe containing all charge, seq pairs that should be excluded from other frame
+    :ds_test: dataframe that should be reduced to only contain seq, charge pairs not in reference
+    :return: dataframe only containing seq, charge pairs not in ref data
+    """
+    ref_pairs = set(zip(ds_ref.sequence, ds_ref.charge))
+    test_pairs = set(zip(ds_test.sequence, ds_test.charge))
+    candidates = test_pairs - ref_pairs
+
+    row_list = []
+    for index, row in ds_test.iterrows():
+        if (row['sequence'], row['charge']) in candidates:
+            row_list.append(row)
+
+    return pd.DataFrame(row_list)
 
 
 def align_annotation(sequence: str, from_str: str = '(Oxidation (M))', to_str: str = '(ox)'):
@@ -109,7 +197,7 @@ def tokenizer_from_json(path: str):
     return tf.keras.preprocessing.text.tokenizer_from_json(data)
 
 
-def get_gravy_score(seq: str, drop_ends: bool = True):
+def get_gravy_score(seq: str, drop_ends: bool = True, normalize: bool = True):
     """
     calculate normalized gravy scores for a given sequence
     :param seq: peptide sequence
@@ -120,7 +208,11 @@ def get_gravy_score(seq: str, drop_ends: bool = True):
     seq = seq.replace('(ox)', '')
     if drop_ends:
         seq = seq[1:-1]
-    return ProteinAnalysis(seq).gravy() / len(seq)
+        
+    if normalize:
+        return ProteinAnalysis(seq).gravy() / len(seq)
+    
+    return ProteinAnalysis(seq).gravy()
 
 
 def get_helix_score(seq: str, drop_ends: bool = True):
