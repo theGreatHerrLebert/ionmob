@@ -40,6 +40,7 @@ class Experiment:
     @classmethod
     def from_MaxQuant_DataFrame(cls, df: pd.DataFrame, name: str) -> Experiment:
         cls._validate(df)
+        df = df[df.Reverse != "+"]
         rt_min = df["Retention time"].values - df["Retention length"]/2
         rt_max = df["Retention time"].values + df["Retention length"]/2
         mz_min = df["Mass"].values
@@ -60,7 +61,7 @@ class Experiment:
         cols = ["Modified sequence", "Charge", "m/z",
                 "CCS", "Intensity", "Raw file",
                 "Retention time", "Retention length",
-                "Mass", "Number of isotopic peaks"]
+                "Mass", "Number of isotopic peaks", "Reverse"]
         if not set(cols).issubset(set(obj.columns)):
             raise AttributeError("Must have {}.".format(cols))
 
