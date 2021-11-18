@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this package, please cite it as below."
+authors:
+- family-names: "Teschner"
+  given-names: "David"
+  orcid: "https://orcid.org/0000-0000-0000-0000" ???
+- family-names: "Lacki"
+  given-names: "Matteo"
+  orcid: "https://orcid.org/0000-0000-0000-0000" ???
+title: "ionmob"
+version: 1.0 ???
+doi: ???
+date-released: 2021-12-24 ???
+url: "https://github.com/theGreatHerrLebert/ionmob"
