@@ -15,6 +15,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**Installation**](#installation)
 * [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#a-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
 * [**Getting insight into driving factors of CCS**](#Getting-insight-into-driving-factors-of-CCS)
+* [**Alignments of in-house and external data**](#Alignments-of-in-house-and-external-data)
 * [**Implementing a custom deep CCS predictor**](#Implementing-a-custom-deep-CCS-predictor)
 
 ---
