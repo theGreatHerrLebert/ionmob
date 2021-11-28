@@ -14,7 +14,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**What can I do with ionmob if I am an experienced coder?**](#what-can-I-do-with-ionmob-if-I-am-an-experienced-coder)
 * [**Installation**](#installation)
 * [**A simple example of CCS prediction and performance evaluation with pre-trained models**](#a-simple-example-of-CCS-prediction-and-performance-evaluation-with-pre-trained-models)
-* [**Getting insight into driving factors of ion-mobility**](#Getting-insight-into-driving-factors-of-ion-mobility)
+* [**Getting insight into driving factors of CCS**](#Getting-insight-into-driving-factors-of-CCS)
 * [**Implementing a custom deep CCS predictor**](#Implementing-a-custom-deep-CCS-predictor)
 
 ---
@@ -185,8 +185,8 @@ This code will result in the following plot:
 You can also try this yourself by cloning this repository and running [this notebook](/notebook/CheckAccuracy.ipynb).
 
 ---
-### Getting insight into driving factors of ion-mobility
-Recent papers that worked on ion-mobility prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility.
+### Getting insight into driving factors of CCS
+Recent papers that worked on CCS prediction such as Chang et al.[^fn2] and Meier et al.[^fn1] identified factors that drive differences in ion mobility.
 By using an in silico digest of the human proteome, we can estimate the impact of two of them, namely the [GRAVY score](https://www.bioinformatics.org/sms2/protein_gravy.html) and helicality of peptides. Our modelling approach will look like this: first an initial CCS value is calculated soley on an ions mass and charge. This is done using the simple formula below (caution, equations might be barely visible if your browser uses darkmode):
 
 <img src="https://render.githubusercontent.com/render/math?math=\mathrm{CCS}_{\mathrm{init}}(\mathrm{mz}, c)=s_c\times\sqrt{\mathrm{mz}} %2B b_c">
