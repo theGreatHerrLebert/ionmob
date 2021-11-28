@@ -391,7 +391,8 @@ print("name of your experiment: ", ex1.name)
 print("data of your experiment: ", ex1.data)
 ```
 Regardless of the initialization method the provided data is cleaned of NaN values in any of the essential columns and of the singly charged ions. 
-Furthermore, the entries in the .data attribute are aggregated upon initialization of duplicate features (duplicates of sequence-charge-ccs entries) already, making those unique
+Furthermore, the entries in the .data attribute are aggregated upon initialization of duplicate features (duplicates of sequence-charge-ccs entries), making those unique.
+Additionally, entries that matched with reversed sequences of the decoy database (depicted as '+' entry in 'reverse' column) are removed.
 
 Since the .data attribute itself is a pd.DataFrame you can use the pandas library to work on it or isolate information from
 ```python
