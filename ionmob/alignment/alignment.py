@@ -256,7 +256,7 @@ def apply_mean_shift(ref: Experiment, exp: Experiment) -> Experiment:
     on the ccs values of exp depending on the charge state.
     :ref: reference experiment towards which the data of exp is corrected
     :exp: experiment that undergoes correction
-    :return: Experiment instance that is essentially exp with corrected ccs values
+    :return: Experiment instance that is essentially exp with additional column  "shifted_ccs" of corrected ccs values
     """
     c_pairs = ref.data.merge(exp.data, left_on=['sequence', 'charge'], right_on=[
                              'sequence', 'charge'])
@@ -274,7 +274,10 @@ def apply_mean_shift(ref: Experiment, exp: Experiment) -> Experiment:
 
 
 def adopt_shifted_ccs(exp: Experiment) -> Experiment:
-    """substitutes ccs values with values of shifted_ccs and removes latter one"""
+    """substitutes ccs values with values of shifted_ccs and removes latter one
+    :exp: Experiment with columns ["ccs", "shifted_ccs"]
+    :return: Experiment where "shifted_ccs" was adopted to be "ccs"
+    """
     df = exp.data.copy().drop(columns="ccs").rename(
         columns={"shifted_ccs": "ccs"})
 

@@ -39,7 +39,7 @@ print("data of your experiment: ", ex1.data)
 ex1.data.loc[ex1.data.charge == 2]
 
 # ex1.data is aggregated rows of duplicate features (duplicates of (sequence, charge, ccs)) already, making those unique
-# to further aggregate rows and theirby getting rid of possible feature divergence by measurement divergence of ccs values, assign a modality class to each feature
+# to further aggregate rows and theirby getting rid of possible feature divergence by measurement insecurities of ccs values, assign a modality class to each feature
 ex2 = ex1.assign_modalities()
 
 # from this point on you can proceed with the inter-experimental CCS alignment of experiment
