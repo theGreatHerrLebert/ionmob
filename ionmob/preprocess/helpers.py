@@ -10,6 +10,32 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
 from scipy.optimize import curve_fit
 
+
+def mean_shift_per_charge(ref_data, data, plot=False):
+    """
+    :param ref_data: reference data 
+    :param data: data to mean shift ccs values by charge state
+    :param plot: if true, will plot charge wise difference between ref and shift data
+    :return: data table now also containing a "shifted_ccs" column 
+    """
+    tmp_list = []
+    
+    both = ref_data.merge(data, left_on=['sequence', 'charge'], right_on=['sequence', 'charge'])
+    both['ccs_diff'] = both.ccs_x - both.ccs_y
+    
+    for c in range(2, 5):
+        tmp, tmp_ref = data[data['charge'] == c], ref_data[ref_data['charge'] == c]
+        both_tmp = both[both['charge'] == c]
+        tmp['ccs_shifted'] = tmp.ccs + np.mean(both_tmp.ccs_diff)
+        tmp_list.append(tmp)
+
+    if plot:
+        plt.hist(both.ccs_diff, bins=100, density=True)
+        plt.show()
+        
+    return pd.concat(tmp_list)
+
+
 def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
     """
     Args:
