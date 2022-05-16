@@ -345,3 +345,81 @@ def get_two_mer_counts_in_order(seq_as_tokens: list, tokens_in_order: list):
     counts = np.array([tmp_dict[x] for x in tokens_in_order])
 
     return np.array(counts).astype(np.float32)
+
+
+def get_shift_per_charge(reference, table):
+    """
+    shift a given dataset by a constant offset based on sequence and charge pairs of reference
+    :param reference: a reference dataset to align CCS values to
+    :param table: a table with CCS values to be shifted
+    :return: a table with an appended shifted CCS value column
+    """
+
+    shift_list = []
+
+    for c in range(2, 5):
+        reference_tmp = reference[reference.charge == c]
+        table_tmp = table[table.charge == c]
+
+        both = pd.merge(left=reference_tmp, right=table_tmp, right_on=['seq-match-mq', 'charge'],
+                        left_on=['sequence', 'charge'])
+        both = both.drop_duplicates(['sequence_x', 'charge'])
+
+        factor = np.mean(both.ccs_x - both.ccs_y)
+        table_tmp['ccs_shifted'] = table_tmp['ccs'] + factor
+        shift_list.append(table_tmp)
+
+    return pd.concat(shift_list)
+
+
+def reduced_mobility_to_ccs(one_over_k0, mz, charge, mass_gas=28.013, temp=31.85, t_diff=273.15):
+    """
+    convert reduced ion mobility (1/k0) to CCS
+    :param one_over_k0: reduced ion mobility
+    :param charge: charge state of the ion
+    :param mz: mass-over-charge of the ion
+    :param mass_gas: mass of drift gas
+    :param temp: temperature of the drift gas in C°
+    :param t_diff: factor to translate from C° to K
+    """
+    SUMMARY_CONSTANT = 18509.8632163405
+    reduced_mass = (mz * charge * mass_gas) / (mz * charge + mass_gas)
+    return (SUMMARY_CONSTANT * charge) / (np.sqrt(reduced_mass * (temp + t_diff)) * 1/one_over_k0)
+
+
+def to_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequences: np.ndarray, ccs: np.ndarray,
+                  tokenizer: tf.keras.preprocessing.text.Tokenizer):
+    """
+
+    Args:
+        mz:
+        charge:
+        sequences:
+        ccs:
+        tokenizer:
+
+    Returns:
+    """
+    # prepare masses, charges, sequences
+    masses = np.expand_dims(mz, 1)
+    charges_one_hot = tf.one_hot(charge - 1, 4)
+    sequences = tokenizer.texts_to_sequences(sequences)
+    seq_padded = tf.keras.preprocessing.sequence.pad_sequences(sequences, 50, padding='post')
+
+    # prepare ccs
+    ccs = np.expand_dims(ccs, 1)
+
+    # generate dataset
+    return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded), ccs))
+
+
+def to_tf_dataset_inference(mz: np.ndarray, charge: np.ndarray, sequences: np.ndarray,
+                            tokenizer: tf.keras.preprocessing.text.Tokenizer):
+    # prepare masses, charges, sequences
+    masses = np.expand_dims(mz, 1)
+    charges_one_hot = tf.one_hot(charge - 1, 4)
+    sequences = tokenizer.texts_to_sequences(sequences)
+    seq_padded = tf.keras.preprocessing.sequence.pad_sequences(sequences, 50, padding='post')
+
+    # generate dataset
+    return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded), np.zeros_like(masses)))
