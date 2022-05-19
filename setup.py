@@ -22,6 +22,7 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=[
         "tensorflow >=2.7",
+        "pyopenms >= 1.0",
         "pandas >=1.1",
         "pyarrow >= 0.5",
         "scipy >=1.5",
