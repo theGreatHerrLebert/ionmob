@@ -7,6 +7,7 @@ Models are implemented with recent versions of either [TensorFlow](https://www.t
 Please feel free to use, alter or extend ```ionmob``` in any way that suits you as it is free and open source under the **GNU General Public License v3.0**.
 Feel also free to let us know about missing functionality, bugs, or contributions you would like to make!
 
+* [**TLDR**](#TLDR)
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value)
 * [**Why do we measure CCS values of ions?**](#why-do-we-measure-CCS-values-of-ions)
 * [**Why would I want to predict CCS values of peptides in silico?**](#why-would-I-want-to-predict-CCS-values-of-peptides-in-silico)
@@ -17,6 +18,9 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**Getting insight into driving factors of CCS**](#Getting-insight-into-driving-factors-of-CCS)
 * [**Alignments of in-house and external data**](#Alignments-of-in-house-and-external-data)
 * [**Implementing a custom deep CCS predictor**](#Implementing-a-custom-deep-CCS-predictor)
+
+---
+### TLDR
 
 ---
 ### What is a peptide CCS value?

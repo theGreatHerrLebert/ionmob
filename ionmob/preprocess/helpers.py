@@ -11,36 +11,43 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from scipy.optimize import curve_fit
 
 
-def mean_shift_per_charge(ref_data, data, plot=False):
+def get_shift_per_charge(table, reference):
     """
-    :param ref_data: reference data 
-    :param data: data to mean shift ccs values by charge state
-    :param plot: if true, will plot charge wise difference between ref and shift data
-    :return: data table now also containing a "shifted_ccs" column 
+    shift a given dataset by a constant offset based on sequence and charge pairs of reference
+    :param reference: a reference dataset to align CCS values to
+    :param table: a table with CCS values to be shifted
+    :return: a table with an appended shifted CCS value column
     """
-    tmp_list = []
-    
-    both = ref_data.merge(data, left_on=['sequence', 'charge'], right_on=['sequence', 'charge'])
-    both['ccs_diff'] = both.ccs_x - both.ccs_y
-    
-    for c in range(2, 5):
-        tmp, tmp_ref = data[data['charge'] == c], ref_data[ref_data['charge'] == c]
-        both_tmp = both[both['charge'] == c]
-        tmp['ccs_shifted'] = tmp.ccs + np.mean(both_tmp.ccs_diff)
-        tmp_list.append(tmp)
 
-    if plot:
-        plt.hist(both.ccs_diff, bins=100, density=True)
-        plt.show()
-        
-    return pd.concat(tmp_list)
+    shift_list = []
+
+    table['sequence'] = table.apply(lambda r: ''.join(list(r['sequence-tokenized'])), axis=1)
+    reference['sequence'] = reference.apply(lambda r: ''.join(list(r['sequence-tokenized'])), axis=1)
+
+    for c in range(2, 5):
+        reference_tmp = reference[reference.charge == c]
+        table_tmp = table[table.charge == c]
+
+        both = pd.merge(left=reference_tmp, right=table_tmp, right_on=['sequence', 'charge'],
+                        left_on=['sequence', 'charge'])
+
+        factor = np.mean(both.ccs_x - both.ccs_y)
+        table_tmp['ccs_shifted'] = table_tmp['ccs'] + factor
+        shift_list.append(table_tmp)
+
+    return pd.concat(shift_list)
 
 
 def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
     """
+
     Args:
-        data:
+        mz:
+        charge:
+        ccs:
+
     Returns:
+
     """
     slopes, intercepts = [0.0], [0.0]
 
@@ -48,10 +55,10 @@ def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
         def fit_func(x, a, b):
             return a * np.sqrt(x) + b
 
-        tripples = list(filter(lambda x: x[1] == c, zip(mz, charge, ccs)))
+        triples = list(filter(lambda x: x[1] == c, zip(mz, charge, ccs)))
         
-        mz_tmp, charge_tmp = np.array([x[0] for x in tripples]), np.array([x[1] for x in tripples])
-        ccs_tmp = np.array([x[2] for x in tripples])
+        mz_tmp, charge_tmp = np.array([x[0] for x in triples]), np.array([x[1] for x in triples])
+        ccs_tmp = np.array([x[2] for x in triples])
 
         popt, _ = curve_fit(fit_func, mz_tmp, ccs_tmp)
 
@@ -59,48 +66,6 @@ def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
         intercepts.append(popt[1])
 
     return np.array(slopes, np.float32), np.array(intercepts, np.float32)
-
-
-def calculate_mean_diff_per_charge(data):
-    """
-
-    Args:
-        data:
-
-    Returns:
-
-    """
-
-    ret_list = []
-
-    for c in sorted(list(set(data.charge.values))):
-        tmp = data[data['charge'] == c]
-
-        ccs = tmp.ccs.values
-        ccs_pred = tmp.ccs_predicted.values
-        mean_error = np.mean(np.abs(ccs - ccs_pred))
-        ret_list.append(mean_error)
-
-    ret_list = [np.round(x, 2) for x in ret_list]
-
-    return ret_list, np.round(np.mean(np.abs(data.ccs.values - data.ccs_predicted.values)), 2)
-
-
-def sequence_with_charge(seqs_tokenized, charges):
-    """
-
-    Args:
-        seqs_tokenized:
-        charges:
-
-    Returns:
-
-    """
-    s_w_c = []
-    for (s, c) in list(zip(seqs_tokenized, charges)):
-        s_w_c.append([str(c)] + s)
-
-    return s_w_c
 
 
 def get_non_overlapping_pairs(ds_ref, ds_test):
@@ -228,6 +193,7 @@ def get_gravy_score(seq: str, drop_ends: bool = True, normalize: bool = True):
     calculate normalized gravy scores for a given sequence
     :param seq: peptide sequence
     :param drop_ends: if true, first and last character will be stripped from sequence
+    :param normalize:
     :return: gravy score normalized by sequence length
     """
     seq = seq.replace('(ac)', '')
@@ -347,31 +313,6 @@ def get_two_mer_counts_in_order(seq_as_tokens: list, tokens_in_order: list):
     return np.array(counts).astype(np.float32)
 
 
-def get_shift_per_charge(reference, table):
-    """
-    shift a given dataset by a constant offset based on sequence and charge pairs of reference
-    :param reference: a reference dataset to align CCS values to
-    :param table: a table with CCS values to be shifted
-    :return: a table with an appended shifted CCS value column
-    """
-
-    shift_list = []
-
-    for c in range(2, 5):
-        reference_tmp = reference[reference.charge == c]
-        table_tmp = table[table.charge == c]
-
-        both = pd.merge(left=reference_tmp, right=table_tmp, right_on=['seq-match-mq', 'charge'],
-                        left_on=['sequence', 'charge'])
-        both = both.drop_duplicates(['sequence_x', 'charge'])
-
-        factor = np.mean(both.ccs_x - both.ccs_y)
-        table_tmp['ccs_shifted'] = table_tmp['ccs'] + factor
-        shift_list.append(table_tmp)
-
-    return pd.concat(shift_list)
-
-
 def reduced_mobility_to_ccs(one_over_k0, mz, charge, mass_gas=28.013, temp=31.85, t_diff=273.15):
     """
     convert reduced ion mobility (1/k0) to CCS
@@ -423,3 +364,137 @@ def to_tf_dataset_inference(mz: np.ndarray, charge: np.ndarray, sequences: np.nd
 
     # generate dataset
     return tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded), np.zeros_like(masses)))
+
+
+def preprocess_peaks_sequence(s):
+    """
+    :param s:
+    """
+
+    seq = s
+
+    is_acc = False
+
+    if seq.find('(+42.01)') != -1:
+        is_acc = True
+
+    # C-<CM>
+    seq = seq.replace('(+57.02)', '')
+    # Phosphorylation
+    seq = seq.replace('(+79.97)', '$')
+    # Oxidation
+    seq = seq.replace('(+15.99)', '&')
+    # Acetylation
+    seq = seq.replace('(+42.01)', '')
+
+    # form list from string
+    slist = list(seq)
+
+    slist = [s if s != '$' else '<PH>' for s in slist]
+    slist = [s if s != '&' else '<OX>' for s in slist]
+
+    r_list = []
+
+    for i, char in enumerate(slist):
+
+        if char == '<PH>':
+            C = slist[i - 1]
+            C = C + '-<PH>'
+            r_list = r_list[:-1]
+            r_list.append(C)
+
+        elif char == '<OX>':
+            M = slist[i - 1]
+            M = M + '-<OX>'
+            r_list = r_list[:-1]
+            r_list.append(M)
+
+        elif char == 'C':
+            r_list.append('C-<CM>')
+
+        else:
+            r_list.append(char)
+
+    if is_acc:
+        return ['<START>-<AC>'] + r_list + ['<END>']
+
+    return ['<START>'] + r_list + ['<END>']
+
+
+def preprocess_diann_sequence(s):
+    """
+    :param s:
+    """
+
+    seq = s
+    seq = seq.replace('(UniMod:4)', '')
+    seq = seq.replace('(UniMod:21)', '$')
+
+    # form list from string
+    slist = list(seq)
+
+    slist = [s if s != '$' else '<PH>' for s in slist]
+
+    r_list = []
+
+    for i, char in enumerate(slist):
+
+        if char == '<PH>':
+            C = slist[i - 1]
+            C = C + '-<PH>'
+            r_list = r_list[:-1]
+            r_list.append(C)
+
+        elif char == 'C':
+            r_list.append('C-<CM>')
+
+        else:
+            r_list.append(char)
+
+    return ['<START>'] + r_list + ['<END>']
+
+
+def process_max_quant_sequence(s):
+    """
+    :param s:
+    """
+
+    seq = s[1:-1]
+    seq = seq.replace('(Oxidation (M))', '$')
+
+    # form list from string
+    slist = list(seq)
+
+    slist = [s if s != '$' else '<OX>' for s in slist]
+
+    r_list = []
+
+    for i, char in enumerate(slist):
+
+        if char == '<OX>':
+            C = slist[i - 1]
+            C = C + '-<OX>'
+            r_list = r_list[:-1]
+            r_list.append(C)
+
+        elif char == 'C':
+            r_list.append('C-<CM>')
+
+        else:
+            r_list.append(char)
+
+    return ['<START>'] + r_list + ['<END>']
+
+
+def sequence_with_charge(seqs_tokenized, charges):
+    """
+    Args:
+        seqs_tokenized:
+        charges:
+    Returns:
+    """
+    s_w_c = []
+    for (s, c) in list(zip(seqs_tokenized, charges)):
+        s_w_c.append([str(c)] + s)
+
+    return

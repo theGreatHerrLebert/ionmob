@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from ionmob.preprocess.helpers import sequence_to_tokens, get_helix_score, get_gravy_score, sequence_with_charge
+from ionmob.preprocess.helpers import sequence_to_tokens, get_helix_score, get_gravy_score
 from ionmob.preprocess.tokenization import token_pattern_MaxQuant_v1, create_nmer_counts
 
 
