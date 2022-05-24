@@ -160,3 +160,15 @@ def partition_tf_dataset(ds: tf.data.Dataset, ds_size: int, train_frac: float = 
     test_ds = ds.skip(train_size).skip(val_size)
 
     return train_ds, val_ds, test_ds
+
+
+def split_dataset(data, train_frac=80, valid_frac=90):
+    num_rows = data.shape[0]
+    train_index = int((num_rows / 100) * 80)
+    valid_index = int((num_rows / 100) * 90)
+
+    d_train = data.iloc[:train_index]
+    d_valid = data.iloc[train_index:valid_index]
+    d_test = data.iloc[valid_index:]
+
+    return d_train, d_valid, d_test
