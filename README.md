@@ -21,6 +21,38 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 
 ---
 ### TLDR
+To simply get started, load our best performing predictor and perform ccs-inference on a dataset
+provided by this repository:
+
+#### Inference on one of our provided datasets
+```python
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+
+from ionmob.preprocess.helpers import tokenizer_from_json, to_tf_dataset_inference, to_tf_dataset
+
+# you will need to load the correct tokenizer to translate peptide sequences to tokens
+tokenizer = tokenizer_from_json('../ionmob/pretrained-models/tokenizers/tokenizer.json')
+
+# load the data
+data = pd.read_parquet('../ionmob/data/Tenzer-dia-phospho_unique.parquet')
+
+# load the model
+deepGRU = tf.keras.models.load_model('../ionmob/pretrained-models/GRUPredictor/')
+
+# create a tensorflow dataset from data
+tf_ds = to_tf_dataset_inference(data.mz.values, 
+                   data.charge.values, 
+                   [list(s) for s in data['sequence-tokenized'].values], 
+                   tokenizer).batch(2048)
+
+# do inference
+ccs_predicted, deep_residues = deepGRU.predict(tf_ds)
+data['ccs_predicted'] = ccs_predicted
+```
+#### Inference on your own datasets
 
 ---
 ### What is a peptide CCS value?
