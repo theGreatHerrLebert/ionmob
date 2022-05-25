@@ -21,7 +21,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 
 ---
 ### TLDR
-To simply get started, load our best performing predictor and perform ccs-inference on a dataset
+To simply get started, load our best performing predictor and infer ccs values on a dataset
 provided by this repository:
 
 #### Inference on one of our provided datasets
