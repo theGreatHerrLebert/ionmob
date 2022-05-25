@@ -114,19 +114,19 @@ We will demonstrate how to do this with one of our provided example datasets:
 import pandas as pd
 
 # read data and a predictor
-data = pd.read_hdf('Tenzer.h5')
+data = pd.read_parquet('data/Tenzer.parquet')
 data.head()
 ```
 
 This is what the data looks like:
 
-|       mz |   charge | sequence                                      |   ccs   | origin     |
-|---------:|---------:|:----------------------------------------------|--------:|:-----------|
-|  801.89  |        2 | \_AAAAAAAAGGAGDSGDAVTK\_                      | 433.825 | Tenzer-lab |
-| 1482.86  |        3 | \_AAAAAPASEDEDDEDDEDDEDDDDDEEDDSEEEAMETTPAK\_ | 701.41  | Tenzer-lab |
-|  410.205 |        2 | \_AAAACLDK\_                                  | 296.58  | Tenzer-lab |
-|  471.28  |        2 | \_AAAAVVAAAAR\_                               | 348.332 | Tenzer-lab |
-|  516.27  |        3 | \_AAADALSDLEIKDSK\_                           | 467.791 | Tenzer-lab |
+|    |       mz |   charge | sequence-tokenized                                                         |     ccs |      rt | name           |
+|---:|---------:|---------:|:---------------------------------------------------------------------------|--------:|--------:|:---------------|
+|  0 |  798.926 |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'G' | 477.104 | 23.6253 | Tenzer-tryptic |
+|  1 | 1184.61  |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'P' 'A' 'A' 'A' 'A' 'T' 'A' | 545.104 | 27.7997 | Tenzer-tryptic |
+|  2 |  478.78  |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'L' 'Q' 'A' 'K' '<END>']            | 351.073 | 14.1374 | Tenzer-tryptic |
+|  3 |  514.317 |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'T' 'V' 'L' 'L' 'R' '<END>']            | 360.949 | 38.812  | Tenzer-tryptic |
+|  4 |  472.251 |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'D' 'L' 'A' 'N' 'R' '<END>']                | 320.562 | 14.467  | Tenzer-tryptic |
 
 Let's compare accuracy for two predictors.
 One that only does a zero-information square-root fit on ion mz values and a deep model that also uses information on peptide sequences.
