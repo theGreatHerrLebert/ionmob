@@ -21,7 +21,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 
 ---
 ### TLDR
-To simply get started, load our best performing predictor and infer ccs values on a dataset
+To simply get started, load our best performing predictor and infer CCS values on a dataset
 provided by this repository:
 
 #### Inference on one of our provided datasets
@@ -43,16 +43,20 @@ data = pd.read_parquet('../ionmob/data/Tenzer-dia-phospho_unique.parquet')
 deepGRU = tf.keras.models.load_model('../ionmob/pretrained-models/GRUPredictor/')
 
 # create a tensorflow dataset from data
-tf_ds = to_tf_dataset_inference(data.mz.values, 
-                   data.charge.values, 
-                   [list(s) for s in data['sequence-tokenized'].values], 
-                   tokenizer).batch(2048)
+tf_ds = to_tf_dataset_inference(mz=data['mz'], 
+                   charge=data['charge'], 
+                   sesquences=[list(s) for s in data['sequence-tokenized']], 
+                   tokenizer=tokenizer)
 
 # do inference
 ccs_predicted, deep_residues = deepGRU.predict(tf_ds)
 data['ccs_predicted'] = ccs_predicted
 ```
 #### Inference on your own datasets
+
+Inference of CCS values on custom data is already more involved as it requires you to tokenize your sequences before 
+they can be used by an `ionmob` predictor. Sequences presented to `ionmob` can be composed of all 20 Amino Acids and a 
+growing number of modifications such as phosphorylation. Have a look at all symbols known to 
 
 ---
 ### What is a peptide CCS value?
@@ -120,13 +124,12 @@ data.head()
 
 This is what the data looks like:
 
-|    |       mz |   charge | sequence-tokenized                                                         |     ccs |      rt | name           |
-|---:|---------:|---------:|:---------------------------------------------------------------------------|--------:|--------:|:---------------|
-|  0 |  798.926 |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'G' | 477.104 | 23.6253 | Tenzer-tryptic |
-|  1 | 1184.61  |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'P' 'A' 'A' 'A' 'A' 'T' 'A' | 545.104 | 27.7997 | Tenzer-tryptic |
-|  2 |  478.78  |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'L' 'Q' 'A' 'K' '<END>']            | 351.073 | 14.1374 | Tenzer-tryptic |
-|  3 |  514.317 |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'T' 'V' 'L' 'L' 'R' '<END>']            | 360.949 | 38.812  | Tenzer-tryptic |
-|  4 |  472.251 |        2 | ['<START>' 'A' 'A' 'A' 'A' 'A' 'D' 'L' 'A' 'N' 'R' '<END>']                | 320.562 | 14.467  | Tenzer-tryptic |
+|    |       mz |   charge | sequence-tokenized                                                |     ccs |      rt | name           |
+|---:|---------:|---------:|:------------------------------------------------------------------|--------:|--------:|:---------------|
+|  2 |  478.78  |        2 | ['\<START>' 'A' 'A' 'A' 'A' 'A' 'A' 'A' 'L' 'Q' 'A' 'K' '\<END>'] | 351.073 | 14.1374 | Tenzer-tryptic |
+|  3 |  514.317 |        2 | ['<\START>' 'A' 'A' 'A' 'A' 'A' 'A' 'T' 'V' 'L' 'L' 'R' '<\END>'] | 360.949 | 38.812  | Tenzer-tryptic |
+|  4 |  472.251 |        2 | ['<\START>' 'A' 'A' 'A' 'A' 'A' 'D' 'L' 'A' 'N' 'R' '<\END>']     | 320.562 | 14.467  | Tenzer-tryptic |
+
 
 Let's compare accuracy for two predictors.
 One that only does a zero-information square-root fit on ion mz values and a deep model that also uses information on peptide sequences.
