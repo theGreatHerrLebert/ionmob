@@ -87,6 +87,7 @@ def get_prediction_data(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray
     :param sequence: array of sequences as strings
     :param tokenizer: pre-fit tokenizer
     :param drop_sequence_ends: if true, start end end AAs will not be treated as separate tokens
+    :param add_charge:
     :return: a tensorflow dataset for prediction
     """
     # prepare masses
@@ -119,6 +120,7 @@ def get_training_data(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends, 
     :param ccs: array of ccs values
     :param tokenizer: pre-fit tokenizer
     :param drop_sequence_ends: if true, start end end AAs will not be treated as separate tokens
+    :param add_charge:
     :return: a tensorflow dataset for prediction
     """
     # ccs values
