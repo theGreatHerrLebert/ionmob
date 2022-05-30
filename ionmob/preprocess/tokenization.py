@@ -10,7 +10,7 @@ import pandas as pd
 from functools import reduce
 
 
-def get_all_pairs(data):
+def get_occurring_kmers(data):
     """
     create a set of all 2-mers in a given dataset
     :param data: dataset containing a tokenized sequence list
