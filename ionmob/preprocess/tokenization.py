@@ -11,6 +11,11 @@ from functools import reduce
 
 
 def get_all_pairs(data):
+    """
+    create a set of all 2-mers in a given dataset
+    :param data: dataset containing a tokenized sequence list
+    :return: a set off all occurring 2-mers
+    """
     pairs = list(data.apply(lambda r: list(zip(list(r['sequence-tokenized']),
                                                list(r['sequence-tokenized'][1:]))), axis=1))
 
@@ -21,11 +26,23 @@ def get_all_pairs(data):
 
 
 def get_index_dict(total_set):
+    """
+    create a sorted, indexed dictionary tuple -> list_index
+    :param total_set: a set containing all tuples to be indexed
+    :return: a dictionary: tuple -> list_index, where tuples are lexicographically sorted
+    """
     sorted_list = sorted(list(total_set))
     return dict(zip(sorted_list, np.arange(len(sorted_list))))
 
 
 def create_count_vector(pairs, num_columns, index_dict):
+    """
+    helper function to count occurrences of tuples in a given tuple sequence
+    :param pairs: a list of all aa tuples
+    :param num_columns: length of zero vector
+    :param index_dict: sorted dict: tuple -> list_index
+    :return: a vector of length 1 x num_tokens, holding counts of tuples in a given sequence
+    """
     count_vec = np.zeros(num_columns)
 
     for p in pairs:
@@ -35,6 +52,12 @@ def create_count_vector(pairs, num_columns, index_dict):
 
 
 def create_count_vectors(data, index_dict):
+    """
+    creates a column of tuple counts in a given dataset
+    :param data: a dataset to create tuple count vectors for
+    :param index_dict: sorted dict: tuple -> list_index
+    :return: a column with all count vectors for a given dataset
+    """
     pairs = pd.DataFrame({'pairs': data.apply(lambda r: list(zip(list(r['sequence-tokenized']),
                                                                  list(r['sequence-tokenized'][1:]))), axis=1)})
     # num_rows = len(pairs)
