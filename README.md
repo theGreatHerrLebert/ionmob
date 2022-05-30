@@ -63,10 +63,10 @@ from ionmob.data.chemistry import VARIANT_DICT
 print(VARIANT_DICT)
 ```
 {'L': ['L'], 'E': ['E'], 'S': ['S', 'S-\<PH>'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'], 
-'<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>-<AC>'], 'T': ['T', 'T-<PH>'], 
-'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K-<AC>'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'], 
-'Y': ['Y', 'Y-<PH>'], 'M': ['M', 'M-<OX>'], 'W': ['W'], 'C': ['C', 'C-<CY>', 'C-<CM>'], 
-'C-<CM>': ['C', 'C-<CY>', 'C-<CM>']}
+'<END>': ['\<END>'], 'P': ['P'], '\<START>': ['\<START>', '\<START>-<AC>'], 'T': ['T', 'T-\<PH>'], 
+'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K-\<AC>'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'], 
+'Y': ['Y', 'Y-\<PH>'], 'M': ['M', 'M-\<OX>'], 'W': ['W'], 'C': ['C', 'C-\<CY>', 'C-\<CM>'], 
+'C-\<CM>': ['C', 'C-\<CY>', 'C-\<CM>']}
 
 
 ---
