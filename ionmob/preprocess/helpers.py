@@ -474,7 +474,7 @@ def preprocess_diann_sequence(s):
     return ['<START>'] + r_list + ['<END>']
 
 
-def process_max_quant_sequence(s):
+def preprocess_max_quant_sequence(s):
     """
     :param s:
     """
@@ -517,4 +517,4 @@ def sequence_with_charge(seqs_tokenized, charges):
     for (s, c) in list(zip(seqs_tokenized, charges)):
         s_w_c.append([str(c)] + s)
 
-    return
+    return s_w_c

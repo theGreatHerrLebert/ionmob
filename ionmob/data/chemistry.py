@@ -1,39 +1,38 @@
 import numpy as np
 from pyopenms import *
 
-
-amino_acids = { 'Lysine': 'K',
-                'Alanine': 'A',
-                'Glycine': 'G',
-                'Valine': 'V',
-                'Tyrosine': 'Y',
-                'Arginine': 'R',
-                'Glutamic Acid': 'E',
-                'Phenylalanine': 'F',
-                'Tryptophan': 'W',
-                'Leucine': 'L',
-                'Threonine': 'T',
-                'Cysteine': 'C',
-                'Serine': 'S',
-                'Glutamine': 'Q',
-                'Methionine': 'M',
-                'Isoleucine': 'I',
-                'Asparagine': 'N',
-                'Proline': 'P',
-                'Histidine': 'H',
-                'Aspartic Acid': 'D'}
+amino_acids = {'Lysine': 'K',
+               'Alanine': 'A',
+               'Glycine': 'G',
+               'Valine': 'V',
+               'Tyrosine': 'Y',
+               'Arginine': 'R',
+               'Glutamic Acid': 'E',
+               'Phenylalanine': 'F',
+               'Tryptophan': 'W',
+               'Leucine': 'L',
+               'Threonine': 'T',
+               'Cysteine': 'C',
+               'Serine': 'S',
+               'Glutamine': 'Q',
+               'Methionine': 'M',
+               'Isoleucine': 'I',
+               'Asparagine': 'N',
+               'Proline': 'P',
+               'Histidine': 'H',
+               'Aspartic Acid': 'D'}
 
 VARIANT_DICT = {'L': ['L'], 'E': ['E'], 'S': ['S', 'S-<PH>'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
-           '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>-<AC>'], 'T': ['T', 'T-<PH>'],
-           'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K-<AC>'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
-           'Y': ['Y', 'Y-<PH>'], 'M': ['M', 'M-<OX>'],
-           'W': ['W'], 'C': ['C', 'C-<CY>', 'C-<CM>'], 'C-<CM>': ['C', 'C-<CY>', 'C-<CM>']}
+                '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>-<AC>'], 'T': ['T', 'T-<PH>'],
+                'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K-<AC>'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
+                'Y': ['Y', 'Y-<PH>'], 'M': ['M', 'M-<OX>'],
+                'W': ['W'], 'C': ['C', 'C-<CY>', 'C-<CM>'], 'C-<CM>': ['C', 'C-<CY>', 'C-<CM>']}
 
 VARIANT_DICT_R = {'L': ['L'], 'E': ['E'], 'S': ['S', 'S-<PH>'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
-           '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>-<AC>'], 'T': ['T', 'T-<PH>'],
-           'I': ['I'], 'Q': ['Q'], 'K': ['K'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
-           'Y': ['Y', 'Y-<PH>'], 'M': ['M', 'M-<OX>'],
-           'W': ['W'], 'C-<CM>': ['C-<CM>']}
+                  '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>-<AC>'], 'T': ['T', 'T-<PH>'],
+                  'I': ['I'], 'Q': ['Q'], 'K': ['K'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
+                  'Y': ['Y', 'Y-<PH>'], 'M': ['M', 'M-<OX>'],
+                  'W': ['W'], 'C-<CM>': ['C-<CM>']}
 
 MASS_PROTON = 1.007276466583
 

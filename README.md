@@ -73,6 +73,16 @@ Modified ones are indicated by an amino acid capital letter followed by a dash a
 Also, N termini are signified by a `<START>` token und C termini by an `<END>` token. This additionally allows for 
 termini modification tokens as well as indication of read direction of peptide sequences.
 
+Translating sequences to tokens from a given output file of e.g. PEAKS, DiaNN or MaxQuant is supported out-of-the-box:
+```python
+import pandas as pd
+from ionmob.preprocess.helpers import preprocess_max_quant_sequence
+
+mq_data = pd.read_table('path/to/mq/evidence.txt', low_memory=False)
+
+mq_data['sequence-tokenized'] = mq_data.apply(lambda r: preprocess_max_quant_sequence(r['Modified sequence']), axis=1)
+```
+
 ---
 ### What is a peptide CCS value?
 The rotationally-averaged collision cross section - **CCS** - is a scalar value that describes a physical property of an ion.
