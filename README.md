@@ -68,6 +68,10 @@ print(VARIANT_DICT)
 'Y': ['Y', 'Y-\<PH>'], 'M': ['M', 'M-\<OX>'], 'W': ['W'], 'C': ['C', 'C-\<CY>', 'C-\<CM>'], 
 'C-\<CM>': ['C', 'C-\<CY>', 'C-\<CM>']}
 
+We use the convention that an unmodified amino acid is just written as a singe character in capital letters. 
+Modified ones are indicated by an amino acid capital letter followed by a dash and the modification in angle brackets.
+Also, N termini are signified by a `<START>` token und C termini by an `<END>` token. This additionally allows for 
+termini modification tokens as well as indication of read direction of peptide sequences.
 
 ---
 ### What is a peptide CCS value?
