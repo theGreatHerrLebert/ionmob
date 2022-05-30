@@ -39,7 +39,7 @@ MASS_PROTON = 1.007276466583
 MODIFICATIONS_MZ = {'<AC>': 42.010565, '<OX>': 15.994915, '<CM>': 57.021464, '<PH>': 79.966331, '<CY>': 0}
 
 
-def calculate_mz(sequence, charge):
+def calculate_mz_multi_info(sequence, charge):
     """
     :param sequence:
     :param charge:
@@ -69,6 +69,38 @@ def calculate_mz(sequence, charge):
         vanilla_mass += value * MODIFICATIONS_MZ[key]
 
     return seq, c_dict, (vanilla_mass + charge * MASS_PROTON) / charge
+
+
+def calculate_mz(sequence, charge):
+    """
+    :param sequence:
+    :param charge:
+    :return:
+    """
+    c_dict = {'<AC>': 0, '<OX>': 0, '<CM>': 0, '<PH>': 0, '<CY>': 0}
+    seq = ''
+
+    first, last = sequence[0], sequence[-1]
+
+    if first.find('<AC>') != -1:
+        c_dict['<AC>'] += 1
+
+    for char in sequence[1:-1]:
+
+        if len(char) == 1:
+            seq += char
+
+        else:
+            first, last = char.split('-')
+            c_dict[last] += 1
+            seq += first
+
+    vanilla_mass = AASequence.fromString(seq).getMonoWeight()
+
+    for key, value in c_dict.items():
+        vanilla_mass += value * MODIFICATIONS_MZ[key]
+
+    return (vanilla_mass + charge * MASS_PROTON) / charge
 
 
 def reduced_mobility_to_ccs(one_over_k0, mz, charge, mass_gas=28.013, temp=31.85, t_diff=273.15):

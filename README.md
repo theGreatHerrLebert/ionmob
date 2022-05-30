@@ -73,7 +73,7 @@ Modified ones are indicated by an amino acid capital letter followed by a dash a
 Also, N termini are signified by a `<START>` token und C termini by an `<END>` token. This additionally allows for 
 termini modification tokens as well as indication of read direction of peptide sequences.
 
-Translating sequences to tokens from a given output file of e.g. PEAKS, DiaNN or MaxQuant is supported out-of-the-box:
+Translating sequences to tokens from a given output file of PEAKS, DiaNN or MaxQuant is supported out-of-the-box:
 ```python
 import pandas as pd
 from ionmob.preprocess.helpers import preprocess_max_quant_sequence
@@ -81,6 +81,24 @@ from ionmob.preprocess.helpers import preprocess_max_quant_sequence
 mq_data = pd.read_table('path/to/mq/evidence.txt', low_memory=False)
 
 mq_data['sequence-tokenized'] = mq_data.apply(lambda r: preprocess_max_quant_sequence(r['Modified sequence']), axis=1)
+```
+Depending on the software used for processing the raw-data, precursor mono-isotopic mz values might not be available
+in the output files. It is therefore possible to calculate them from a given tokenized sequence and charge state:
+
+```python
+from ionmob.data.chemistry import calculate_mz
+
+mq_data['mz'] = mq_data.apply(lambda r: calculate_mz(r['sequence-tokenized'], r['Charge']), axis=1)
+```
+Now, a dataset can be created for prediction:
+```python
+import tensorflow as tf
+from ionmob.preprocess.helpers import to_tf_dataset_inference
+from ionmob.preprocess.helpers import tokenizer_from_json
+
+tokenizer = tokenizer_from_json('pretrained-models/tokenizers/tokenizer.json')
+
+tf_ds = to_tf_dataset_inference(mq_data['mz'], mq_data['Charge'], mq_data['sequence-tokenized'], tokenizer)
 ```
 
 ---
