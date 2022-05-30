@@ -174,3 +174,94 @@ def split_dataset(data, train_frac=80, valid_frac=90):
     d_test = data.iloc[valid_index:]
 
     return d_train, d_valid, d_test
+
+
+def to_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequences: np.ndarray, ccs: np.ndarray,
+                  tokenizer: tf.keras.preprocessing.text.Tokenizer, batch=True, batch_size=2048):
+    """
+    Args:
+        mz:
+        charge:
+        sequences:
+        ccs:
+        tokenizer:
+        batch:
+        batch_size:
+    Returns:
+    """
+    # prepare masses, charges, sequences
+    masses = np.expand_dims(mz, 1)
+    charges_one_hot = tf.one_hot(charge - 1, 4)
+    sequences = tokenizer.texts_to_sequences(sequences)
+    seq_padded = tf.keras.preprocessing.sequence.pad_sequences(sequences, 50, padding='post')
+
+    # prepare ccs
+    ccs = np.expand_dims(ccs, 1)
+
+    # generate dataset
+    ds = tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded), ccs))
+
+    if batch:
+        return ds.batch(batch_size)
+    return ds
+
+
+def to_tf_dataset_inference(mz: np.ndarray, charge: np.ndarray, sequences: np.ndarray,
+                            tokenizer: tf.keras.preprocessing.text.Tokenizer, batch=True, batch_size=2048):
+    """
+    Args:
+        mz:
+        charge:
+        sequences:
+        tokenizer:
+        batch:
+        batch_size:
+
+    Returns:
+
+    """
+    # prepare masses, charges, sequences
+    masses = np.expand_dims(mz, 1)
+    charges_one_hot = tf.one_hot(charge - 1, 4)
+    sequences = tokenizer.texts_to_sequences(sequences)
+    seq_padded = tf.keras.preprocessing.sequence.pad_sequences(sequences, 50, padding='post')
+
+    # generate dataset
+    ds = tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, seq_padded), np.zeros_like(masses)))
+
+    if batch:
+        return ds.batch(batch_size)
+    return ds
+
+
+def to_tf_dataset_kmer(mz: np.ndarray, charge: np.ndarray, token_counts: np.ndarray, ccs: np.ndarray,
+                       batch=True, batch_size=2048):
+    """
+
+    Args:
+        mz:
+        charge:
+        token_counts:
+        ccs:
+        batch:
+        batch_size:
+
+    Returns:
+
+    """
+    # prepare masses, charges, sequences
+    masses = np.expand_dims(mz, 1)
+    charges_one_hot = tf.one_hot(charge - 1, 4)
+
+    # prepare ccs
+    ccs = np.expand_dims(ccs, 1)
+
+    token_counts = np.array(list(x for x in token_counts))
+
+    # generate dataset
+    ds = tf.data.Dataset.from_tensor_slices(((masses, charges_one_hot, token_counts), ccs))
+
+    if batch:
+        return ds.batch(batch_size)
+
+    return ds
