@@ -55,8 +55,19 @@ data['ccs_predicted'] = ccs_predicted
 #### Inference on your own datasets
 
 Inference of CCS values on custom data is already more involved as it requires you to tokenize your sequences before 
-they can be used by an `ionmob` predictor. Sequences presented to `ionmob` can be composed of all 20 Amino Acids and a 
-growing number of modifications such as phosphorylation. Have a look at all symbols known to 
+they can be used by an `ionmob` predictor. Sequences presented to `ionmob` can be composed of all 20 amino acids and a 
+growing number of modifications such as phosphorylation. Have a look at all known symbols:
+
+```python
+from ionmob.data.chemistry import VARIANT_DICT
+print(VARIANT_DICT)
+```
+{'L': ['L'], 'E': ['E'], 'S': ['S', 'S-\<PH>'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'], 
+'<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>-<AC>'], 'T': ['T', 'T-<PH>'], 
+'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K-<AC>'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'], 
+'Y': ['Y', 'Y-<PH>'], 'M': ['M', 'M-<OX>'], 'W': ['W'], 'C': ['C', 'C-<CY>', 'C-<CM>'], 
+'C-<CM>': ['C', 'C-<CY>', 'C-<CM>']}
+
 
 ---
 ### What is a peptide CCS value?

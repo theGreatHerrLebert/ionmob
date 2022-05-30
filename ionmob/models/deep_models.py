@@ -6,6 +6,7 @@ class ProjectToInitialCCS(tf.keras.layers.Layer):
     """
     Simple linear regression layer, calculates ccs value as linear mapping from mz, charge -> ccs
     """
+
     def __init__(self, slopes, intercepts):
         super(ProjectToInitialCCS, self).__init__()
         self.slopes = tf.constant([slopes])
@@ -21,6 +22,7 @@ class ProjectToInitialSqrtCCS(tf.keras.layers.Layer):
     """
     Simple sqrt regression layer, calculates ccs value as linear mapping from mz, charge -> ccs
     """
+
     def __init__(self, slopes, intercepts):
         super(ProjectToInitialSqrtCCS, self).__init__()
         self.slopes = tf.constant([slopes])
@@ -29,17 +31,19 @@ class ProjectToInitialSqrtCCS(tf.keras.layers.Layer):
     def call(self, inputs):
         mz, charge = inputs[0], inputs[1]
         # since charge is one-hot encoded, can use it to gate linear prediction by charge state
-        return tf.expand_dims(tf.reduce_sum((self.slopes*tf.sqrt(mz) + self.intercepts)*tf.squeeze(charge), axis=1), 1)
-    
+        return tf.expand_dims(tf.reduce_sum((self.slopes * tf.sqrt(mz) + self.intercepts) * tf.squeeze(charge), axis=1),
+                              1)
+
 
 class SqrtModel(tf.keras.models.Model):
     """
     expands sqrt layer into a callable model
     """
+
     def __init__(self, slopes, intercepts):
         super(SqrtModel, self).__init__()
         self.sqrt_layer = ProjectToInitialSqrtCCS(slopes, intercepts)
-    
+
     def call(self, inputs):
         mz, charge = inputs[0], inputs[1]
         return self.sqrt_layer((mz, charge))
@@ -103,7 +107,9 @@ class DeepRecurrentModelExpanded(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
-    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_1=64, gru_2=64, rdo=0.0, do=0.0, sqrt=True):
+
+    def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_1=64, gru_2=64, rdo=0.0, do=0.0,
+                 sqrt=True):
 
         super(DeepRecurrentModelExpanded, self).__init__()
         self.__seq_len = seq_len
@@ -151,6 +157,7 @@ class DeepAttentionModel(tf.keras.models.Model):
     Deep Learning model combining initial linear fit with sequence based features, both scalar and complex
     Model architecture is inspired by Meier et al.: https://doi.org/10.1038/s41467-021-21352-8
     """
+
     def __init__(self, slopes, intercepts, num_tokens, seq_len=50, emb_dim=128, gru_enc_dec_dim=64, r_dim=128):
         super(DeepAttentionModel, self).__init__()
         self.__seq_len = seq_len
@@ -241,20 +248,16 @@ class SeqConvNet(tf.keras.models.Model):
 
 
 class KmerNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercepts, activation=None, dropout=0.3, l1_reg=1e-2, l2_reg=1e-3, sqrt=True):
+    def __init__(self, slopes, intercepts, activation=None, dropout=0.1, l1_reg=1e-5, l2_reg=1e-5):
         super(KmerNet, self).__init__()
 
-         # decide between inital linear or sqrt projection
-        if sqrt:
-            self.initial = ProjectToInitialSqrtCCS(slopes, intercepts)
-        else:
-            self.initial = ProjectToInitialCCS(slopes, intercepts)
+        self.initial = ProjectToInitialSqrtCCS(slopes, intercepts)
 
-        self.d1 = tf.keras.layers.Dense(128, activation=activation,
+        self.d1 = tf.keras.layers.Dense(256, activation=activation,
                                         kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
-        self.d2 = tf.keras.layers.Dense(64, activation=activation,
+        self.d2 = tf.keras.layers.Dense(128, activation=activation,
                                         kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
-        self.d3 = tf.keras.layers.Dense(32, activation=activation,
+        self.d3 = tf.keras.layers.Dense(64, activation=activation,
                                         kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
 
         self.dropout = tf.keras.layers.Dropout(dropout)
@@ -270,21 +273,20 @@ class KmerNet(tf.keras.models.Model):
 
 
 class SimpleKmerNet(tf.keras.models.Model):
-    def __init__(self, slopes, intercepts, dropout=0.3, l1_reg=1e-2, l2_reg=1e-3):
+    def __init__(self, slopes, intercepts, l1_reg=1e-2, l2_reg=1e-3):
         super(SimpleKmerNet, self).__init__()
 
-        self.linear = ProjectToInitialCCS(slopes, intercepts)
+        self.linear = ProjectToInitialSqrtCCS(slopes, intercepts)
 
         self.dense = tf.keras.layers.Dense(1, activation=None,
-                                        kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
+                                           kernel_regularizer=tf.keras.regularizers.l1_l2(l1_reg, l2_reg))
 
     def call(self, inputs):
-        mz, charge, k_mers = inputs[0], inputs[1], inputs[2]     
+        mz, charge, k_mers = inputs[0], inputs[1], inputs[2]
         return self.linear([mz, charge]) + self.dense(k_mers)
 
 
 if __name__ == '__main__':
-
     early_stopper = tf.keras.callbacks.EarlyStopping(
         monitor='val_output_1_loss',
         patience=10

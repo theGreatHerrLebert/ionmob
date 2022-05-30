@@ -5,6 +5,44 @@ from itertools import islice, product
 from typing import Iterator, Iterable
 import functools
 import numpy as np
+import pandas as pd
+
+from functools import reduce
+
+
+def get_all_pairs(data):
+    pairs = list(data.apply(lambda r: list(zip(list(r['sequence-tokenized']),
+                                               list(r['sequence-tokenized'][1:]))), axis=1))
+
+    pairs_unique = list(map(lambda l: set(l), pairs))
+    total_set = reduce(lambda l, r: l.union(r), pairs_unique)
+
+    return total_set
+
+
+def get_index_dict(total_set):
+    sorted_list = sorted(list(total_set))
+    return dict(zip(sorted_list, np.arange(len(sorted_list))))
+
+
+def create_count_vector(pairs, num_columns, index_dict):
+    count_vec = np.zeros(num_columns)
+
+    for p in pairs:
+        count_vec[index_dict[p]] += 1
+
+    return count_vec
+
+
+def create_count_vectors(data, index_dict):
+    pairs = pd.DataFrame({'pairs': data.apply(lambda r: list(zip(list(r['sequence-tokenized']),
+                                                                 list(r['sequence-tokenized'][1:]))), axis=1)})
+    # num_rows = len(pairs)
+    num_cols = len(index_dict)
+
+    pairs['pair_count'] = pairs.apply(lambda r: create_count_vector(r['pairs'], num_cols, index_dict), axis=1)
+
+    return pairs[['pair_count']]
 
 
 def get_token_pattern_str(
