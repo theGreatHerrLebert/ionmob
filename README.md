@@ -119,7 +119,7 @@ target = pd.read_table('path/to/my/table.csv')
 reference = pd.read_parquet('../ionmob/data/Meier.parquet')
 
 # a shift factor is calculated from charge state 2, which has the lowest variance
-shift_factor = get_ccs_shift(reference, reference)
+shift_factor = get_ccs_shift(target, reference)
 
 # optionally, apply shift to target dataset
 target['ccs_shifted'] = target.apply(lambda r: r['ccs'] + shift_factor, axis=1)
