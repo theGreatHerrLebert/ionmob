@@ -11,7 +11,7 @@ from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from scipy.optimize import curve_fit
 
 
-def get_shift_per_charge(table, reference):
+def apply_shift_per_charge(table, reference):
     """
     shift a given dataset by a constant offset based on sequence and charge pairs of reference
     :param reference: a reference dataset to align CCS values to
@@ -38,6 +38,33 @@ def get_shift_per_charge(table, reference):
     shifted_data = pd.concat(shift_list).drop(columns=['sequence'])
 
     return shifted_data
+
+
+def get_ccs_shift(table: pd.DataFrame, reference: pd.DataFrame) -> dict:
+    """
+    shift a given dataset by a constant offset based on sequence and charge pairs of reference
+    :param reference: a reference dataset to align CCS values to
+    :param table: a table with CCS values to be shifted
+    :return: a table with an appended shifted CCS value column
+    """
+
+    shift_list = []
+
+    tmp_table = table.copy(deep=True)
+    tmp_reference = reference.copy(deep=True)
+
+    tmp_table['sequence'] = table.apply(lambda r: ''.join(list(r['sequence-tokenized'])), axis=1)
+    tmp_reference['sequence'] = reference.apply(lambda r: ''.join(list(r['sequence-tokenized'])), axis=1)
+
+    reference_tmp = tmp_reference[tmp_reference.charge == 2]
+    table_tmp = tmp_table[tmp_table.charge == 2]
+
+    both = pd.merge(left=reference_tmp, right=table_tmp, right_on=['sequence', 'charge'],
+                    left_on=['sequence', 'charge'])
+
+    factor = np.mean(both.ccs_x - both.ccs_y)
+
+    return factor
 
 
 def get_sqrt_slopes_and_intercepts(mz, charge, ccs):

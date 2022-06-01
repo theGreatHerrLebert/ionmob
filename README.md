@@ -31,7 +31,8 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 
-from ionmob.preprocess.helpers import tokenizer_from_json, to_tf_dataset_inference, to_tf_dataset
+from ionmob.preprocess.helpers import tokenizer_from_json
+from ionmob.preprocess.data import to_tf_dataset_inference
 
 # you will need to load the correct tokenizer to translate peptide sequences to tokens
 tokenizer = tokenizer_from_json('../ionmob/pretrained-models/tokenizers/tokenizer.json')
@@ -92,13 +93,36 @@ mq_data['mz'] = mq_data.apply(lambda r: calculate_mz(r['sequence-tokenized'], r[
 ```
 Now, a dataset can be created for prediction:
 ```python
-import tensorflow as tf
-from ionmob.preprocess.helpers import to_tf_dataset_inference
+from ionmob.preprocess.data import to_tf_dataset_inference
 from ionmob.preprocess.helpers import tokenizer_from_json
 
 tokenizer = tokenizer_from_json('pretrained-models/tokenizers/tokenizer.json')
 
 tf_ds = to_tf_dataset_inference(mq_data['mz'], mq_data['Charge'], mq_data['sequence-tokenized'], tokenizer)
+```
+
+#### Calculate experiment specific shifts of CCS values
+A linear shift can often be observed between two experiments coming from different sources. You can correct
+for this by calculating a shift factor that needs to be added to observed ion-mobilities. Optimally, use a set of high 
+confidence identifications that contain at least tokenized sequences, charges and CCS values. They can then be used
+together with one of the training datasets as reference:
+
+```python
+import pandas as pd
+from ionmob.preprocess.helpers import get_ccs_shift
+
+target = pd.read_table('path/to/my/table.csv')
+
+# preprocess, select high confidence identifications, tokenize etc.
+
+# read a reference dataset predictor was trained on
+reference = pd.read_parquet('../ionmob/data/Meier.parquet')
+
+# a shift factor is calculated for every charge state
+shift_factor = get_ccs_shift(reference, reference)
+
+# optionally, apply shift to target dataset
+target['ccs_shifted'] = target.apply(lambda r: r['ccs'] + shift_factor, axis=1)
 ```
 
 ---
