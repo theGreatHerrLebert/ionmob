@@ -118,7 +118,7 @@ target = pd.read_table('path/to/my/table.csv')
 # read a reference dataset predictor was trained on
 reference = pd.read_parquet('../ionmob/data/Meier.parquet')
 
-# a shift factor is calculated for every charge state
+# a shift factor is calculated from charge state 2, which has the lowest variance
 shift_factor = get_ccs_shift(reference, reference)
 
 # optionally, apply shift to target dataset

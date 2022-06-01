@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
+from numpy import ndarray
 
 from scipy.optimize import curve_fit
 
@@ -40,12 +41,13 @@ def apply_shift_per_charge(table, reference):
     return shifted_data
 
 
-def get_ccs_shift(table: pd.DataFrame, reference: pd.DataFrame) -> dict:
+def get_ccs_shift(table: pd.DataFrame, reference: pd.DataFrame, use_charge_state: int = 2) -> ndarray:
     """
     shift a given dataset by a constant offset based on sequence and charge pairs of reference
     :param reference: a reference dataset to align CCS values to
     :param table: a table with CCS values to be shifted
-    :return: a table with an appended shifted CCS value column
+    :param use_charge_state:
+    :return: a global shift factor
     """
 
     shift_list = []
@@ -56,15 +58,13 @@ def get_ccs_shift(table: pd.DataFrame, reference: pd.DataFrame) -> dict:
     tmp_table['sequence'] = table.apply(lambda r: ''.join(list(r['sequence-tokenized'])), axis=1)
     tmp_reference['sequence'] = reference.apply(lambda r: ''.join(list(r['sequence-tokenized'])), axis=1)
 
-    reference_tmp = tmp_reference[tmp_reference.charge == 2]
-    table_tmp = tmp_table[tmp_table.charge == 2]
+    reference_tmp = tmp_reference[tmp_reference.charge == use_charge_state]
+    table_tmp = tmp_table[tmp_table.charge == use_charge_state]
 
     both = pd.merge(left=reference_tmp, right=table_tmp, right_on=['sequence', 'charge'],
                     left_on=['sequence', 'charge'])
 
-    factor = np.mean(both.ccs_x - both.ccs_y)
-
-    return factor
+    return np.mean(both.ccs_x - both.ccs_y)
 
 
 def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
