@@ -35,7 +35,9 @@ def get_shift_per_charge(table, reference):
         table_tmp['ccs_shifted'] = table_tmp['ccs'] + factor
         shift_list.append(table_tmp)
 
-    return pd.concat(shift_list)
+    shifted_data = pd.concat(shift_list).drop(columns=['sequence'])
+
+    return shifted_data
 
 
 def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
