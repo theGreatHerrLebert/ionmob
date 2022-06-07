@@ -387,12 +387,15 @@ def preprocess_peaks_sequence(s):
     seq = seq.replace('(+15.99)', '&')
     # Acetylation
     seq = seq.replace('(+42.01)', '')
+    # c-cy
+    seq = seq.replace('C(+119.00)', '!')
 
     # form list from string
     slist = list(seq)
 
     slist = [s if s != '$' else '<PH>' for s in slist]
     slist = [s if s != '&' else '<OX>' for s in slist]
+    slist = [s if s != '!' else 'C-<CY>' for s in slist]
 
     r_list = []
 
