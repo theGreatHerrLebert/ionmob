@@ -67,20 +67,30 @@ def get_ccs_shift(table: pd.DataFrame, reference: pd.DataFrame, use_charge_state
     return np.mean(both.ccs_x - both.ccs_y)
 
 
-def get_sqrt_slopes_and_intercepts(mz, charge, ccs):
+def get_sqrt_slopes_and_intercepts(mz: ndarray, charge: ndarray, ccs: ndarray, fit_charge_state_one: bool = False):
     """
 
     Args:
         mz:
         charge:
         ccs:
+        fit_charge_state_one:
 
     Returns:
 
     """
-    slopes, intercepts = [0.0], [0.0]
 
-    for c in range(2, 5):
+    if fit_charge_state_one:
+        slopes, intercepts = [], []
+    else:
+        slopes, intercepts = [0.0], [0.0]
+
+    if fit_charge_state_one:
+        c_begin = 1
+    else:
+        c_begin = 2
+
+    for c in range(c_begin, 5):
         def fit_func(x, a, b):
             return a * np.sqrt(x) + b
 
@@ -445,13 +455,25 @@ def preprocess_diann_sequence(s):
     return ['<START>'] + r_list + ['<END>']
 
 
-def preprocess_max_quant_sequence(s):
+def preprocess_max_quant_sequence(s, old_annotation=False):
     """
     :param s:
+    :param old_annotation:
     """
 
     seq = s[1:-1]
-    seq = seq.replace('(Oxidation (M))', '$')
+
+    is_acc = False
+
+    if old_annotation:
+        seq = seq.replace('(ox)', '$')
+
+        if seq.find('(ac)') != -1:
+            is_acc = True
+            seq = seq.replace('(ac)', '')
+
+    else:
+        seq = seq.replace('(Oxidation (M))', '$')
 
     # form list from string
     slist = list(seq)
@@ -473,6 +495,10 @@ def preprocess_max_quant_sequence(s):
 
         else:
             r_list.append(char)
+
+
+    if is_acc:
+        return ['<START>-<AC>'] + r_list + ['<END>']
 
     return ['<START>'] + r_list + ['<END>']
 

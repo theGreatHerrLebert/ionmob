@@ -91,7 +91,7 @@ class Experiment:
     @staticmethod
     def _drop_unnecessary_rows(df: pd.DataFrame) -> pd.DataFrame:
         df = df.dropna()
-        df = df.drop(df[df.charge == 1].index)
+        # df = df.drop(df[df.charge == 1].index)
         return df
 
     @staticmethod
