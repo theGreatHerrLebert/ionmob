@@ -102,8 +102,8 @@ tf_ds = to_tf_dataset_inference(mq_data['mz'], mq_data['Charge'], mq_data['seque
 ```
 
 #### Calculate experiment specific shifts of CCS values
-A linear shift can often be observed between two experiments coming from different sources. You can correct
-for this by calculating a shift factor that needs to be added to observed ion-mobilities. Optimally, use a set of high 
+A linear shift in calculated CCS values can often be observed between two experiments coming from different sources. You can correct
+for this by calculating a shift factor that needs to be added to observed values. Optimally, use a set of high 
 confidence identifications that contain at least tokenized sequences, charges and CCS values. They can then be used
 together with one of the training datasets as reference:
 
