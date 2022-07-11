@@ -344,7 +344,7 @@ def get_two_mer_counts_in_order(seq_as_tokens: list, tokens_in_order: list):
     tmp_dict = get_counter_dict(tokens_in_order)
     # go over symbols in current sequence
     for t in seq_as_tokens:
-        # increment the counter for given symbold
+        # increment the counter for given symbols
         tmp_dict[t] += 1
     # create a sorted count vector
     counts = np.array([tmp_dict[x] for x in tokens_in_order])
@@ -477,11 +477,28 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
     else:
         seq = seq.replace('(Oxidation (M))', '$')
+        seq = seq.replace('(Phospho (STY))', '&')
+
+        if seq.find('(Acetyl (Protein N-term))') != -1:
+            is_acc = True
+            seq = seq.replace('(Acetyl (Protein N-term))', '')
 
     # form list from string
     slist = list(seq)
 
-    slist = [s if s != '$' else '<OX>' for s in slist]
+    tmp_list = []
+
+    for item in slist:
+        if item == '$':
+            tmp_list.append('<OX>')
+
+        elif item == '&':
+            tmp_list.append('<PH>')
+
+        else:
+            tmp_list.append(item)
+
+    slist = tmp_list
 
     r_list = []
 
@@ -496,9 +513,14 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif char == 'C':
             r_list.append('C-<CM>')
 
+        elif char == '<PH>':
+            C = slist[i - 1]
+            C = C + '-<PH>'
+            r_list = r_list[:-1]
+            r_list.append(C)
+
         else:
             r_list.append(char)
-
 
     if is_acc:
         return ['<START>-<AC>'] + r_list + ['<END>']
@@ -518,3 +540,15 @@ def sequence_with_charge(seqs_tokenized, charges):
         s_w_c.append([str(c)] + s)
 
     return s_w_c
+
+
+def split_dataset(data: pd.DataFrame, train_frac=80, valid_frac=90):
+    num_rows = data.shape[0]
+    train_index = int((num_rows / 100) * train_frac)
+    valid_index = int((num_rows / 100) * valid_frac)
+
+    d_train = data.iloc[:train_index]
+    d_valid = data.iloc[train_index:valid_index]
+    d_test = data.iloc[valid_index:]
+
+    return d_train, d_valid, d_test
