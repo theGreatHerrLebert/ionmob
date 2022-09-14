@@ -95,7 +95,7 @@ def get_sqrt_slopes_and_intercepts(mz: ndarray, charge: ndarray, ccs: ndarray, f
             return a * np.sqrt(x) + b
 
         triples = list(filter(lambda x: x[1] == c, zip(mz, charge, ccs)))
-        
+
         mz_tmp, charge_tmp = np.array([x[0] for x in triples]), np.array([x[1] for x in triples])
         ccs_tmp = np.array([x[2] for x in triples])
 
@@ -239,10 +239,10 @@ def get_gravy_score(seq: str, drop_ends: bool = True, normalize: bool = True):
     seq = seq.replace('(ox)', '')
     if drop_ends:
         seq = seq[1:-1]
-        
+
     if normalize:
         return ProteinAnalysis(seq).gravy() / len(seq)
-    
+
     return ProteinAnalysis(seq).gravy()
 
 
@@ -364,7 +364,7 @@ def reduced_mobility_to_ccs(one_over_k0, mz, charge, mass_gas=28.013, temp=31.85
     """
     SUMMARY_CONSTANT = 18509.8632163405
     reduced_mass = (mz * charge * mass_gas) / (mz * charge + mass_gas)
-    return (SUMMARY_CONSTANT * charge) / (np.sqrt(reduced_mass * (temp + t_diff)) * 1/one_over_k0)
+    return (SUMMARY_CONSTANT * charge) / (np.sqrt(reduced_mass * (temp + t_diff)) * 1 / one_over_k0)
 
 
 def preprocess_peaks_sequence(s):
@@ -552,3 +552,56 @@ def split_dataset(data: pd.DataFrame, train_frac=80, valid_frac=90):
     d_test = data.iloc[valid_index:]
 
     return d_train, d_valid, d_test
+
+
+def preprocess_max_quant_evidence(exp: pd.DataFrame) -> pd.DataFrame:
+    """
+    select columns from evidence txt, rename to ionmob naming convention and transform to raw data rt in seconds
+    Args:
+        exp: a MaxQuant evidence dataframe from evidence.txt table
+
+    Returns: cleaned evidence dataframe, columns renamed to ionmob naming convention
+
+    """
+
+    # select columns
+    exp = exp[['m/z', 'Mass', 'Charge', 'Modified sequence', 'Retention time',
+               'Retention length', 'Ion mobility index', 'Ion mobility length', '1/K0', '1/K0 length',
+               'Number of isotopic peaks', 'Max intensity m/z 0', 'Intensity', 'Raw file', 'CCS']].rename(
+        # rename columns to ionmob naming convention
+        columns={'m/z': 'mz', 'Mass': 'mass',
+                 'Charge': 'charge', 'Modified sequence': 'sequence', 'Retention time': 'rt',
+                 'Retention length': 'rt_length', 'Ion mobility index': 'im', 'Ion mobility length': 'im_length',
+                 '1/K0': 'inv_ion_mob', '1/K0 length': 'inv_ion_mob_length', 'CCS': 'ccs',
+                 'Number of isotopic peaks': 'num_peaks', 'Max intensity m/z 0': 'mz_max_intensity',
+                 'Intensity': 'intensity', 'Raw file': 'raw'}).dropna()
+
+    # transform retention time from minutes to seconds as stored in tdf raw data
+    exp['rt'] = exp.apply(lambda r: r['rt'] * 60, axis=1)
+    exp['rt_length'] = exp.apply(lambda r: r['rt_length'] * 60, axis=1)
+    exp['rt_start'] = exp.apply(lambda r: r['rt'] - r['rt_length'] / 2, axis=1)
+    exp['rt_stop'] = exp.apply(lambda r: r['rt'] + r['rt_length'] / 2, axis=1)
+
+    exp['im_start'] = exp.apply(lambda r: int(np.round(r['im'] - r['im_length'] / 2)), axis=1)
+    exp['im_stop'] = exp.apply(lambda r: int(np.round(r['im'] + r['im_length'] / 2)), axis=1)
+
+    exp['inv_ion_mob_start'] = exp.apply(lambda r: r['inv_ion_mob'] - r['inv_ion_mob_length'] / 2, axis=1)
+    exp['inv_ion_mob_stop'] = exp.apply(lambda r: r['inv_ion_mob'] + r['inv_ion_mob_length'] / 2, axis=1)
+
+    # remove duplicates
+    exp = exp.drop_duplicates(['sequence', 'charge', 'rt', 'ccs'])
+
+    return exp
+
+
+def percent_difference(ccs_x, ccs_y):
+    """
+    calculate percent difference between two ccs values
+    Args:
+        ccs_x: first ccs value
+        ccs_y: second ccs value
+
+    Returns: percent difference between two ccs values
+
+    """
+    return np.round((np.abs(ccs_x - ccs_y) / ccs_x) * 100, 2)
