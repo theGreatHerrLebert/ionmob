@@ -28,7 +28,7 @@ setup(
         "scipy >=1.5",
         "scikit-learn >=1.0.0",
         "h5py >=3.0.0",
-	"biopython >=1.5",
-	"matplotlib >=3.0"
+	    "biopython >=1.5",
+        "matplotlib >=3.0"
     ],
 )
