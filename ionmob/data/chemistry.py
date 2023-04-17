@@ -60,7 +60,8 @@ def calculate_mz_multi_info(sequence, charge):
             seq += char
 
         else:
-            first, last = char.split('-')
+            first, last = char.split('[')
+            last = '[' + last
             c_dict[last] += 1
             seq += first
 
@@ -78,7 +79,7 @@ def calculate_mz(sequence, charge):
     :param charge:
     :return:
     """
-    c_dict = {'<AC>': 0, '[UNIMOD:35]': 0, '': 0, '[UNIMOD:21]': 0, '[UNIMOD:312]': 0}
+    c_dict = {'[UNIMOD:1]': 0, '[UNIMOD:35]': 0, '[UNIMOD:4]': 0, '[UNIMOD:21]': 0, '[UNIMOD:312]': 0}
     seq = ''
 
     first, last = sequence[0], sequence[-1]
@@ -92,7 +93,8 @@ def calculate_mz(sequence, charge):
             seq += char
 
         else:
-            first, last = char.split('-')
+            first, last = char.split('[')
+            last = '[' + last
             c_dict[last] += 1
             seq += first
 
