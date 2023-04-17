@@ -605,3 +605,36 @@ def percent_difference(ccs_x, ccs_y):
 
     """
     return np.round((np.abs(ccs_x - ccs_y) / ccs_x) * 100, 2)
+
+
+def old_sequence_to_pro_forma(sequence: list[str]) -> list[str]:
+    """Translates a peptide sequence given as a list of tokens into a string ProForma representation.
+
+    Args:
+        sequence (list[str]): Sequence as list of tokens.
+        padd_ends (bool): if True, will add '_' to start and end of sequence indicating a peptide
+
+    Returns:
+        str: Sequence now formatted according to ProForma convention
+
+    .. ProForma Format:
+        https://github.com/HUPO-PSI/ProForma
+    .. Unimod Homepage:
+        https://www.unimod.org/
+
+    """
+    # Acetylation=(UniMod:1)
+    # Carbomethylation=(UniMod:4)
+    # Phosphorylation=(UniMod:21)
+    # Oxidation=(UniMod:35)
+    # Cysteinylation=(UniMod:312)
+
+    TRANSLATION_DICT = {
+        '<START>': '<START>', '<END>': '<END>', '<START>-<AC>': '<START>[UNIMOD:1]', 'C-<CM>': 'C[UNIMOD:4]',
+        'S-<PH>': 'S[UNIMOD:21]', 'T-<PH>': 'T[UNIMOD:21]', 'Y-<PH>': 'Y[UNIMOD:21]',
+        'M-<OX>': 'M[UNIMOD:35]', 'C-<CY>': 'C[UNIMOD:312]', 'K-<AC>': 'K[UNIMOD:1]',
+    }
+
+    TRANSLATION_DICT.update({c: c for c in 'ACDEFGHIKLMNPQRSTVWY'})
+
+    return [TRANSLATION_DICT[char] for char in sequence]

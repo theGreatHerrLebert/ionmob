@@ -22,21 +22,22 @@ amino_acids = {'Lysine': 'K',
                'Histidine': 'H',
                'Aspartic Acid': 'D'}
 
-VARIANT_DICT = {'L': ['L'], 'E': ['E'], 'S': ['S', 'S-<PH>'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
-                '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>-<AC>'], 'T': ['T', 'T-<PH>'],
-                'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K-<AC>'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
-                'Y': ['Y', 'Y-<PH>'], 'M': ['M', 'M-<OX>'],
-                'W': ['W'], 'C': ['C', 'C-<CY>', 'C-<CM>'], 'C-<CM>': ['C', 'C-<CY>', 'C-<CM>']}
+VARIANT_DICT = {'L': ['L'], 'E': ['E'], 'S': ['S', 'S[UNIMOD:21]'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
+                '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>[UNIMOD:1]'], 'T': ['T', 'T[UNIMOD:21]'],
+                'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K[UNIMOD:1]'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
+                'Y': ['Y', 'Y[UNIMOD:21]'], 'M': ['M', 'M[UNIMOD:35]'],
+                'W': ['W'], 'C': ['C', 'C[UNIMOD:312]', 'C[UNIMOD:4]'], 'C[UNIMOD:4]': ['C', 'C[UNIMOD:312]', 'C[UNIMOD:4]']}
 
-VARIANT_DICT_R = {'L': ['L'], 'E': ['E'], 'S': ['S', 'S-<PH>'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
-                  '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>-<AC>'], 'T': ['T', 'T-<PH>'],
+VARIANT_DICT_R = {'L': ['L'], 'E': ['E'], 'S': ['S', 'S[UNIMOD:21]'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
+                  '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>[UNIMOD:1]'], 'T': ['T', 'T[UNIMOD:21]'],
                   'I': ['I'], 'Q': ['Q'], 'K': ['K'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
-                  'Y': ['Y', 'Y-<PH>'], 'M': ['M', 'M-<OX>'],
-                  'W': ['W'], 'C-<CM>': ['C-<CM>']}
+                  'Y': ['Y', 'Y[UNIMOD:21]'], 'M': ['M', 'M[UNIMOD:35]'],
+                  'W': ['W'], 'C[UNIMOD:4]': ['C[UNIMOD:4]']}
 
 MASS_PROTON = 1.007276466583
 
-MODIFICATIONS_MZ = {'<AC>': 42.010565, '<OX>': 15.994915, '<CM>': 57.021464, '<PH>': 79.966331, '<CY>': 0}
+MODIFICATIONS_MZ = {'[UNIMOD:1]': 42.010565, '[UNIMOD:35]': 15.994915,
+                    '[UNIMOD:4]': 57.021464, '[UNIMOD:21]': 79.966331, '[UNIMOD:312]': 119.004099}
 
 
 def calculate_mz_multi_info(sequence, charge):
@@ -45,13 +46,13 @@ def calculate_mz_multi_info(sequence, charge):
     :param charge:
     :return:
     """
-    c_dict = {'<AC>': 0, '<OX>': 0, '<CM>': 0, '<PH>': 0, '<CY>': 0}
+    c_dict = {'[UNIMOD:1]': 0, '[UNIMOD:35]': 0, '[UNIMOD:4]': 0, '[UNIMOD:21]': 0, '[UNIMOD:312]': 0}
     seq = ''
 
     first, last = sequence[0], sequence[-1]
 
-    if first.find('<AC>') != -1:
-        c_dict['<AC>'] += 1
+    if first.find('[UNIMOD:1]') != -1:
+        c_dict['[UNIMOD:1]'] += 1
 
     for char in sequence[1:-1]:
 
@@ -77,13 +78,13 @@ def calculate_mz(sequence, charge):
     :param charge:
     :return:
     """
-    c_dict = {'<AC>': 0, '<OX>': 0, '<CM>': 0, '<PH>': 0, '<CY>': 0}
+    c_dict = {'<AC>': 0, '[UNIMOD:35]': 0, '': 0, '[UNIMOD:21]': 0, '[UNIMOD:312]': 0}
     seq = ''
 
     first, last = sequence[0], sequence[-1]
 
-    if first.find('<AC>') != -1:
-        c_dict['<AC>'] += 1
+    if first.find('[UNIMOD:1]') != -1:
+        c_dict['[UNIMOD:1]'] += 1
 
     for char in sequence[1:-1]:
 
