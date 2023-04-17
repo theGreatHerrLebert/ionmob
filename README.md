@@ -71,7 +71,7 @@ print(VARIANT_DICT)
 
 ```
 
-Unmodified amino acids are just written as a singe character as capital letter. Modified sequences use the 
+Unmodified amino acids are just written as a singe character as capital letters. Modified sequences use the 
 [UniMod convention](http://www.unimod.org/): A modification is noted like `[UNIMOD:X]`, where `X` is 
 the UniMod code for the respective modification. Read more about this convention [here](https://github.com/HUPO-PSI/ProForma).
 Also, N termini are signified by a `<START>` token und C termini by an `<END>` token. This additionally allows for 
