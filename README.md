@@ -62,15 +62,19 @@ growing number of modifications such as phosphorylation. Have a look at all know
 ```python
 from ionmob.data.chemistry import VARIANT_DICT
 print(VARIANT_DICT)
-```
-{'L': ['L'], 'E': ['E'], 'S': ['S', 'S-\<PH>'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'], 
-'\<END>': ['\<END>'], 'P': ['P'], '\<START>': ['\<START>', '\<START>-\<AC>'], 'T': ['T', 'T-\<PH>'], 
-'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K-\<AC>'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'], 
-'Y': ['Y', 'Y-\<PH>'], 'M': ['M', 'M-\<OX>'], 'W': ['W'], 'C': ['C', 'C-\<CY>', 'C-\<CM>'], 
-'C-\<CM>': ['C', 'C-\<CY>', 'C-\<CM>']}
 
-We use the convention that an unmodified amino acid is just written as a singe character in capital letters. 
-Modified ones are indicated by an amino acid capital letter followed by a dash and the modification in angle brackets.
+{'L': ['L'], 'E': ['E'], 'S': ['S', 'S[UNIMOD:21]'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
+'<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>[UNIMOD:1]'], 'T': ['T', 'T[UNIMOD:21]'],
+'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K[UNIMOD:1]'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
+'Y': ['Y', 'Y[UNIMOD:21]'], 'M': ['M', 'M[UNIMOD:35]'],
+'W': ['W'], 'C': ['C', 'C[UNIMOD:312]', 'C[UNIMOD:4]'], 'C[UNIMOD:4]': ['C', 'C[UNIMOD:312]', 'C[UNIMOD:4]']}
+
+```
+
+
+We use the convention that an unmodified amino acid is just written as a singe character in capital letters. Modified
+sequences use the UniMod [convention]("http://www.unimod.org/"): A modification is noted like `[UNIMOD:X]`, where `X` is 
+the UniMod code for the respective modification. Read more about this convention [here]("https://github.com/HUPO-PSI/ProForma").
 Also, N termini are signified by a `<START>` token und C termini by an `<END>` token. This additionally allows for 
 termini modification tokens as well as indication of read direction of peptide sequences.
 
@@ -605,14 +609,9 @@ seq_tokenized = [sequence_to_tokens(s, drop_ends=True) for s in data_train.seque
 # fit a tokenizer
 tokenizer = fit_tokenizer(seq_tokenized)
 # have a look at tokens
-print(tokenizer.word_index)
 ```
 
 The tokenizer now knows 41 tokens, 20 of which are amino acids and 21 are PTMs.
-
-```python
-{'L': 1, 'E': 2, 'S': 3, 'A': 4, 'V': 5, 'D': 6, 'G': 7, 'P': 8, 'T': 9, 'I': 10, 'Q': 11, 'K': 12, 'N': 13, 'R': 14, 'F': 15, 'H': 16, 'Y': 17, 'M-OX': 18, 'C': 19, 'M': 20, 'W': 21, 'A-AC': 22, 'M-OX-AC': 23, 'S-AC': 24, 'M-AC': 25, 'T-AC': 26, 'G-AC': 27, 'V-AC': 28, 'E-AC': 29, 'P-AC': 30, 'C-AC': 31, 'L-AC': 32, 'K-AC': 33, 'D-AC': 34, 'N-AC': 35, 'Q-AC': 36, 'R-AC': 37, 'I-AC': 38, 'F-AC': 39, 'H-AC': 40, 'Y-AC': 41}
-```
 
 It has proven to be a very efficient way to build on top of a simple square-root fit to help a deep predictor reach high accuracy as well as fast convergence. 
 ```ionmob``` implements its own layer that is able to project all charge states at the same time, making it very convenient to add it to your own predictor.
