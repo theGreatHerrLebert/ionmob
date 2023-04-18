@@ -119,7 +119,7 @@ target = pd.read_table('path/to/my/table.csv')
 # preprocess, select high confidence identifications, tokenize etc.
 
 # read a reference dataset predictor was trained on
-reference = pd.read_parquet('../ionmob/data/Meier.parquet')
+reference = pd.read_parquet('../ionmob/data/reference.parquet')
 
 # a shift factor is calculated from charge state 2, which has the lowest variance
 shift_factor = get_ccs_shift(target, reference)
