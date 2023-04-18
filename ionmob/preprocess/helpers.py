@@ -393,34 +393,34 @@ def preprocess_peaks_sequence(s):
     # form list from string
     slist = list(seq)
 
-    slist = [s if s != '$' else '<PH>' for s in slist]
-    slist = [s if s != '&' else '<OX>' for s in slist]
-    slist = [s if s != '!' else 'C-<CY>' for s in slist]
+    slist = [s if s != '$' else '[UNIMOD:21]' for s in slist]
+    slist = [s if s != '&' else '[UNIMOD:35]' for s in slist]
+    slist = [s if s != '!' else 'C[UNIMOD:312]' for s in slist]
 
     r_list = []
 
     for i, char in enumerate(slist):
 
-        if char == '<PH>':
+        if char == '[UNIMOD:21]':
             C = slist[i - 1]
-            C = C + '-<PH>'
+            C = C + '[UNIMOD:21]'
             r_list = r_list[:-1]
             r_list.append(C)
 
-        elif char == '<OX>':
+        elif char == '[UNIMOD:35]':
             M = slist[i - 1]
-            M = M + '-<OX>'
+            M = M + '[UNIMOD:35]'
             r_list = r_list[:-1]
             r_list.append(M)
 
         elif char == 'C':
-            r_list.append('C-<CM>')
+            r_list.append('C[UNIMOD:4]')
 
         else:
             r_list.append(char)
 
     if is_acc:
-        return ['<START>-<AC>'] + r_list + ['<END>']
+        return ['<START>[UNIMOD:1]'] + r_list + ['<END>']
 
     return ['<START>'] + r_list + ['<END>']
 
@@ -437,20 +437,20 @@ def preprocess_diann_sequence(s):
     # form list from string
     slist = list(seq)
 
-    slist = [s if s != '$' else '<PH>' for s in slist]
+    slist = [s if s != '$' else '[UNIMOD:21]' for s in slist]
 
     r_list = []
 
     for i, char in enumerate(slist):
 
-        if char == '<PH>':
+        if char == '[UNIMOD:21]':
             C = slist[i - 1]
-            C = C + '-<PH>'
+            C = C + '[UNIMOD:21]'
             r_list = r_list[:-1]
             r_list.append(C)
 
         elif char == 'C':
-            r_list.append('C-<CM>')
+            r_list.append('C[UNIMOD:4]')
 
         else:
             r_list.append(char)
@@ -490,10 +490,10 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
     for item in slist:
         if item == '$':
-            tmp_list.append('<OX>')
+            tmp_list.append('[UNIMOD:35]')
 
         elif item == '&':
-            tmp_list.append('<PH>')
+            tmp_list.append('[UNIMOD:21]')
 
         else:
             tmp_list.append(item)
@@ -504,18 +504,18 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
     for i, char in enumerate(slist):
 
-        if char == '<OX>':
+        if char == '[UNIMOD:35]':
             C = slist[i - 1]
-            C = C + '-<OX>'
+            C = C + '[UNIMOD:35]'
             r_list = r_list[:-1]
             r_list.append(C)
 
         elif char == 'C':
-            r_list.append('C-<CM>')
+            r_list.append('C[UNIMOD:4]')
 
-        elif char == '<PH>':
+        elif char == '[UNIMOD:21]':
             C = slist[i - 1]
-            C = C + '-<PH>'
+            C = C + '[UNIMOD:21]'
             r_list = r_list[:-1]
             r_list.append(C)
 
@@ -523,7 +523,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
             r_list.append(char)
 
     if is_acc:
-        return ['<START>-<AC>'] + r_list + ['<END>']
+        return ['<START>[UNIMOD:1]'] + r_list + ['<END>']
 
     return ['<START>'] + r_list + ['<END>']
 
@@ -605,3 +605,36 @@ def percent_difference(ccs_x, ccs_y):
 
     """
     return np.round((np.abs(ccs_x - ccs_y) / ccs_x) * 100, 2)
+
+
+def old_sequence_to_pro_forma(sequence: list[str]) -> list[str]:
+    """Translates a peptide sequence given as a list of tokens into a string ProForma representation.
+
+    Args:
+        sequence (list[str]): Sequence as list of tokens.
+        padd_ends (bool): if True, will add '_' to start and end of sequence indicating a peptide
+
+    Returns:
+        str: Sequence now formatted according to ProForma convention
+
+    .. ProForma Format:
+        https://github.com/HUPO-PSI/ProForma
+    .. Unimod Homepage:
+        https://www.unimod.org/
+
+    """
+    # Acetylation=(UniMod:1)
+    # Carbomethylation=(UniMod:4)
+    # Phosphorylation=(UniMod:21)
+    # Oxidation=(UniMod:35)
+    # Cysteinylation=(UniMod:312)
+
+    TRANSLATION_DICT = {
+        '<START>': '<START>', '<END>': '<END>', '<START>-<AC>': '<START>[UNIMOD:1]', 'C-<CM>': 'C[UNIMOD:4]',
+        'S-<PH>': 'S[UNIMOD:21]', 'T-<PH>': 'T[UNIMOD:21]', 'Y-<PH>': 'Y[UNIMOD:21]',
+        'M-<OX>': 'M[UNIMOD:35]', 'C-<CY>': 'C[UNIMOD:312]', 'K-<AC>': 'K[UNIMOD:1]',
+    }
+
+    TRANSLATION_DICT.update({c: c for c in 'ACDEFGHIKLMNPQRSTVWY'})
+
+    return [TRANSLATION_DICT[char] for char in sequence]
