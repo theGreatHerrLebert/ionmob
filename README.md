@@ -38,7 +38,7 @@ from ionmob.preprocess.data import to_tf_dataset_inference
 tokenizer = tokenizer_from_json('../ionmob/pretrained-models/tokenizers/tokenizer.json')
 
 # load the data
-data = pd.read_parquet('../ionmob/data/Tenzer-dia-phospho_unique.parquet')
+data = pd.read_parquet('../ionmob/data/Tenzer-phospho-train_unimod.parquet')
 
 # load the model
 deepGRU = tf.keras.models.load_model('../ionmob/pretrained-models/GRUPredictor/')
