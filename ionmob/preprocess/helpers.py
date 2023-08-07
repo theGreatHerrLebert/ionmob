@@ -227,7 +227,7 @@ def tokenizer_from_json(path: str):
     return tf.keras.preprocessing.text.tokenizer_from_json(data)
 
 
-def get_gravy_score(seq: str, drop_ends: bool = True, normalize: bool = True):
+def get_gravy_score(seq: list[str], drop_ends: bool = True, normalize: bool = True):
     """
     calculate normalized gravy scores for a given sequence
     :param seq: peptide sequence
@@ -235,10 +235,18 @@ def get_gravy_score(seq: str, drop_ends: bool = True, normalize: bool = True):
     :param normalize:
     :return: gravy score normalized by sequence length
     """
-    seq = seq.replace('(ac)', '')
-    seq = seq.replace('(ox)', '')
     if drop_ends:
         seq = seq[1:-1]
+
+    sanatized_sequence = []
+
+    for amino_acid in seq:
+        if len(amino_acid) > 1:
+            sanatized_sequence.append(amino_acid[0])
+        else:
+            sanatized_sequence.append(amino_acid)
+
+    seq = ''.join(sanatized_sequence)
 
     if normalize:
         return ProteinAnalysis(seq).gravy() / len(seq)
@@ -246,18 +254,26 @@ def get_gravy_score(seq: str, drop_ends: bool = True, normalize: bool = True):
     return ProteinAnalysis(seq).gravy()
 
 
-def get_helix_score(seq: str, drop_ends: bool = True):
+def get_helix_score(seq: list[str], drop_ends: bool = True):
     """
     calculate portion of helix peptides
     :param seq: sequence to calculate helix portion of
     :param drop_ends: if true, first and last character will be stripped from sequence
     :return: helix portion
     """
-    seq = seq.replace('(ac)', '')
-    seq = seq.replace('(ox)', '')
 
     if drop_ends:
         seq = seq[1:-1]
+
+    sanatized_sequence = []
+
+    for aa in seq:
+        if len(aa) > 1:
+            sanatized_sequence.append(aa[0])
+        else:
+            sanatized_sequence.append(aa)
+
+    seq = ''.join(sanatized_sequence)
 
     return ProteinAnalysis(seq).secondary_structure_fraction()[0]
 
