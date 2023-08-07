@@ -7,6 +7,8 @@ Models are implemented with recent versions of either [TensorFlow](https://www.t
 Please feel free to use, alter or extend ```ionmob``` in any way that suits you as it is free and open source under the **GNU General Public License v3.0**.
 Feel also free to let us know about missing functionality, bugs, or contributions you would like to make!
 
+The `ionmob` packge now is accompanied by out publication in Bioinformatics! Read the paper which is fully open access [here](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btad486/7237255).
+
 * [**TLDR**](#TLDR)
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value)
 * [**Why do we measure CCS values of ions?**](#why-do-we-measure-CCS-values-of-ions)
@@ -18,6 +20,7 @@ Feel also free to let us know about missing functionality, bugs, or contribution
 * [**Getting insight into driving factors of CCS**](#Getting-insight-into-driving-factors-of-CCS)
 * [**Alignments of in-house and external data**](#Alignments-of-in-house-and-external-data)
 * [**Implementing a custom deep CCS predictor**](#Implementing-a-custom-deep-CCS-predictor)
+* [**Cite ionmob**](#Cite-ionmob)
 
 ---
 ### TLDR
@@ -756,6 +759,24 @@ model.evaluate(tf_test)
 [11.537385940551758, 11.537385940551758]
 ```
 It is arround 11.5. Not too bad compared to the naive approach which gave us a value of arround 13. Want to try it yourself? Use [this notebook](notebook/DeepModelTraining.ipynb).
+
+# Cite ionmob
+If you use `ionmob` for your own work, we only ask you to give credit by citing:
+
+```
+@article{10.1093/bioinformatics/btad486,
+    author = {Teschner, David and Gomez-Zepeda, David and Declercq, Arthur and Łącki, Mateusz K and Avci, Seymen and Bob, Konstantin and Distler, Ute and Michna, Thomas and Martens, Lennart and Tenzer, Stefan and Hildebrandt, Andreas},
+    title = "{Ionmob: A Python Package for Prediction of Peptide Collisional Cross-Section Values}",
+    journal = {Bioinformatics},
+    pages = {btad486},
+    year = {2023},
+    month = {08},
+    issn = {1367-4811},
+    doi = {10.1093/bioinformatics/btad486},
+    url = {https://doi.org/10.1093/bioinformatics/btad486},
+    eprint = {https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btad486/51038853/btad486.pdf},
+}
+```
 
 [^fn1]: Deep learning the collisional cross-sections of the peptide universe from a million experimental values. Nat Commun, 2021. https://doi.org/10.1038/s41467-021-21352-8
 [^fn2]: Sequence-Specific Model for Predicting Peptide Collision Cross Section Values in Proteomic Ion Mobility Spectrometry. Journal of Proteome Research, 2021. https://doi.org/10.1021/acs.jproteome.1c00185
