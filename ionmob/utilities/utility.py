@@ -67,52 +67,12 @@ def get_ccs_shift(table: pd.DataFrame, reference: pd.DataFrame, use_charge_state
     return np.mean(both.ccs_x - both.ccs_y)
 
 
-def get_sqrt_slopes_and_intercepts(mz: ndarray, charge: ndarray, ccs: ndarray, fit_charge_state_one: bool = False):
-    """
-
-    Args:
-        mz:
-        charge:
-        ccs:
-        fit_charge_state_one:
-
-    Returns:
-
-    """
-
-    if fit_charge_state_one:
-        slopes, intercepts = [], []
-    else:
-        slopes, intercepts = [0.0], [0.0]
-
-    if fit_charge_state_one:
-        c_begin = 1
-    else:
-        c_begin = 2
-
-    for c in range(c_begin, 5):
-        def fit_func(x, a, b):
-            return a * np.sqrt(x) + b
-
-        triples = list(filter(lambda x: x[1] == c, zip(mz, charge, ccs)))
-
-        mz_tmp, charge_tmp = np.array([x[0] for x in triples]), np.array([x[1] for x in triples])
-        ccs_tmp = np.array([x[2] for x in triples])
-
-        popt, _ = curve_fit(fit_func, mz_tmp, ccs_tmp)
-
-        slopes.append(popt[0])
-        intercepts.append(popt[1])
-
-    return np.array(slopes, np.float32), np.array(intercepts, np.float32)
-
-
 def get_non_overlapping_pairs(ds_ref, ds_test):
     """
     reduce a dataframe to only contain seq, charge pairs not present in ref dataset
     :ds_ref: dataframe containing all charge, seq pairs that should be excluded from other frame
     :ds_test: dataframe that should be reduced to only contain seq, charge pairs not in reference
-    :return: dataframe only containing seq, charge pairs not in ref data
+    :return: dataframe only containing seq, charge pairs not in ref example_data
     """
     ref_pairs = set(zip(ds_ref.sequence, ds_ref.charge))
     test_pairs = set(zip(ds_test.sequence, ds_test.charge))
@@ -193,40 +153,6 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
     return seq_list
 
 
-def fit_tokenizer(sequence_tokens: list):
-    """
-    will create a tensorflow tokenizer and fit it on a given set of tokens
-    CAUTION, tokens should be single AAs, so a sequence should be provided as a list of tokens
-    :param sequence_tokens: a list of lists of sequences as tokens
-    :return: a tokenizer ready to be used for tokens -> ids and ids -> tokens conversion
-    """
-    tokenizer = tf.keras.preprocessing.text.Tokenizer(char_level=False, lower=False)
-    tokenizer.fit_on_texts(sequence_tokens)
-    return tokenizer
-
-
-def tokenizer_to_json(tokenizer: tf.keras.preprocessing.text.Tokenizer, path: str):
-    """
-    save a fit keras tokenizer to json for later use
-    :param tokenizer: fit keras tokenizer to save
-    :param path: path to save json to
-    """
-    tokenizer_json = tokenizer.to_json()
-    with io.open(path, 'w', encoding='utf-8') as f:
-        f.write(json.dumps(tokenizer_json, ensure_ascii=False))
-
-
-def tokenizer_from_json(path: str):
-    """
-    load a pre-fit tokenizer from a json file
-    :param path: path to tokenizer as json file
-    :return: a keras tokenizer loaded from json
-    """
-    with open(path) as f:
-        data = json.load(f)
-    return tf.keras.preprocessing.text.tokenizer_from_json(data)
-
-
 def get_gravy_score(seq: list[str], drop_ends: bool = True, normalize: bool = True):
     """
     calculate normalized gravy scores for a given sequence
@@ -238,15 +164,15 @@ def get_gravy_score(seq: list[str], drop_ends: bool = True, normalize: bool = Tr
     if drop_ends:
         seq = seq[1:-1]
 
-    sanatized_sequence = []
+    sanitized_sequence = []
 
     for amino_acid in seq:
         if len(amino_acid) > 1:
-            sanatized_sequence.append(amino_acid[0])
+            sanitized_sequence.append(amino_acid[0])
         else:
-            sanatized_sequence.append(amino_acid)
+            sanitized_sequence.append(amino_acid)
 
-    seq = ''.join(sanatized_sequence)
+    seq = ''.join(sanitized_sequence)
 
     if normalize:
         return ProteinAnalysis(seq).gravy() / len(seq)
@@ -261,19 +187,18 @@ def get_helix_score(seq: list[str], drop_ends: bool = True):
     :param drop_ends: if true, first and last character will be stripped from sequence
     :return: helix portion
     """
-
     if drop_ends:
         seq = seq[1:-1]
 
-    sanatized_sequence = []
+    sanitized_sequence = []
 
     for aa in seq:
         if len(aa) > 1:
-            sanatized_sequence.append(aa[0])
+            sanitized_sequence.append(aa[0])
         else:
-            sanatized_sequence.append(aa)
+            sanitized_sequence.append(aa)
 
-    seq = ''.join(sanatized_sequence)
+    seq = ''.join(sanitized_sequence)
 
     return ProteinAnalysis(seq).secondary_structure_fraction()[0]
 
@@ -572,7 +497,7 @@ def split_dataset(data: pd.DataFrame, train_frac=80, valid_frac=90):
 
 def preprocess_max_quant_evidence(exp: pd.DataFrame) -> pd.DataFrame:
     """
-    select columns from evidence txt, rename to ionmob naming convention and transform to raw data rt in seconds
+    select columns from evidence txt, rename to ionmob naming convention and transform to raw example_data rt in seconds
     Args:
         exp: a MaxQuant evidence dataframe from evidence.txt table
 
@@ -592,7 +517,7 @@ def preprocess_max_quant_evidence(exp: pd.DataFrame) -> pd.DataFrame:
                  'Number of isotopic peaks': 'num_peaks', 'Max intensity m/z 0': 'mz_max_intensity',
                  'Intensity': 'intensity', 'Raw file': 'raw'}).dropna()
 
-    # transform retention time from minutes to seconds as stored in tdf raw data
+    # transform retention time from minutes to seconds as stored in tdf raw example_data
     exp['rt'] = exp.apply(lambda r: r['rt'] * 60, axis=1)
     exp['rt_length'] = exp.apply(lambda r: r['rt_length'] * 60, axis=1)
     exp['rt_start'] = exp.apply(lambda r: r['rt'] - r['rt_length'] / 2, axis=1)

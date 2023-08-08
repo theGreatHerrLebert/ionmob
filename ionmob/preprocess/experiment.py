@@ -130,7 +130,7 @@ class Experiment:
     @staticmethod
     def add_main_feat_values(df: pd.DataFrame, condition_main: str, secondary_level: bool = False):
         """
-        adds columns with values of respective main_feature to each row. For each column in target_cols that contains a container data type, a
+        adds columns with values of respective main_feature to each row. For each column in target_cols that contains a container example_data type, a
         seperate colum with name max_feat_{colname} is generated with the max value of respective container 
         :param condition_main: column which determines main feature. currently only "feat_intensity" or "occurences" considered
         :return: dataframe with len(target_columns) additinal columns with "main_" prefix to targeted column name

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from typing import List, Callable, Dict
-from ionmob.alignment.experiment import Experiment
+from ionmob.preprocess.experiment import Experiment
 import math
 from scipy.interpolate import interp1d
 from scipy.ndimage import uniform_filter1d
@@ -132,7 +132,7 @@ def get_data_for_lin_interpol(joined_tables, diff_ccs_col, bin_size=5):
 
 def learn_ccs_correction(df: pd.DataFrame, ex_name: str) -> dict:
     """learn correction curve for each charge state of one experiment
-    @df: outer-join of experiment data
+    @df: outer-join of experiment example_data
     @return: {experiment_name: {charge_state: align_function}}
     """
     funcs_dic = {ex_name: dict()}
@@ -254,7 +254,7 @@ def apply_mean_shift(ref: Experiment, exp: Experiment) -> Experiment:
     a chargewise shift is applied on exp by calculating the difference of ccs values
     detected in both experiments and their chargewise mean before applying those means
     on the ccs values of exp depending on the charge state.
-    :ref: reference experiment towards which the data of exp is corrected
+    :ref: reference experiment towards which the example_data of exp is corrected
     :exp: experiment that undergoes correction
     :return: Experiment instance that is essentially exp with additional column  "shifted_ccs" of corrected ccs values
     """
@@ -303,7 +303,7 @@ def adopt_shifted_ccs(exp: Experiment) -> Experiment:
 #     @return: {experiment_name: {charge_state: align_function}}
 #     """
 #     ex_name = ex.name
-#     df = ex.data
+#     df = ex.example_data
 #     funcs_dic = {ex_name: dict()}
 
 #     diff_ccs_col = "diff_ccs_"+ex_name

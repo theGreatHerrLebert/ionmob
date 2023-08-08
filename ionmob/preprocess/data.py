@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
-from ionmob.preprocess.helpers import sequence_to_tokens, get_helix_score, get_gravy_score, sequence_with_charge
-from ionmob.preprocess.tokenization import token_pattern_MaxQuant_v1, create_nmer_counts
+from ionmob.utilities.utility import sequence_to_tokens, get_helix_score, get_gravy_score, sequence_with_charge
+from ionmob.utilities.tokenization import token_pattern_MaxQuant_v1, create_nmer_counts
 
 
 def twomer_model_dataset(vocab, tok_func, mz, charge, sequence, ccs=None, pattern=token_pattern_MaxQuant_v1):
@@ -50,7 +50,7 @@ def get_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray, ccs
                    tokenizer: tf.keras.preprocessing.text.Tokenizer,
                    drop_sequence_ends: bool = False, add_charge=False) -> tf.data.Dataset:
     """
-    takes data and puts them into a tensorflow dataset for easy tf interop
+    takes example_data and puts them into a tensorflow dataset for easy tf interop
     :param mz: arrays of mz values
     :param charge: arrays of one hot encoded charge state values between 1 and 4 (one hot 0 to 3)
     :param sequence: array of sequences as strings
@@ -81,7 +81,7 @@ def get_tf_dataset(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray, ccs
 def get_prediction_data(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray,
                         tokenizer: tf.keras.preprocessing.text.Tokenizer, drop_sequence_ends: bool, add_charge=False):
     """
-    takes data for prediction and preprocesses it
+    takes example_data for prediction and preprocesses it
     :param mz: arrays of mz values
     :param charge: arrays of one hot encoded charge state values between 1 and 4 (one hot 0 to 3)
     :param sequence: array of sequences as strings
@@ -113,7 +113,7 @@ def get_prediction_data(mz: np.ndarray, charge: np.ndarray, sequence: np.ndarray
 
 def get_training_data(mz, charge, sequence, ccs, tokenizer, drop_sequence_ends, add_charge):
     """
-    takes data for training and preprocesses it
+    takes example_data for training and preprocesses it
     :param mz: arrays of mz values
     :param charge: arrays of one hot encoded charge state values between 1 and 4 (one hot 0 to 3)
     :param sequence: array of sequences as strings
@@ -140,8 +140,8 @@ def partition_tf_dataset(ds: tf.data.Dataset, ds_size: int, train_frac: float = 
     """
     partitions a tensorflow dataset into fractions for training, validation and test
     :param ds: a unbatched tensorflow dataset
-    :param ds_size: number of samples inside the data set
-    :param train_frac: fraction of data that should be used for training
+    :param ds_size: number of samples inside the example_data set
+    :param train_frac: fraction of example_data that should be used for training
     :param val_frac: --""-- validation
     :param test_frac: --""-- testing
     :param shuffle: if true, dataset will be shuffled before splitting

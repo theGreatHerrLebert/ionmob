@@ -1,4 +1,3 @@
-import numpy as np
 from pyopenms import *
 
 amino_acids = {'Lysine': 'K',

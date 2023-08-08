@@ -25,29 +25,30 @@ To simply get started, load our best performing predictor and infer CCS values o
 provided by this repository:
 
 #### Inference on one of our provided datasets
+
 ```python
 import tensorflow as tf
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 
-from ionmob.preprocess.helpers import tokenizer_from_json
+from ionmob.utilities.utility import tokenizer_from_json
 from ionmob.preprocess.data import to_tf_dataset_inference
 
 # you will need to load the correct tokenizer to translate peptide sequences to tokens
-tokenizer = tokenizer_from_json('../ionmob/pretrained-models/tokenizers/tokenizer.json')
+tokenizer = tokenizer_from_json('pretrained_models/tokenizers/tokenizer.json')
 
-# load the data
-data = pd.read_parquet('../ionmob/data/Tenzer-phospho-train_unimod.parquet')
+# load the example_data
+data = pd.read_parquet('example_data/Tenzer-phospho-train_unimod.parquet')
 
 # load the model
-deepGRU = tf.keras.models.load_model('../ionmob/pretrained-models/GRUPredictor/')
+deepGRU = tf.keras.models.load_model('pretrained_models/GRUPredictor/')
 
-# create a tensorflow dataset from data
-tf_ds = to_tf_dataset_inference(mz=data['mz'], 
-                   charge=data['charge'], 
-                   sesquences=[list(s) for s in data['sequence-tokenized']], 
-                   tokenizer=tokenizer)
+# create a tensorflow dataset from example_data
+tf_ds = to_tf_dataset_inference(mz=data['mz'],
+                                charge=data['charge'],
+                                sesquences=[list(s) for s in data['sequence-tokenized']],
+                                tokenizer=tokenizer)
 
 # do inference
 ccs_predicted, deep_residues = deepGRU.predict(tf_ds)
@@ -60,14 +61,15 @@ they can be used by an `ionmob` predictor. Sequences presented to `ionmob` can b
 growing number of modifications such as phosphorylation. Have a look at all known symbols:
 
 ```python
-from ionmob.data.chemistry import VARIANT_DICT
+from ionmob.utilities.chemistry import VARIANT_DICT
+
 print(VARIANT_DICT)
 
 {'L': ['L'], 'E': ['E'], 'S': ['S', 'S[UNIMOD:21]'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
-'<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>[UNIMOD:1]'], 'T': ['T', 'T[UNIMOD:21]'],
-'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K[UNIMOD:1]'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
-'Y': ['Y', 'Y[UNIMOD:21]'], 'M': ['M', 'M[UNIMOD:35]'],
-'W': ['W'], 'C': ['C', 'C[UNIMOD:312]', 'C[UNIMOD:4]'], 'C[UNIMOD:4]': ['C', 'C[UNIMOD:312]', 'C[UNIMOD:4]']}
+ '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>[UNIMOD:1]'], 'T': ['T', 'T[UNIMOD:21]'],
+ 'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K[UNIMOD:1]'], 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
+ 'Y': ['Y', 'Y[UNIMOD:21]'], 'M': ['M', 'M[UNIMOD:35]'],
+ 'W': ['W'], 'C': ['C', 'C[UNIMOD:312]', 'C[UNIMOD:4]'], 'C[UNIMOD:4]': ['C', 'C[UNIMOD:312]', 'C[UNIMOD:4]']}
 
 ```
 
@@ -78,9 +80,10 @@ Also, N termini are signified by a `<START>` token und C termini by an `<END>` t
 termini modification tokens as well as indication of read direction of peptide sequences.
 
 Translating sequences to tokens from a given output file of PEAKS, DiaNN or MaxQuant is supported out-of-the-box:
+
 ```python
 import pandas as pd
-from ionmob.preprocess.helpers import preprocess_max_quant_sequence
+from ionmob.utilities.utility import preprocess_max_quant_sequence
 
 mq_data = pd.read_table('path/to/mq/evidence.txt', low_memory=False)
 
@@ -90,16 +93,17 @@ Depending on the software used for processing the raw-data, precursor mono-isoto
 in the output files. It is therefore possible to calculate them from a given tokenized sequence and charge state:
 
 ```python
-from ionmob.data.chemistry import calculate_mz
+from ionmob.utilities.chemistry import calculate_mz
 
 mq_data['mz'] = mq_data.apply(lambda r: calculate_mz(r['sequence-tokenized'], r['Charge']), axis=1)
 ```
 Now, a dataset can be created for prediction:
+
 ```python
 from ionmob.preprocess.data import to_tf_dataset_inference
-from ionmob.preprocess.helpers import tokenizer_from_json
+from ionmob.utilities.utility import tokenizer_from_json
 
-tokenizer = tokenizer_from_json('pretrained-models/tokenizers/tokenizer.json')
+tokenizer = tokenizer_from_json('pretrained_models/tokenizers/tokenizer.json')
 
 tf_ds = to_tf_dataset_inference(mq_data['mz'], mq_data['Charge'], mq_data['sequence-tokenized'], tokenizer)
 ```
@@ -112,14 +116,14 @@ together with one of the training datasets as reference:
 
 ```python
 import pandas as pd
-from ionmob.preprocess.helpers import get_ccs_shift
+from ionmob.utilities.utility import get_ccs_shift
 
 target = pd.read_table('path/to/my/table.csv')
 
 # preprocess, select high confidence identifications, tokenize etc.
 
 # read a reference dataset predictor was trained on
-reference = pd.read_parquet('../ionmob/data/reference.parquet')
+reference = pd.read_parquet('example_data/reference.parquet')
 
 # a shift factor is calculated from charge state 2, which has the lowest variance
 shift_factor = get_ccs_shift(target, reference)
@@ -187,8 +191,8 @@ We will demonstrate how to do this with one of our provided example datasets:
 ```python
 import pandas as pd
 
-# read data and a predictor
-data = pd.read_parquet('data/Tenzer.parquet')
+# read example_data and a predictor
+data = pd.read_parquet('example_data/Tenzer.parquet')
 data.head()
 ```
 
@@ -212,11 +216,11 @@ from matplotlib import pyplot as plt
 from ionmob.preprocess.data import sqrt_model_dataset
 
 # read the pretrained predictors
-sqrtModel = tf.keras.models.load_model('pretrained-models/SqrtModel')
-gruModel = tf.keras.models.load_model('pretrained-models/GRUPredictor/')
+sqrtModel = tf.keras.models.load_model('pretrained_models/SqrtModel')
+gruModel = tf.keras.models.load_model('pretrained_models/GRUPredictor/')
 
 # read tokenizer for deep model
-tokenizer = tokenizer_from_json('pretrained-models/tokenizer.json')
+tokenizer = tokenizer_from_json('pretrained_models/tokenizer.json')
 
 # create dataset for sqrt prediction and predict
 tensorflow_ds_sqrt = sqrt_model_dataset(data.mz, data.charge, data.ccs).batch(1024)
@@ -321,16 +325,17 @@ import numpy as np
 import tensorflow as tf
 
 from matplotlib import pyplot as plt
-from ionmob.preprocess.helpers import get_gravy_score, get_helix_score, tokenizer_from_json
+from ionmob.utilities.utility import get_gravy_score, get_helix_score, tokenizer_from_json
 from ionmob.preprocess.data import get_tf_dataset, sqrt_model_dataset
 
 # read in silico digested human proteome to gain insight into predictors behaviour
-data = pd.read_hdf(Synthetic.h5').sample(frac=0.25)
+data = pd.read_hdf(Synthetic.h5
+').sample(frac=0.25)
 
 # read predictors and tokenizer
-gruModel = tf.keras.models.load_model('pretrained-models/GRUPredictor/')
-sqrtModel = tf.keras.models.load_model('pretrained-models/SqrtModel/')
-tokenizer = tokenizer_from_json('pretrained-models/tokenizer.json')
+gruModel = tf.keras.models.load_model('pretrained_models/GRUPredictor/')
+sqrtModel = tf.keras.models.load_model('pretrained_models/SqrtModel/')
+tokenizer = tokenizer_from_json('pretrained_models/tokenizer.json')
 
 # generate tensorflow datasets for prediction
 tensorflow_ds_sqrt = sqrt_model_dataset(data.mz, data.charge, None).batch(1024)
@@ -407,10 +412,10 @@ ax1.set_xlabel('relative mobility trend')
 ax2.set_xlabel('MZ')
 ax2.set_title('Deep vs Sqrt prediction')
 
-im1 = ax1.scatter(charge_2.deep_normalized, charge_2.helix, c=charge_2.helix, alpha=.3, s=10, label='data points')
+im1 = ax1.scatter(charge_2.deep_normalized, charge_2.helix, c=charge_2.helix, alpha=.3, s=10, label='example_data points')
 im1 = ax1.scatter(charge_2.deep_normalized, y_line_helix, s=10, c='red', label='linear trend')
 
-im2 = ax2.scatter(charge_2.mz, charge_2.ccs_predicted_gru, s=10, c=charge_2.helix - np.mean(data.gravy), alpha=.3, label='data points')
+im2 = ax2.scatter(charge_2.mz, charge_2.ccs_predicted_gru, s=10, c=charge_2.helix - np.mean(data.gravy), alpha=.3, label='example_data points')
 im2 = ax2.scatter(charge_2.mz, charge_2.ccs_predicted_sqrt, s=2, c='red', alpha=.3, label='sqrt prediction')
 ax1.legend()
 ax2.legend()
@@ -426,10 +431,10 @@ ax3.set_xlabel('relative mobility trend')
 ax4.set_xlabel('MZ')
 ax4.set_title('Deep vs Sqrt prediction')
 
-im3 = ax3.scatter(charge_2.deep_normalized, charge_2.gravy, c=charge_2.gravy, alpha=.3, s=10, label='data points')
+im3 = ax3.scatter(charge_2.deep_normalized, charge_2.gravy, c=charge_2.gravy, alpha=.3, s=10, label='example_data points')
 im3 = ax3.scatter(charge_2.deep_normalized, y_line_gravy, s=10, c='red', label='linear trend')
 
-im4 = ax4.scatter(charge_2.mz, charge_2.ccs_predicted_gru, s=10, c=charge_2.gravy, alpha=.3, label='data points')
+im4 = ax4.scatter(charge_2.mz, charge_2.ccs_predicted_gru, s=10, c=charge_2.gravy, alpha=.3, label='example_data points')
 im4 = ax4.scatter(charge_2.mz, charge_2.ccs_predicted_sqrt, s=2, c='red', alpha=.3, label='sqrt prediction')
 ax3.legend()
 ax4.legend()
@@ -454,12 +459,13 @@ Implement your own ideas to uncover driving factors like amino acid counts or sp
 
 ---
 ### Alignments of in-house and external data
+
 ```python
 import pandas as pd
 from ionmob.alignment import experiment as exp
-from ionmob.alignment import alignment as alig
+from ionmob.preprocess import alignment as alig
 
-data_dir = "data/raw_data/"
+data_dir = "example_data/raw_data/"
 fname = "M210115_00[1,2,3]_HeLa_grad110_ramp100__evidence.txt"
 
 path = data_dir + fname
@@ -497,7 +503,7 @@ ex1 = exp.Experiment.from_MaxQuant_DataFrame(df, "HeLa_grad110")
 access the name and data of Experiment like this
 ```python
 print("name of your experiment: ", ex1.name)
-print("data of your experiment: ", ex1.data)
+print("example_data of your experiment: ", ex1.data)
 ```
 Regardless of the initialization method the provided data is cleaned of NaN values in any of the essential columns and of the singly charged ions. 
 Furthermore, the entries in the .data attribute are aggregated upon initialization of duplicate features (duplicates of sequence-charge-ccs entries), making those unique.
@@ -515,8 +521,9 @@ ex2 = ex1.assign_modalities()
 ```
 from this point on you can proceed with the inter-experimental CCS alignment of experiment
 data aquired by the same device
+
 ```python
-data_dir = "data/raw_data/"
+data_dir = "example_data/raw_data/"
 file_names = ["M210115_00[1,2,3]_HeLa_grad110_ramp100__evidence.txt",
               "M210115_00[4,5,6]_HeLa_grad47_ramp100__evidence.txt",
               "M210115_00[7,8,9]_HeLa_grad20_ramp100__evidence.txt"]
@@ -535,7 +542,7 @@ aligned_ex = alig.merge_experiments(aligned_exs, "our_experiments")
 if you want to expand your aquired data you can align a dataset aquired by another lab to the first one
 first read and intrinsically align the experiments of the other dataset like you did above
 ```python
-data_dir2 = "data/mann_data/"
+data_dir2 = "example_data/mann_data/"
 file_names2 = ["Results_evidence_mann_Drosophila.txt",
                "Results_evidence_mann_HeLaTryp.txt",
                "Results_evidence_mann_Celegans.txt"]
@@ -584,24 +591,28 @@ import os
 from datetime import datetime
 
 import os
+
 # suppress CUDA specific logs 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
 
-tf.config.experimental.set_virtual_device_configuration(gpus[0], 
-                                        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2048)])
+tf.config.experimental.set_virtual_device_configuration(gpus[0],
+                                                        [tf.config.experimental.VirtualDeviceConfiguration(
+                                                            memory_limit=2048)])
 
 from matplotlib import pyplot as plt
 from ionmob.alignment.experiment import Experiment
 
 from ionmob.models.deep_models import ProjectToInitialSqrtCCS
 from ionmob.preprocess.data import get_tf_dataset
-from ionmob.preprocess.helpers import get_sqrt_slopes_and_intercepts, sequence_to_tokens, sequence_with_charge, fit_tokenizer
+from ionmob.utilities.utility import get_sqrt_slopes_and_intercepts, sequence_to_tokens, sequence_with_charge,
 
-data_train = pd.read_hdf('data/Meier.h5')
-data_valid = pd.read_hdf('data/Tenzer.h5')
-data_test = pd.read_hdf('data/Chang.h5')
+fit_tokenizer
+
+data_train = pd.read_hdf('example_data/Meier.h5')
+data_valid = pd.read_hdf('example_data/Tenzer.h5')
+data_test = pd.read_hdf('example_data/Chang.h5')
 
 # tokenize sequences 
 seq_tokenized = [sequence_to_tokens(s, drop_ends=True) for s in data_train.sequence.values]

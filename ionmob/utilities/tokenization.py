@@ -1,3 +1,6 @@
+import tensorflow as tf
+import io
+import json
 from collections import Counter
 import re
 import string
@@ -9,6 +12,39 @@ import pandas as pd
 
 from functools import reduce
 
+
+def fit_tokenizer(sequence_tokens: list):
+    """
+    will create a tensorflow tokenizer and fit it on a given set of tokens
+    CAUTION, tokens should be single AAs, so a sequence should be provided as a list of tokens
+    :param sequence_tokens: a list of lists of sequences as tokens
+    :return: a tokenizer ready to be used for tokens -> ids and ids -> tokens conversion
+    """
+    tokenizer = tf.keras.preprocessing.text.Tokenizer(char_level=False, lower=False)
+    tokenizer.fit_on_texts(sequence_tokens)
+    return tokenizer
+
+
+def tokenizer_to_json(tokenizer: tf.keras.preprocessing.text.Tokenizer, path: str):
+    """
+    save a fit keras tokenizer to json for later use
+    :param tokenizer: fit keras tokenizer to save
+    :param path: path to save json to
+    """
+    tokenizer_json = tokenizer.to_json()
+    with io.open(path, 'w', encoding='utf-8') as f:
+        f.write(json.dumps(tokenizer_json, ensure_ascii=False))
+
+
+def tokenizer_from_json(path: str):
+    """
+    load a pre-fit tokenizer from a json file
+    :param path: path to tokenizer as json file
+    :return: a keras tokenizer loaded from json
+    """
+    with open(path) as f:
+        data = json.load(f)
+    return tf.keras.preprocessing.text.tokenizer_from_json(data)
 
 def get_occurring_kmers(data):
     """
@@ -210,14 +246,12 @@ if __name__ == "__main__":
 
     tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
 
-    tokenize_tag_first_and_last = tag_first_and_last(
-        first_prefix="!")(tokenize)
+    tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
 
     list(tokenize_tag_first_and_last(token_pattern, sequence))
     print(Counter(tokenize_tag_first_and_last(token_pattern, sequence)))
 
-    tokenize_tag_first_and_last = tag_first_and_last(
-        first_prefix="!")(tokenize)
+    tokenize_tag_first_and_last = tag_first_and_last(first_prefix="!")(tokenize)
     list(tokenize_tag_first_and_last(token_pattern, sequence))
     Counter(tokenize_tag_first_and_last(token_pattern, sequence))
 
