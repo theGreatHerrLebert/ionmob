@@ -35,14 +35,14 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 
-from ionmob.utilities.utility import tokenizer_from_json
+from ionmob.utilities.tokenization import tokenizer_from_json
 from ionmob.preprocess.data import to_tf_dataset_inference
 
 # you will need to load the correct tokenizer to translate peptide sequences to tokens
 tokenizer = tokenizer_from_json('pretrained_models/tokenizers/tokenizer.json')
 
 # load the example_data
-data = pd.read_parquet('example_data/Tenzer-phospho-train_unimod.parquet')
+data = pd.read_parquet('example_data/Tenzer_unimod.parquet')
 
 # load the model
 deepGRU = tf.keras.models.load_model('pretrained_models/GRUPredictor/')
@@ -50,7 +50,7 @@ deepGRU = tf.keras.models.load_model('pretrained_models/GRUPredictor/')
 # create a tensorflow dataset from example_data
 tf_ds = to_tf_dataset_inference(mz=data['mz'],
                                 charge=data['charge'],
-                                sesquences=[list(s) for s in data['sequence-tokenized']],
+                                sequences=[list(s) for s in data['sequence-tokenized']],
                                 tokenizer=tokenizer)
 
 # do inference
@@ -104,7 +104,7 @@ Now, a dataset can be created for prediction:
 
 ```python
 from ionmob.preprocess.data import to_tf_dataset_inference
-from ionmob.utilities.utility import tokenizer_from_json
+from ionmob.utilities.tokenization import tokenizer_from_json
 
 tokenizer = tokenizer_from_json('pretrained_models/tokenizers/tokenizer.json')
 
@@ -327,13 +327,12 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 
-from matplotlib import pyplot as plt
-from ionmob.utilities.utility import get_gravy_score, get_helix_score, tokenizer_from_json
+from ionmob.utilities.utility import get_gravy_score, get_helix_score
+from ionmob.utilities.tokenization import tokenizer_from_json
 from ionmob.preprocess.data import get_tf_dataset, sqrt_model_dataset
 
 # read in silico digested human proteome to gain insight into predictors behaviour
-data = pd.read_hdf(Synthetic.h5
-').sample(frac=0.25)
+data = pd.read_hdf('Synthetic.h5').sample(frac=0.25)
 
 # read predictors and tokenizer
 gruModel = tf.keras.models.load_model('pretrained_models/GRUPredictor/')
@@ -465,7 +464,7 @@ Implement your own ideas to uncover driving factors like amino acid counts or sp
 
 ```python
 import pandas as pd
-from ionmob.alignment import experiment as exp
+from ionmob.preprocess import experiment as exp
 from ionmob.preprocess import alignment as alig
 
 data_dir = "example_data/raw_data/"
