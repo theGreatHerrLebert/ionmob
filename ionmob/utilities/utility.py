@@ -293,21 +293,6 @@ def get_two_mer_counts_in_order(seq_as_tokens: list, tokens_in_order: list):
     return np.array(counts).astype(np.float32)
 
 
-def reduced_mobility_to_ccs(one_over_k0, mz, charge, mass_gas=28.013, temp=31.85, t_diff=273.15):
-    """
-    convert reduced ion mobility (1/k0) to CCS
-    :param one_over_k0: reduced ion mobility
-    :param charge: charge state of the ion
-    :param mz: mass-over-charge of the ion
-    :param mass_gas: mass of drift gas
-    :param temp: temperature of the drift gas in C°
-    :param t_diff: factor to translate from C° to K
-    """
-    SUMMARY_CONSTANT = 18509.8632163405
-    reduced_mass = (mz * charge * mass_gas) / (mz * charge + mass_gas)
-    return (SUMMARY_CONSTANT * charge) / (np.sqrt(reduced_mass * (temp + t_diff)) * 1 / one_over_k0)
-
-
 def preprocess_peaks_sequence(s):
     """
     :param s:
