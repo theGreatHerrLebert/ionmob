@@ -46,6 +46,7 @@ def tokenizer_from_json(path: str):
         data = json.load(f)
     return tf.keras.preprocessing.text.tokenizer_from_json(data)
 
+
 def get_occurring_kmers(data):
     """
     create a set of all 2-mers in a given dataset
