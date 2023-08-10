@@ -5,7 +5,7 @@
 
 We encourage you to use, modify, or extend ionmob to suit your needs. It's freely available and open-source under the **GNU General Public License v3.0**. Feedback is always appreciated! Please let us know if you encounter any missing features, bugs, or if you'd like to contribute in any way.
 
-"Our ionmob package is now featured in a publication in Bioinformatics. Access the fully open-access paper [here](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btad486/7237255). For those interested in replicating our experiments, training models, or reproducing result plots from the paper, additional data and scripts not included in the ionmob package can be found on [Zenodo](https://zenodo.org/record/8091540)."
+Our ionmob package is now featured in a publication in Bioinformatics. Access the fully open-access paper [here](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btad486/7237255). For those interested in replicating our experiments, training models, or reproducing result plots from the paper, additional data and scripts not included in the ionmob package can be found on [Zenodo](https://zenodo.org/record/8091540).
 
 * [**TLDR**](#TLDR)
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value)
