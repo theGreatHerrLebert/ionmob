@@ -7,7 +7,7 @@ Models are implemented with recent versions of either [TensorFlow](https://www.t
 Please feel free to use, alter or extend ```ionmob``` in any way that suits you as it is free and open source under the **GNU General Public License v3.0**.
 Feel also free to let us know about missing functionality, bugs, or contributions you would like to make!
 
-The `ionmob` packge now is accompanied by out publication in Bioinformatics! Read the paper which is fully open access [here](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btad486/7237255).
+The `ionmob` packge now is accompanied by out publication in Bioinformatics! Read the paper which is fully open access [here](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btad486/7237255). If you would like to re-implement any of our experiments, model trainings or result plots from the paper, you can find additional data and scripts that are not directly part of `ionmob` hosted at [Zenodo](https://zenodo.org/record/8091540).
 
 * [**TLDR**](#TLDR)
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value)
