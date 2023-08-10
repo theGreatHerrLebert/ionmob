@@ -1,13 +1,11 @@
 # ionmob
 ### A Framework for Predicting Collision Cross Section (CCS) Values of Peptide-Ions with Traditional and Deep Machine Learning Methods
 
-```ionmob``` is a python package for predicting **CCS** values of peptides.
-Not only does it contain several pre-trained regression models for this task, but it also introduces a full pipeline to link data preprocessing, model training and CCS value inference.
-Models are implemented with recent versions of either [TensorFlow](https://www.tensorflow.org/) or [scikit-learn](https://scikit-learn.org/stable/).
-Please feel free to use, alter or extend ```ionmob``` in any way that suits you as it is free and open source under the **GNU General Public License v3.0**.
-Feel also free to let us know about missing functionality, bugs, or contributions you would like to make!
+`ionmob` is a Python package designed to predict **CCS** values of peptides. Beyond offering several pre-trained regression models for this task, it provides a comprehensive pipeline that seamlessly integrates data preprocessing, model training, and CCS value inference. Models are built using up-to-date versions of either [TensorFlow](https://www.tensorflow.org/) or [scikit-learn](https://scikit-learn.org/stable/).
 
-The `ionmob` packge now is accompanied by out publication in Bioinformatics! Read the paper which is fully open access [here](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btad486/7237255). If you would like to re-implement any of our experiments, model trainings or result plots from the paper, you can find additional data and scripts that are not directly part of `ionmob` hosted at [Zenodo](https://zenodo.org/record/8091540).
+We encourage you to use, modify, or extend ionmob to suit your needs. It's freely available and open-source under the **GNU General Public License v3.0**. Feedback is always appreciated! Please let us know if you encounter any missing features, bugs, or if you'd like to contribute in any way.
+
+"Our ionmob package is now featured in a publication in Bioinformatics. Access the fully open-access paper [here](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btad486/7237255). For those interested in replicating our experiments, training models, or reproducing result plots from the paper, additional data and scripts not included in the ionmob package can be found on [Zenodo](https://zenodo.org/record/8091540)."
 
 * [**TLDR**](#TLDR)
 * [**What is a peptide CCS value?**](#what-is-a-peptide-CCS-value)
