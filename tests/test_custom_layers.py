@@ -7,7 +7,7 @@ from ionmob.models.deep_models import ProjectToInitialSqrtCCS, ProjectToInitialC
 
 
 def test_linear_projection_layer():
-    data = pd.read_parquet('example_data/Tenzer_unimod.parquet')
+    data = pd.read_parquet('ionmob/example_data/Tenzer_unimod.parquet')
     # mz values need to be expanded to 2D for the layer to work
     mz = np.expand_dims(data.mz.values, 1)
     # charges need to be one-hot encoded and values are 0 indexed, so subtract 1
@@ -22,7 +22,7 @@ def test_linear_projection_layer():
 
 
 def test_sqrt_projection_layer():
-    data = pd.read_parquet('example_data/Zepeda_thunder_unique_unimod.parquet')
+    data = pd.read_parquet('ionmob/example_data/Zepeda_thunder_unique_unimod.parquet')
     # mz values need to be expanded to 2D for the layer to work
     mz = np.expand_dims(data.mz.values, 1)
     # charges need to be one-hot encoded and values are 0 indexed, so subtract 1
