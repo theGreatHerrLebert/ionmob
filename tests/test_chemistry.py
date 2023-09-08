@@ -7,7 +7,7 @@ def test_mz_calculation():
     """
     Test that the mz calculation works as expected
     """
-    df = pd.read_parquet('example_data/Tenzer_unimod.parquet')
+    df = pd.read_parquet('ionmob/example_data/Tenzer_unimod.parquet')
 
     # calculate the mz from the sequence and charge
     df['mz_calc'] = df.apply(lambda x: calculate_mz(x['sequence-tokenized'], x['charge']), axis=1)
@@ -24,7 +24,7 @@ def test_ccs_one_over_k0_translation():
     """
     Test that the ccs to 1/k0 and back translation works as expected
     """
-    df = pd.read_parquet('example_data/Tenzer_unimod.parquet')
+    df = pd.read_parquet('ionmob/example_data/Tenzer_unimod.parquet')
     
     # read data from given parquet file
     mz, charge, ccs = df.mz.values, df.charge.values, df.ccs.values
