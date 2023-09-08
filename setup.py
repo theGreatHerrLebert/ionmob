@@ -1,22 +1,17 @@
 from setuptools import setup
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     ld = fh.read()
 
 setup(
-    name='ionmob',
-    version='0.1.1',
-    description='predict peptide collision-cross sections / ion-mobilities',
-    packages=[
-        'ionmob.models',
-        'ionmob.preprocess',
-        'ionmob.utilities',
-        'tests'
-    ],
-    package_data={
-        'example_data': ['*.parquet'],
-        'pretrained_models': ['*'],
-    },
+    name="ionmob",
+    version="0.1.1",
+    description="predict peptide collision-cross sections / ion-mobilities",
+    packages=["ionmob.models", "ionmob.preprocess", "ionmob.utilities", "tests"],
+    # package_data={
+    #     "example_data": ["*.parquet"],
+    #     "pretrained_models": ["*"],
+    # },
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -26,7 +21,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-        "Operating System :: OS Independent"
+        "Operating System :: OS Independent",
     ],
     long_description=ld,
     long_description_content_type="text/markdown",
@@ -39,6 +34,6 @@ setup(
         "scikit-learn >=1.0.0",
         "h5py >=3.0.0",
         "biopython >=1.5",
-        "matplotlib >=3.0"
+        "matplotlib >=3.0",
     ],
 )
