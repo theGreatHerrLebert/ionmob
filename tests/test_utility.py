@@ -5,7 +5,7 @@ from ionmob.utilities.utility import get_ccs_shift, preprocess_peaks_sequence
 
 
 def test_apply_ccs_shift():
-    data = pd.read_csv('example_data/DB_search_psm.zip')
+    data = pd.read_csv('ionmob/example_data/DB_search_psm.zip')
     data = data.rename(columns={'Z': 'charge'})
 
     # create tokenized sequence
@@ -18,7 +18,7 @@ def test_apply_ccs_shift():
     data['k0_mean'] = data.apply(lambda k: (k['k0_start'] + k['k0_end']) / 2, axis=1)
     data['ccs'] = data.apply(lambda k: reduced_mobility_to_ccs(k['k0_mean'], k['m/z'], k['charge']), axis=1)
 
-    ref_data = pd.read_parquet('example_data/Tenzer_unimod.parquet')
+    ref_data = pd.read_parquet('ionmob/example_data/Tenzer_unimod.parquet')
     ref_data['sequence-join'] = ref_data.apply(lambda s: ''.join(s['sequence-tokenized']), axis=1)
 
     # join on sequence to pairwise ccs values

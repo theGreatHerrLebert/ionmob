@@ -8,12 +8,12 @@ from ionmob.utilities.tokenization import tokenizer_from_json
 
 
 def test_model_load():
-    model = tf.keras.models.load_model('pretrained_models/GRUPredictor/')
+    model = tf.keras.models.load_model('ionmob/pretrained_models/GRUPredictor/')
     assert model is not None
 
 
 def test_model_prediction():
-    data = pd.read_parquet('example_data/Zepeda_thunder_unique_unimod.parquet').sample(frac=.1)
+    data = pd.read_parquet('ionmob/example_data/Zepeda_thunder_unique_unimod.parquet').sample(frac=.1)
     tokenizer = tokenizer_from_json('pretrained_models/tokenizers/tokenizer.json')
     tf_ds = to_tf_dataset_inference(data.mz, data.charge, [list(s) for s in data['sequence-tokenized']], tokenizer)
     model = tf.keras.models.load_model('pretrained_models/GRUPredictor/')
