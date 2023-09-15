@@ -25,6 +25,7 @@ setup(
     ],
     long_description=ld,
     long_description_content_type="text/markdown",
+    python_requires=">=3.8",
     install_requires=[
         "tensorflow >=2.7",
         "pyopenms >= 1.0",
