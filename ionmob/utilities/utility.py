@@ -1,15 +1,12 @@
-import io
-import json
 import re
-
 from itertools import combinations
+from typing import List
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from numpy import ndarray
-
-from scipy.optimize import curve_fit
 
 
 def apply_shift_per_charge(table, reference):
@@ -50,8 +47,6 @@ def get_ccs_shift(table: pd.DataFrame, reference: pd.DataFrame, use_charge_state
     :return: a global shift factor
     """
 
-    shift_list = []
-
     tmp_table = table.copy(deep=True)
     tmp_reference = reference.copy(deep=True)
 
@@ -79,7 +74,7 @@ def get_non_overlapping_pairs(ds_ref, ds_test):
     candidates = test_pairs - ref_pairs
 
     row_list = []
-    for index, row in ds_test.iterrows():
+    for _, row in ds_test.iterrows():
         if (row['sequence'], row['charge']) in candidates:
             row_list.append(row)
 
@@ -153,7 +148,7 @@ def sequence_to_tokens(sequence: str, drop_ends: bool = False):
     return seq_list
 
 
-def get_gravy_score(seq: list[str], drop_ends: bool = True, normalize: bool = True):
+def get_gravy_score(seq: List[str], drop_ends: bool = True, normalize: bool = True):
     """
     calculate normalized gravy scores for a given sequence
     :param seq: peptide sequence
@@ -180,7 +175,7 @@ def get_gravy_score(seq: list[str], drop_ends: bool = True, normalize: bool = Tr
     return ProteinAnalysis(seq).gravy()
 
 
-def get_helix_score(seq: list[str], drop_ends: bool = True):
+def get_helix_score(seq: List[str], drop_ends: bool = True):
     """
     calculate portion of helix peptides
     :param seq: sequence to calculate helix portion of
@@ -533,7 +528,7 @@ def percent_difference(ccs_x, ccs_y):
     return np.round((np.abs(ccs_x - ccs_y) / ccs_x) * 100, 2)
 
 
-def old_sequence_to_pro_forma(sequence: list[str]) -> list[str]:
+def old_sequence_to_pro_forma(sequence: List[str]) -> List[str]:
     """Translates a peptide sequence given as a list of tokens into a string ProForma representation.
 
     Args:

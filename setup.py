@@ -7,14 +7,18 @@ setup(
     name="ionmob",
     version="0.1.1",
     description="predict peptide collision-cross sections / ion-mobilities",
-    packages=["ionmob.models", "ionmob.preprocess", "ionmob.utilities", "tests"],
+    packages=[
+        "ionmob",
+        "ionmob.models",
+        "ionmob.preprocess",
+        "ionmob.utilities",
+        "tests",
+    ],
     # package_data={
     #     "example_data": ["*.parquet"],
     #     "pretrained_models": ["*"],
     # },
     classifiers=[
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
@@ -25,6 +29,7 @@ setup(
     ],
     long_description=ld,
     long_description_content_type="text/markdown",
+    python_requires=">=3.8",
     install_requires=[
         "tensorflow >=2.7",
         "pyopenms >= 1.0",
