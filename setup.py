@@ -7,7 +7,13 @@ setup(
     name="ionmob",
     version="0.1.1",
     description="predict peptide collision-cross sections / ion-mobilities",
-    packages=["ionmob.models", "ionmob.preprocess", "ionmob.utilities", "tests"],
+    packages=[
+        "ionmob",
+        "ionmob.models",
+        "ionmob.preprocess",
+        "ionmob.utilities",
+        "tests",
+    ],
     # package_data={
     #     "example_data": ["*.parquet"],
     #     "pretrained_models": ["*"],
