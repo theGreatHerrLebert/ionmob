@@ -5,11 +5,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ionmob",
-    version="0.2.1",
+    version="0.2.2",
     description="predict peptide collision-cross sections / ion-mobilities",
     packages=[
         "ionmob",
         "ionmob.models",
+        "ionmob.pretrained_models",
         "ionmob.preprocess",
         "ionmob.utilities",
         "tests",
