@@ -1,2 +1,2 @@
-include ionmob/pretrained_models/**/*
-include ionmob/example_data/Tenzer_unimod.parquet
+recursive-include ionmob/pretrained_models *
+recursive-include ionmob/example_data *
