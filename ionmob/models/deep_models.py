@@ -1,5 +1,19 @@
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import numpy as np
 import tensorflow as tf
+tf.get_logger().setLevel('ERROR')
+
+import importlib.resources as resources
+
+def get_model_path(model_name: str) -> str:
+    return resources.files('ionmob.pretrained_models').joinpath(model_name)
+
+
+def get_gru_predictor(model_name: str = 'GRUPredictor') -> tf.keras.models.Model:
+    return tf.keras.models.load_model(get_model_path(model_name))
 
 
 class ProjectToInitialCCS(tf.keras.layers.Layer):

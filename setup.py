@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ionmob",
-    version="0.2.0",
+    version="0.2.1",
     description="predict peptide collision-cross sections / ion-mobilities",
     packages=[
         "ionmob",
@@ -14,10 +14,7 @@ setup(
         "ionmob.utilities",
         "tests",
     ],
-    # package_data={
-    #     "example_data": ["*.parquet"],
-    #     "pretrained_models": ["*"],
-    # },
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
