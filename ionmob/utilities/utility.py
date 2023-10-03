@@ -400,6 +400,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Oxidation (M))', '$')
         seq = seq.replace('(Phospho (STY))', '&')
         seq = seq.replace('(Acetyl (K))', '!')
+        seq = seq.replace('(Biotin)', '§')
+        seq = seq.replace('(Butyryl)', '=')
+        seq = seq.replace('(Crotonyl)', '*')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -420,6 +423,15 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif item == '!':
             tmp_list.append('[UNIMOD:1]')
 
+        elif item == '§':
+            tmp_list.append('[UNIMOD:3]')
+
+        elif item == '=':
+            tmp_list.append('[UNIMOD:1289]')
+
+        elif item == '*':
+            tmp_list.append('[UNIMOD:1363]')
+
         else:
             tmp_list.append(item)
 
@@ -428,27 +440,51 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
     r_list = []
 
     for i, char in enumerate(slist):
+        # treat Cysteine as modified by Carbamidomethylation as default
+        if char == 'C':
+            r_list.append('C[UNIMOD:4]')
 
-        if char == '[UNIMOD:35]':
+        # CASE 1: Oxidation
+        elif char == '[UNIMOD:35]':
             C = slist[i - 1]
             C = C + '[UNIMOD:35]'
             r_list = r_list[:-1]
             r_list.append(C)
 
-        elif char == 'C':
-            r_list.append('C[UNIMOD:4]')
-
+        # CASE 2: Phosphorylation
         elif char == '[UNIMOD:21]':
             C = slist[i - 1]
             C = C + '[UNIMOD:21]'
             r_list = r_list[:-1]
             r_list.append(C)
 
+        # CASE 3: Acetylation
         elif char == '[UNIMOD:1]':
             K = slist[i - 1]
             K = K + '[UNIMOD:1]'
             r_list = r_list[:-1]
             r_list.append(K)
+
+        # CASE 4: Biotin
+        elif char == '[UNIMOD:3]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:3]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 5: Butyryl
+        elif char == '[UNIMOD:1289]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:1289]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 6: Crotonyl
+        elif char == '[UNIMOD:1363]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:1363]'
+            r_list = r_list[:-1]
+            r_list.append(B)
 
         else:
             r_list.append(char)
