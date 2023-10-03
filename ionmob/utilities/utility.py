@@ -409,6 +409,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(hydroxyisobutyryl)', '<')
         seq = seq.replace('(Malonyl)', '¢')
         seq = seq.replace('(Methyl (K))', 'æ')
+        seq = seq.replace('(Methyl (R))', 'æ')
         seq = seq.replace('(Propionyl)', '|')
         seq = seq.replace('(Succinyl)', '{')
         seq = seq.replace('(Trimethyl (K))', '}')
