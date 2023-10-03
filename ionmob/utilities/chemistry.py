@@ -94,6 +94,7 @@ def calculate_mz(sequence, charge):
         '[UNIMOD:36]': 0,
         '[UNIMOD:122]': 0,
         '[UNIMOD:312]': 0,
+        '[UNIMOD:747]': 0,
         '[UNIMOD:1289]': 0,
         '[UNIMOD:1363]': 0,
         '[UNIMOD:1848]': 0,
