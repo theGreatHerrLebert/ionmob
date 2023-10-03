@@ -42,6 +42,7 @@ MASS_PROTON = 1.007276466583
 MODIFICATIONS_MZ = {'[UNIMOD:1]': 42.010565, '[UNIMOD:35]': 15.994915, '[UNIMOD:1289]': 70.041865,
                     '[UNIMOD:3]': 226.077598, '[UNIMOD:1363]': 68.026215, '[UNIMOD:36]': 28.031300,
                     '[UNIMOD:122]': 27.994915, '[UNIMOD:1848]': 114.031694, '[UNIMOD:1849]': 86.036779,
+                    '[UNIMOD:64]': 100.016044,
                     '[UNIMOD:747]': 86.000394, '[UNIMOD:34]': 14.015650, '[UNIMOD:58]': 56.026215,
                     '[UNIMOD:4]': 57.021464, '[UNIMOD:21]': 79.966331, '[UNIMOD:312]': 119.004099}
 
@@ -94,6 +95,7 @@ def calculate_mz(sequence, charge):
         '[UNIMOD:35]': 0,
         '[UNIMOD:36]': 0,
         '[UNIMOD:58]': 0,
+        '[UNIMOD:64]': 0,
         '[UNIMOD:122]': 0,
         '[UNIMOD:312]': 0,
         '[UNIMOD:747]': 0,
