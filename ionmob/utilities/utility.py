@@ -417,6 +417,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Citrullination (R))', '¥')
         seq = seq.replace('(Dimethyl (R))', '´')
         seq = seq.replace('(Nitro (Y))', 'µ')
+        seq = seq.replace('(Phospho (Y))', '¿')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -487,6 +488,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == 'µ':
             tmp_list.append('[UNIMOD:354]')
+
+        elif item == '¿':
+            tmp_list.append('[UNIMOD:21]')
 
         else:
             tmp_list.append(item)
