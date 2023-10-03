@@ -400,10 +400,10 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Oxidation (M))', '$')
         seq = seq.replace('(Phospho (STY))', '&')
         seq = seq.replace('(Acetyl (K))', '!')
+        seq = seq.replace('(Dimethyl (K))', '~')
         seq = seq.replace('(Biotin)', '§')
         seq = seq.replace('(Butyryl)', '=')
         seq = seq.replace('(Crotonyl)', '*')
-        seq = seq.replace('(Dimethyl (K))', '~')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -415,26 +415,26 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
     tmp_list = []
 
     for item in slist:
-        if item == '$':
-            tmp_list.append('[UNIMOD:35]')
-
-        elif item == '&':
-            tmp_list.append('[UNIMOD:21]')
-
-        elif item == '!':
+        if item == '!':
             tmp_list.append('[UNIMOD:1]')
 
         elif item == '§':
             tmp_list.append('[UNIMOD:3]')
+
+        elif item == '&':
+            tmp_list.append('[UNIMOD:21]')
+
+        elif item == '$':
+            tmp_list.append('[UNIMOD:35]')
+
+        elif item == '~':
+            tmp_list.append('[UNIMOD:36]')
 
         elif item == '=':
             tmp_list.append('[UNIMOD:1289]')
 
         elif item == '*':
             tmp_list.append('[UNIMOD:1363]')
-
-        elif item == '~':
-            tmp_list.append('[UNIMOD:36]')
 
         else:
             tmp_list.append(item)
