@@ -403,6 +403,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Biotin)', '§')
         seq = seq.replace('(Butyryl)', '=')
         seq = seq.replace('(Crotonyl)', '*')
+        seq = seq.replace('(Dimethyl (K))', '~')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -431,6 +432,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '*':
             tmp_list.append('[UNIMOD:1363]')
+
+        elif item == '~':
+            tmp_list.append('[UNIMOD:36]')
 
         else:
             tmp_list.append(item)
@@ -483,6 +487,13 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif char == '[UNIMOD:1363]':
             B = slist[i - 1]
             B = B + '[UNIMOD:1363]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 7: Dimethyl
+        elif char == '[UNIMOD:36]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:36]'
             r_list = r_list[:-1]
             r_list.append(B)
 
