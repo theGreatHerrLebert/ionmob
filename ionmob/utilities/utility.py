@@ -413,6 +413,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Succinyl)', '{')
         seq = seq.replace('(Trimethyl (K))', '}')
         seq = seq.replace('(GlyGly (K))', '£')
+        seq = seq.replace('(Hydroxyproline)', '€')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -471,6 +472,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '£':
             tmp_list.append('[UNIMOD:121]')
+
+        elif item == '€':
+            tmp_list.append('[UNIMOD:408]')
 
         else:
             tmp_list.append(item)
