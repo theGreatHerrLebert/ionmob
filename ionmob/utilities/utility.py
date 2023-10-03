@@ -412,6 +412,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Propionyl)', '|')
         seq = seq.replace('(Succinyl)', '{')
         seq = seq.replace('(Trimethyl (K))', '}')
+        seq = seq.replace('(GlyGly (K))', '£')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -467,6 +468,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '}':
             tmp_list.append('[UNIMOD:37]')
+
+        elif item == '£':
+            tmp_list.append('[UNIMOD:121]')
 
         else:
             tmp_list.append(item)
@@ -582,6 +586,13 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif char == '[UNIMOD:37]':
             B = slist[i - 1]
             B = B + '[UNIMOD:37]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 16: GlyGly
+        elif char == '[UNIMOD:121]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:121]'
             r_list = r_list[:-1]
             r_list.append(B)
 
