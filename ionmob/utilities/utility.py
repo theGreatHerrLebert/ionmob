@@ -399,6 +399,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
     else:
         seq = seq.replace('(Oxidation (M))', '$')
         seq = seq.replace('(Phospho (STY))', '&')
+        seq = seq.replace('(Acetyl (K))', '!')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -415,6 +416,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '&':
             tmp_list.append('[UNIMOD:21]')
+
+        elif item == '!':
+            tmp_list.append('[UNIMOD:1]')
 
         else:
             tmp_list.append(item)
@@ -439,6 +443,12 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
             C = C + '[UNIMOD:21]'
             r_list = r_list[:-1]
             r_list.append(C)
+
+        elif char == '[UNIMOD:1]':
+            K = slist[i - 1]
+            K = K + '[UNIMOD:1]'
+            r_list = r_list[:-1]
+            r_list.append(K)
 
         else:
             r_list.append(char)
