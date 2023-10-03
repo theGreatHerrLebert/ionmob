@@ -415,6 +415,8 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(GlyGly (K))', '£')
         seq = seq.replace('(Hydroxyproline)', '€')
         seq = seq.replace('(Citrullination (R))', '¥')
+        seq = seq.replace('(Dimethyl (R))', '´')
+        seq = seq.replace('(Nitro (Y))', 'µ')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -479,6 +481,12 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '¥':
             tmp_list.append('[UNIMOD:7]')
+
+        elif item == '´':
+            tmp_list.append('[UNIMOD:36]')
+
+        elif item == 'µ':
+            tmp_list.append('[UNIMOD:354]')
 
         else:
             tmp_list.append(item)
@@ -615,6 +623,13 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif char == '[UNIMOD:7]':
             B = slist[i - 1]
             B = B + '[UNIMOD:7]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 19: Nitro
+        elif char == '[UNIMOD:354]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:354]'
             r_list = r_list[:-1]
             r_list.append(B)
 
