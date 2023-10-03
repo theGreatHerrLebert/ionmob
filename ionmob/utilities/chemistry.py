@@ -24,7 +24,7 @@ amino_acids = {'Lysine': 'K',
 VARIANT_DICT = {'L': ['L'], 'E': ['E'], 'S': ['S', 'S[UNIMOD:21]'], 'A': ['A'], 'V': ['V'], 'D': ['D'], 'G': ['G'],
                 '<END>': ['<END>'], 'P': ['P'], '<START>': ['<START>', '<START>[UNIMOD:1]'], 'T': ['T', 'T[UNIMOD:21]'],
                 'I': ['I'], 'Q': ['Q'], 'K': ['K', 'K[UNIMOD:1]', 'K[UNIMOD:3]', 'K[UNIMOD:36]', 'K[UNIMOD:122]',
-                                              'K[UNIMOD:1848]',
+                                              'K[UNIMOD:1848]', 'K[UNIMOD:1849]'
                                               'K[UNIMOD:1289]', 'K[UNIMOD:1363]'],
                 'N': ['N'], 'R': ['R'], 'F': ['F'], 'H': ['H'],
                 'Y': ['Y', 'Y[UNIMOD:21]'], 'M': ['M', 'M[UNIMOD:35]'],
@@ -41,7 +41,7 @@ MASS_PROTON = 1.007276466583
 
 MODIFICATIONS_MZ = {'[UNIMOD:1]': 42.010565, '[UNIMOD:35]': 15.994915, '[UNIMOD:1289]': 70.041865,
                     '[UNIMOD:3]': 226.077598, '[UNIMOD:1363]': 68.026215, '[UNIMOD:36]': 28.031300,
-                    '[UNIMOD:122]': 27.994915, '[UNIMOD:1848]': 114.031694,
+                    '[UNIMOD:122]': 27.994915, '[UNIMOD:1848]': 114.031694, '[UNIMOD:1849]': 86.036779,
                     '[UNIMOD:4]': 57.021464, '[UNIMOD:21]': 79.966331, '[UNIMOD:312]': 119.004099}
 
 
@@ -96,6 +96,7 @@ def calculate_mz(sequence, charge):
         '[UNIMOD:1289]': 0,
         '[UNIMOD:1363]': 0,
         '[UNIMOD:1848]': 0,
+        '[UNIMOD:1849]': 0
     }
 
     seq = ''

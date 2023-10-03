@@ -406,6 +406,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Crotonyl)', '*')
         seq = seq.replace('(Formyl)', '^')
         seq = seq.replace('(Gluratylation)', '>')
+        seq = seq.replace('(hydroxyisobutyryl)', '<')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -443,6 +444,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '>':
             tmp_list.append('[UNIMOD:1848]')
+
+        elif item == '<':
+            tmp_list.append('[UNIMOD:1849]')
 
         else:
             tmp_list.append(item)
@@ -516,6 +520,13 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif char == '[UNIMOD:1848]':
             B = slist[i - 1]
             B = B + '[UNIMOD:1848]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 10: hydroxyisobutyryl
+        elif char == '[UNIMOD:1849]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:1849]'
             r_list = r_list[:-1]
             r_list.append(B)
 
