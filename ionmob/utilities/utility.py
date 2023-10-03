@@ -404,6 +404,8 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Biotin)', '§')
         seq = seq.replace('(Butyryl)', '=')
         seq = seq.replace('(Crotonyl)', '*')
+        seq = seq.replace('(Formyl)', '^')
+        seq = seq.replace('(Gluratylation)', '>')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -435,6 +437,12 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '*':
             tmp_list.append('[UNIMOD:1363]')
+
+        elif item == '^':
+            tmp_list.append('[UNIMOD:122]')
+
+        elif item == '>':
+            tmp_list.append('[UNIMOD:1848]')
 
         else:
             tmp_list.append(item)
@@ -494,6 +502,20 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif char == '[UNIMOD:36]':
             B = slist[i - 1]
             B = B + '[UNIMOD:36]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 8: Formyl
+        elif char == '[UNIMOD:122]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:122]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 9: Gluratylation
+        elif char == '[UNIMOD:1848]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:1848]'
             r_list = r_list[:-1]
             r_list.append(B)
 
