@@ -414,6 +414,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(Trimethyl (K))', '}')
         seq = seq.replace('(GlyGly (K))', '£')
         seq = seq.replace('(Hydroxyproline)', '€')
+        seq = seq.replace('(Citrullination (R))', '¥')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -475,6 +476,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '€':
             tmp_list.append('[UNIMOD:408]')
+
+        elif item == '¥':
+            tmp_list.append('[UNIMOD:7]')
 
         else:
             tmp_list.append(item)
@@ -597,6 +601,20 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif char == '[UNIMOD:121]':
             B = slist[i - 1]
             B = B + '[UNIMOD:121]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 17: Hydroxyproline
+        elif char == '[UNIMOD:408]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:408]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 18: Citrullination
+        elif char == '[UNIMOD:7]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:7]'
             r_list = r_list[:-1]
             r_list.append(B)
 
