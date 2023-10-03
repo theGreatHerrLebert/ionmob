@@ -409,6 +409,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         seq = seq.replace('(hydroxyisobutyryl)', '<')
         seq = seq.replace('(Malonyl)', '¢')
         seq = seq.replace('(Methyl (K))', '+')
+        seq = seq.replace('(Propionyl)', '|')
 
         if seq.find('(Acetyl (Protein N-term))') != -1:
             is_acc = True
@@ -455,6 +456,9 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
 
         elif item == '+':
             tmp_list.append('[UNIMOD:34]')
+
+        elif item == '|':
+            tmp_list.append('C[UNIMOD:58]')
 
         else:
             tmp_list.append(item)
@@ -549,6 +553,13 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         elif char == '[UNIMOD:34]':
             B = slist[i - 1]
             B = B + '[UNIMOD:34]'
+            r_list = r_list[:-1]
+            r_list.append(B)
+
+        # CASE 13: Propionyl
+        elif char == '[UNIMOD:58]':
+            B = slist[i - 1]
+            B = B + '[UNIMOD:58]'
             r_list = r_list[:-1]
             r_list.append(B)
 
