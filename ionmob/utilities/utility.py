@@ -380,266 +380,83 @@ def preprocess_diann_sequence(s):
 
 
 def preprocess_max_quant_sequence(s, old_annotation=False):
-    """
-    :param s:
-    :param old_annotation:
-    """
-
     seq = s[1:-1]
-
     is_acc = False
 
+    # Replacement dictionaries
     if old_annotation:
-        seq = seq.replace('(ox)', '$')
-
-        if seq.find('(ac)') != -1:
-            is_acc = True
-            seq = seq.replace('(ac)', '')
-
+        replacements = {
+            '(ox)': '$',
+            '(ac)': ''
+        }
+        is_acc = '(ac)' in seq
     else:
-        seq = seq.replace('(Oxidation (M))', '$')
-        seq = seq.replace('(Phospho (STY))', '&')
-        seq = seq.replace('(Acetyl (K))', '!')
-        seq = seq.replace('(Dimethyl (K))', '~')
-        seq = seq.replace('(Biotin)', '§')
-        seq = seq.replace('(Butyryl)', '=')
-        seq = seq.replace('(Crotonyl)', '*')
-        seq = seq.replace('(Formyl)', '^')
-        seq = seq.replace('(Gluratylation)', '>')
-        seq = seq.replace('(hydroxyisobutyryl)', '<')
-        seq = seq.replace('(Malonyl)', '¢')
-        seq = seq.replace('(Methyl (K))', 'æ')
-        seq = seq.replace('(Methyl (R))', 'æ')
-        seq = seq.replace('(Propionyl)', '|')
-        seq = seq.replace('(Succinyl)', '{')
-        seq = seq.replace('(Trimethyl (K))', '}')
-        seq = seq.replace('(GlyGly (K))', '£')
-        seq = seq.replace('(Hydroxyproline)', '€')
-        seq = seq.replace('(Citrullination (R))', '¥')
-        seq = seq.replace('(Dimethyl (R))', '´')
-        seq = seq.replace('(Nitro (Y))', 'µ')
-        seq = seq.replace('(Phospho (Y))', '¿')
+        replacements = {
+            '(Oxidation (M))': '$',
+            '(Phospho (STY))': '&',
+            '(Acetyl (K))': '!',
+            '(Dimethyl (K))': '~',
+            '(Biotin)': '§',
+            '(Butyryl)': '=',
+            '(Crotonyl)': '*',
+            '(Formyl)': '^',
+            '(Gluratylation)': '>',
+            '(hydroxyisobutyryl)': '<',
+            '(Malonyl)': '¢',
+            '(Methyl (K))': 'æ',
+            '(Methyl (R))': 'æ',
+            '(Propionyl)': '|',
+            '(Succinyl)': '{',
+            '(Trimethyl (K))': '}',
+            '(GlyGly (K))': '£',
+            '(Hydroxyproline)': '€',
+            '(Citrullination (R))': '¥',
+            '(Dimethyl (R))': '´',
+            '(Nitro (Y))': 'µ',
+            '(Phospho (Y))': '¿',
+            '(Acetyl (Protein N-term))': ''
+        }
+        is_acc = '(Acetyl (Protein N-term))' in seq
 
-        if seq.find('(Acetyl (Protein N-term))') != -1:
-            is_acc = True
-            seq = seq.replace('(Acetyl (Protein N-term))', '')
+    # Apply replacements
+    for old, new in replacements.items():
+        seq = seq.replace(old, new)
 
-    # form list from string
+    # Convert to UNIMOD
+    symbols_to_unimod = {
+        '!': '[UNIMOD:1]',
+        '§': '[UNIMOD:3]',
+        '&': '[UNIMOD:21]',
+        '$': '[UNIMOD:35]',
+        '~': '[UNIMOD:36]',
+        '=': '[UNIMOD:1289]',
+        '*': '[UNIMOD:1363]',
+        '^': '[UNIMOD:122]',
+        '>': '[UNIMOD:1848]',
+        '<': '[UNIMOD:1849]',
+        '¢': '[UNIMOD:747]',
+        'æ': '[UNIMOD:34]',
+        '|': 'C[UNIMOD:58]',
+        '{': '[UNIMOD:64]',
+        '}': '[UNIMOD:37]',
+        '£': '[UNIMOD:121]',
+        '€': '[UNIMOD:408]',
+        '¥': '[UNIMOD:7]',
+        '´': '[UNIMOD:36]',
+        'µ': '[UNIMOD:354]',
+        '¿': '[UNIMOD:21]'
+    }
+
     slist = list(seq)
-
-    tmp_list = []
-
-    for item in slist:
-        if item == '!':
-            tmp_list.append('[UNIMOD:1]')
-
-        elif item == '§':
-            tmp_list.append('[UNIMOD:3]')
-
-        elif item == '&':
-            tmp_list.append('[UNIMOD:21]')
-
-        elif item == '$':
-            tmp_list.append('[UNIMOD:35]')
-
-        elif item == '~':
-            tmp_list.append('[UNIMOD:36]')
-
-        elif item == '=':
-            tmp_list.append('[UNIMOD:1289]')
-
-        elif item == '*':
-            tmp_list.append('[UNIMOD:1363]')
-
-        elif item == '^':
-            tmp_list.append('[UNIMOD:122]')
-
-        elif item == '>':
-            tmp_list.append('[UNIMOD:1848]')
-
-        elif item == '<':
-            tmp_list.append('[UNIMOD:1849]')
-
-        elif item == '¢':
-            tmp_list.append('[UNIMOD:747]')
-
-        elif item == 'æ':
-            tmp_list.append('[UNIMOD:34]')
-
-        elif item == '|':
-            tmp_list.append('C[UNIMOD:58]')
-
-        elif item == '{':
-            tmp_list.append('[UNIMOD:64]')
-
-        elif item == '}':
-            tmp_list.append('[UNIMOD:37]')
-
-        elif item == '£':
-            tmp_list.append('[UNIMOD:121]')
-
-        elif item == '€':
-            tmp_list.append('[UNIMOD:408]')
-
-        elif item == '¥':
-            tmp_list.append('[UNIMOD:7]')
-
-        elif item == '´':
-            tmp_list.append('[UNIMOD:36]')
-
-        elif item == 'µ':
-            tmp_list.append('[UNIMOD:354]')
-
-        elif item == '¿':
-            tmp_list.append('[UNIMOD:21]')
-
-        else:
-            tmp_list.append(item)
-
-    slist = tmp_list
-
-    r_list = []
-
     for i, char in enumerate(slist):
-        # treat Cysteine as modified by Carbamidomethylation as default
-        if char == 'C':
-            r_list.append('C[UNIMOD:4]')
+        if char in symbols_to_unimod:
+            prev_char = slist[i - 1]
+            slist[i - 1] = prev_char + symbols_to_unimod[char]
+            slist[i] = ''
+        elif char == 'C':
+            slist[i] = 'C[UNIMOD:4]'
 
-        # CASE 1: Oxidation
-        elif char == '[UNIMOD:35]':
-            C = slist[i - 1]
-            C = C + '[UNIMOD:35]'
-            r_list = r_list[:-1]
-            r_list.append(C)
-
-        # CASE 2: Phosphorylation
-        elif char == '[UNIMOD:21]':
-            C = slist[i - 1]
-            C = C + '[UNIMOD:21]'
-            r_list = r_list[:-1]
-            r_list.append(C)
-
-        # CASE 3: Acetylation
-        elif char == '[UNIMOD:1]':
-            K = slist[i - 1]
-            K = K + '[UNIMOD:1]'
-            r_list = r_list[:-1]
-            r_list.append(K)
-
-        # CASE 4: Biotin
-        elif char == '[UNIMOD:3]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:3]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 5: Butyryl
-        elif char == '[UNIMOD:1289]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:1289]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 6: Crotonyl
-        elif char == '[UNIMOD:1363]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:1363]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 7: Dimethyl
-        elif char == '[UNIMOD:36]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:36]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 8: Formyl
-        elif char == '[UNIMOD:122]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:122]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 9: Gluratylation
-        elif char == '[UNIMOD:1848]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:1848]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 10: hydroxyisobutyryl
-        elif char == '[UNIMOD:1849]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:1849]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 11: Malonyl
-        elif char == '[UNIMOD:747]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:747]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 12: Methyl
-        elif char == '[UNIMOD:34]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:34]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 13: Propionyl
-        elif char == '[UNIMOD:58]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:58]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 14: Succinyl
-        elif char == '[UNIMOD:64]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:64]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 15: Trimethyl
-        elif char == '[UNIMOD:37]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:37]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 16: GlyGly
-        elif char == '[UNIMOD:121]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:121]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 17: Hydroxyproline
-        elif char == '[UNIMOD:408]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:408]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 18: Citrullination
-        elif char == '[UNIMOD:7]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:7]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        # CASE 19: Nitro
-        elif char == '[UNIMOD:354]':
-            B = slist[i - 1]
-            B = B + '[UNIMOD:354]'
-            r_list = r_list[:-1]
-            r_list.append(B)
-
-        else:
-            r_list.append(char)
+    r_list = [char for char in slist if char]
 
     if is_acc:
         return ['<START>[UNIMOD:1]'] + r_list + ['<END>']
