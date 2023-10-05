@@ -414,6 +414,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
             '(Dimethyl (R))': '´',
             '(Nitro (Y))': 'µ',
             '(Phospho (Y))': '¿',
+            '(HexNAc (ST))': '±',
             '(Acetyl (Protein N-term))': ''
         }
         is_acc = '(Acetyl (Protein N-term))' in seq
@@ -429,6 +430,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         '&': '[UNIMOD:21]',
         '$': '[UNIMOD:35]',
         '~': '[UNIMOD:36]',
+        '±': '[UNIMOD:43]',
         '=': '[UNIMOD:1289]',
         '*': '[UNIMOD:1363]',
         '^': '[UNIMOD:122]',

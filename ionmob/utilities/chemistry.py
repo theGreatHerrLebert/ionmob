@@ -43,6 +43,7 @@ MODIFICATIONS_MZ = {
     # currently unclear if correct
     '[UNIMOD:7]': 43.005814, '[UNIMOD:408]': 148.037173, '[UNIMOD:58]': 56.026215,
     # correct
+    '[UNIMOD:43]': 203.079373,
     '[UNIMOD:1]': 42.010565, '[UNIMOD:35]': 15.994915, '[UNIMOD:1289]': 70.041865,
     '[UNIMOD:3]': 226.077598, '[UNIMOD:1363]': 68.026215, '[UNIMOD:36]': 28.031300,
     '[UNIMOD:122]': 27.994915, '[UNIMOD:1848]': 114.031694, '[UNIMOD:1849]': 86.036779,
@@ -101,6 +102,7 @@ def calculate_mz(sequence, charge):
         '[UNIMOD:35]': 0,
         '[UNIMOD:36]': 0,
         '[UNIMOD:37]': 0,
+        '[UNIMOD:43]': 0,
         '[UNIMOD:58]': 0,
         '[UNIMOD:64]': 0,
         '[UNIMOD:121]': 0,
