@@ -8,6 +8,44 @@ import tensorflow as tf
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from numpy import ndarray
 
+def ccs_shift_per_charge(table: pd.DataFrame, reference: pd.DataFrame, min_charge=1, max_charge=4):
+    """
+    shift a given dataset by a charge-wise offset based on sequence and charge pairs of reference
+    :param reference: a reference dataset to align CCS values to
+    :param table: a table with CCS values to be shifted
+    :param min_charge: lowest occuring charge state
+    :param max_charge: highest occuring chrage state
+    :return: a dict having one shift factor per charge state
+    """
+    tmp_table = table.copy(deep=True)
+    tmp_reference = reference.copy(deep=True)
+
+    tmp_table['sequence'] = table.apply(lambda r: ''.join(list(r['sequence-tokenized'])), axis=1)
+    tmp_reference['sequence'] = reference.apply(lambda r: ''.join(list(r['sequence-tokenized'])), axis=1)
+
+    both = pd.merge(left=tmp_table, right=tmp_reference, right_on=['sequence', 'charge'],
+                    left_on=['sequence', 'charge'])
+
+    both['ccs_diffs'] = both.ccs_y - both.ccs_x
+
+    c_dict = {}
+
+    for charge in range(min_charge, max_charge + 1):
+
+        b = both[both.charge == charge]
+
+        # check if candidate pairs exist
+        if b.shape[0] > 0:
+            c_dict[charge] = np.mean(b.ccs_diffs)
+        else:
+            c_dict[charge] = 0.0
+
+    for key, value in c_dict.items():
+        # guard for nan return
+        if np.isnan(value):
+            c_dict[key] = 0.0
+
+    return c_dict
 
 def apply_shift_per_charge(table, reference):
     """
