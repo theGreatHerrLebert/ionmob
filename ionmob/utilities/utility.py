@@ -438,7 +438,7 @@ def preprocess_max_quant_sequence(s, old_annotation=False):
         '<': '[UNIMOD:1849]',
         '¢': '[UNIMOD:747]',
         'æ': '[UNIMOD:34]',
-        '|': 'C[UNIMOD:58]',
+        '|': '[UNIMOD:58]',
         '{': '[UNIMOD:64]',
         '}': '[UNIMOD:37]',
         '£': '[UNIMOD:121]',
